@@ -35,14 +35,14 @@ entry in hash table:
 /***********************************************************************
 * rsx_hash_tbl_obj_t* hash_tbl = RSX device core hash table object
 * S32 channel_id           = channel ID of RSX context, 0 to 3(max)
-* uS32 class_type          = type of class object, sw, hv or dma
+* U32 class_type          = type of class object, sw, hv or dma
 *                                sw  e.g. 0xCAFEBABE
 *                                hv  e.g. 0x31337303, 0x3137C0DE, ...
 *                                dma e.g. 0xFEED0001, 0xFEED0000, 0x66604200 to 0x6660420F, ...
 * S32 offset               = 
 * S32 arg1                 = ?, 1 or 2
 ***********************************************************************/
-void rsx_object_hash_table_create_entry(rsx_hash_tbl_obj_t* hash_tbl, S32 channel_id, uS32 class_type, S32 offset, S32 arg1) {
+void rsx_object_hash_table_create_entry(rsx_hash_tbl_obj_t* hash_tbl, S32 channel_id, U32 class_type, S32 offset, S32 arg1) {
     rsx_dev_core_obj_t* core = NULL;
     rsx_utils_bm_obj_t* bm_channels = NULL;
     S32 value, max_channels, entry_offset = 0;
@@ -114,12 +114,12 @@ void rsx_object_hash_table_create_entry(rsx_hash_tbl_obj_t* hash_tbl, S32 channe
 /***********************************************************************
 * rsx_hash_tbl_obj_t* hash_tbl = RSX device core hash table object
 * S32 channel_id           = channel ID of RSX context, 0 to 3(max)
-* uS32 class_type          = type of class object, sw, hv or dma
+* U32 class_type          = type of class object, sw, hv or dma
 *                                sw  e.g. 0xCAFEBABE
 *                                hv  e.g. 0x31337303, 0x3137C0DE, ...
 *                                dma e.g. 0xFEED0001, 0xFEED0000, 0x66604200 to 0x6660420F, ...
 ***********************************************************************/
-void rsx_object_hash_table_invalidate_entry(rsx_hash_tbl_obj_t* hash_tbl, S32 channel_id, uS32 class_type) {
+void rsx_object_hash_table_invalidate_entry(rsx_hash_tbl_obj_t* hash_tbl, S32 channel_id, U32 class_type) {
     rsx_dev_core_obj_t* core = NULL;
     rsx_utils_bm_obj_t* bm_channels = NULL;
     S32 value, max_channels, entry_offset = 0;

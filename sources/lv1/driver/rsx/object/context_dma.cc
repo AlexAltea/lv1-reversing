@@ -93,7 +93,7 @@ void rsx_object_context_dma_220064(rsx_ctx_dma_obj_t* dma_obj, S32 arg1, S32 arg
 /***********************************************************************
 * 
 ***********************************************************************/
-rsx_ctx_dma_obj_t* rsx_object_context_dma_create_obj(uS32 type) {
+rsx_ctx_dma_obj_t* rsx_object_context_dma_create_obj(U32 type) {
     S32 ret = -1;
     S64 idx;
     rsx_dev_core_obj_t* core = NULL;

@@ -16,7 +16,7 @@
 * 
 ***********************************************************************/
 S32 rsx_utils_debugger_ctor(void) {
-    uS64 value = 0;
+    U64 value = 0;
     rsx_dbg_obj_t* dbg_obj = NULL;
     
     

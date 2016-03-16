@@ -5,9 +5,7 @@
 
 #pragma once
 
-#ifndef __RSX_UTILS_DEBUGGER_H__
-#define __RSX_UTILS_DEBUGGER_H__
-
+#include "common/types.h"
 
 S32 rsx_utils_debugger_ctor(void);
 

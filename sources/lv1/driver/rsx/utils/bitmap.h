@@ -5,9 +5,7 @@
 
 #pragma once
 
-#ifndef __RSX_UTILS_BITMAP_H__
-#define __RSX_UTILS_BITMAP_H__
-
+#include "common/types.h"
 
 S32 rsx_utils_bitmap_get_item_total(rsx_utils_bm_obj_t* bm_obj);
 void rsx_utils_bitmap_free_map(rsx_utils_bm_obj_t* bm_obj);

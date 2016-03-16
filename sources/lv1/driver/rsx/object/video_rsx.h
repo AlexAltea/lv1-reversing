@@ -5,9 +5,7 @@
 
 #pragma once
 
-#ifndef __RSX_OBJECT_VIDEO_RSX_H__
-#define __RSX_OBJECT_VIDEO_RSX_H__
-
+#include "common/types.h"
 
 //--- init -------------------------------------------------------------
 S32 rsx_object_video_rsx_223230(rsx_obj_video_rsx_t* video_rsx, S32 arg1, S32 arg2);

@@ -261,7 +261,7 @@ S32 rsx_object_video_rsx_223510(rsx_obj_video_rsx_t* video_rsx, S32 id, S32 arg2
 ***********************************************************************/
 void rsx_object_video_rsx_init(rsx_obj_video_rsx_t* video_rsx) {
     S32 i, value, offset = 0;
-    uS64 rsx_debug = 0;
+    U64 rsx_debug = 0;
     lv1_unk_obj_00_t* video_rsx_unk_0 = NULL;
     lv1_unk_obj_00_t* video_rsx_unk_1 = NULL;
     
@@ -404,7 +404,7 @@ void rsx_object_video_rsx_init(rsx_obj_video_rsx_t* video_rsx) {
   
   // get RSX LV1 debug level
     get_param_value("sys.lv1.rsxdebug", &rsx_debug);
-  video_rsx->unk_00 = (int8_t)(rsx_debug & 1);
+  video_rsx->unk_00 = (S8)(rsx_debug & 1);
   
   
   // allocate, init and store unk LV1 object 0 and 1 ? 

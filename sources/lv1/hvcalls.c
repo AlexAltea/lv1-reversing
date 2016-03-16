@@ -23,7 +23,7 @@
 /***********************************************************************
 * hypercall 217
 ***********************************************************************/
-void lv1_gpu_context_allocate(uS32 mem_ctx_id, uS64 system_mode) {
+void lv1_gpu_context_allocate(U32 mem_ctx_id, U64 system_mode) {
 	S32 idx;
 	rsx_dev_core_obj_t* core = NULL;
 	rsx_mem_ctx_obj_t* mem_ctx = NULL;
@@ -226,7 +226,7 @@ void lv1_gpu_close(void) {
 ***********************************************************************/
 void lv1_gpu_open(S32 arg1) {
 	S32 ret = -1;
-	uS64 value = 0;
+	U64 value = 0;
 	S32 dev_core_id = 2;    // it's always 2 in my dumps
 	
 	

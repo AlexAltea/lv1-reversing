@@ -4,6 +4,7 @@
  */
 
 #include "memory.h"
+#include "lv1/driver/rsx/assert.h"
 
 #include <stdlib.h>
 #include <stdint.h>
@@ -455,32 +456,13 @@ static void rsx_core_memory_build_core_mem_obj(rsx_core_mem_obj_t* core_mem, S32
     // store bitmap into core memory object
     core_mem->bm_unk_03 = (void*)bm_unk_03;
     
-    // check some bitmap objects again...
-    if (core_mem->bm_local_mem == NULL) {
-        printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-        return;
-    }
-    
-    if (core_mem->bm_reports == NULL) {
-        printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-        return;
-    }
-    
-    if (core_mem->bm_unk_00 == NULL) {
-        printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-        return;
-    }
-    
-    if (core_mem->bm_unk_01 == NULL) {
-        printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-        return;
-    }
-    
-    if (core_mem->bm_unk_02 == NULL) {
-        printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-        return;
-    }
-    
+    // Check that bitmap objects are non-zero
+    RSX_ASSERT(core_mem->bm_local_mem);
+    RSX_ASSERT(core_mem->bm_reports);
+    RSX_ASSERT(core_mem->bm_unk_00);
+    RSX_ASSERT(core_mem->bm_unk_01);
+    RSX_ASSERT(core_mem->bm_unk_02);
+
     // context DMA
     // allocate bitmap, to handle the 256 context dma objects
     bm_ctx_dma = lv1_kmalloc(sizeof(rsx_utils_bm_obj_t));
@@ -559,19 +541,13 @@ rsx_core_mem_obj_t* rsx_core_memory_ctor(S64 rsx_core_id) {
     rsx_core_mem_obj_t* core_mem = NULL;
     
     
-    // get device core
+    // Get device core
     core = rsx_core_device_get_core_object_by_id(rsx_core_id);
-    if (core == NULL) {
-        printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-        return NULL;
-    }
+    RSX_ASSERT(core);
     
-    // get IOIF0
+    // Get IOIF0
     ioif0 = (void*)core->ioif0;
-    if (ioif0 == NULL) {
-        printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-        return NULL;
-    }
+    RSX_ASSERT(ioif0);
     
     // check: is there alraedy a global memory core object?
     if (g_core_mem_obj != NULL) {

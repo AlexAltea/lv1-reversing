@@ -37,7 +37,7 @@ void lv1_sub_2CA414(lv1_unk_obj_00_t* obj_0, S64 arg1, S64 opd_64, void *obj_1) 
 * in real, a checksum from the name is builded, thats the base value for
 * compute the offset into param list.
 ***********************************************************************/
-void get_param_value(const char *name, uS64 *value) {
+void get_param_value(const char *name, U64 *value) {
 	if ((strcmp(name, "sys.boot.gos")) == 0)
 	{
 	  *value = SYS_BOOT_GOS;

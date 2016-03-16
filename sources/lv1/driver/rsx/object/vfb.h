@@ -5,9 +5,7 @@
 
 #pragma once
 
-#ifndef __RSX_OBJECT_VFB_H__
-#define __RSX_OBJECT_VFB_H__
-
+#include "common/types.h"
 
 
 void rsx_object_vfb_init(rsx_obj_vfb_obj_t* vfb_obj);

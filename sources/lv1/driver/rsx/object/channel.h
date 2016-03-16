@@ -5,9 +5,7 @@
 
 #pragma once
 
-#ifndef __RSX_OBJECT_CHANNEL_H__
-#define __RSX_OBJECT_CHANNEL_H__
-
+#include "common/types.h"
 
 
 

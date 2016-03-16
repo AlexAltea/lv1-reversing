@@ -378,24 +378,6 @@ struct rsx_dev_clock_obj_t {
   S32 unk_24;               // 0x24: ?
 } rsx_dev_clock_obj;
 
-
-
-// LV1 RSX IOIF 0 object, size 0x40
-struct _rsx_bus_ioif0_obj_t {
-    S64 vtab;                 // 0x00: pointer -> virtual table
-    S32 chip_revision;        // 0x08: RSX chip revision
-    int8_t init;                  // 0x0C: init flag
-    int8_t pad1[3];               // 0x0D: padding 
-    S64 base_addr;            // 0x10: interface base address, 0x28000000000
-    S64 bar_0_addr;           // 0x18: BAR0 start address, 0x28000000000
-    S64 bar_1_addr;           // 0x20: BAR1(VRAM) start address, 0x28080000000
-    S64 bar_2_addr;           // 0x28: BAR2(PRAMIN) start address, 0x28002000000
-    S32 bar_0_size;           // 0x30: BAR0 size, 0x2000000(32 MB)
-    S32 bar_1_2_size;         // 0x34: BAR1/BAR2 size, 0x10000000(256 MB)
-    S32 unk_38;               // 0x38: ?
-    S32 unk_3C;               // 0x3C: ?
-} rsx_bus_ioif0_obj_t;
-
 // LV1 RSX utils bitmap object, size 0x38
 struct rsx_utils_bm_obj_t {
     S64 value1;                 // 0x00: base, e.g. a memory start address

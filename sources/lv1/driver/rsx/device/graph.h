@@ -5,9 +5,7 @@
 
 #pragma once
 
-#ifndef __RSX_DEVICE_GRAPH_H__
-#define __RSX_DEVICE_GRAPH_H__
-
+#include "common/types.h"
 
 
 //--- init -------------------------------------------------------------

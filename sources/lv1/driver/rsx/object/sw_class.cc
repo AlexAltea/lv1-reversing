@@ -21,7 +21,7 @@
 /***********************************************************************
 * 
 ***********************************************************************/
-void rsx_object_sw_class_create_object(rsx_sw_class_obj_t* sw_obj, uS32 class, S64 *opd) {
+void rsx_object_sw_class_create_object(rsx_sw_class_obj_t* sw_obj, U32 class, S64 *opd) {
     
     
     

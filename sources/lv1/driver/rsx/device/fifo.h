@@ -5,9 +5,7 @@
 
 #pragma once
 
-#ifndef __RSX_DEVICE_FIFO_H__
-#define __RSX_DEVICE_FIFO_H__
-
+#include "common/types.h"
 
 //--- init ---------------------------------------------------------------------------
 void rsx_device_fifo_21B5FC(rsx_fifo_obj_t* fifo, S32 arg1, S32 arg2);

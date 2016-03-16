@@ -39,7 +39,7 @@ void rsx_utils_bitmap_free_map(rsx_utils_bm_obj_t* bm_obj) {
 S32 rsx_utils_bitmap_dealloc(rsx_utils_bm_obj_t* bm_obj, S64 start, S32 count) {
     S32 i, bm_idx;
     S64 *bm = NULL;
-    uS64 seg;
+    U64 seg;
     
     
     // nothing to free
@@ -53,7 +53,7 @@ S32 rsx_utils_bitmap_dealloc(rsx_utils_bm_obj_t* bm_obj, S64 start, S32 count) {
     // free item, if set
     for(i = bm_idx; i < count; i++) {
         seg = bm[i / bm_obj->seg_base];
-        if (((seg >>(i - ((i / bm_obj->seg_base) * bm_obj->seg_base))) & (uS64)1) == 1)
+        if (((seg >>(i - ((i / bm_obj->seg_base) * bm_obj->seg_base))) & (U64)1) == 1)
           rsx_utils_bitmap_set_bit(bm_obj, i, 0);
     }
     
@@ -70,7 +70,7 @@ S32 rsx_utils_bitmap_dealloc(rsx_utils_bm_obj_t* bm_obj, S64 start, S32 count) {
 S32 rsx_utils_bitmap_allocate(rsx_utils_bm_obj_t* bm_obj, S32 count, S64 *out) {
     S32 i, free = 0, start = 0;
     S64 *bm = NULL;
-    uS64 seg;
+    U64 seg;
     
     
     // fail, nothing to allocate in bitmap
@@ -90,7 +90,7 @@ S32 rsx_utils_bitmap_allocate(rsx_utils_bm_obj_t* bm_obj, S32 count, S64 *out) {
         seg = bm[i / bm_obj->seg_base];
         
         // item free
-        if (((seg >>(i - ((i / bm_obj->seg_base) * bm_obj->seg_base))) & (uS64)1) == 0)
+        if (((seg >>(i - ((i / bm_obj->seg_base) * bm_obj->seg_base))) & (U64)1) == 0)
             free++;
         else
           start++;
@@ -119,7 +119,7 @@ S32 rsx_utils_bitmap_allocate(rsx_utils_bm_obj_t* bm_obj, S32 count, S64 *out) {
 ***********************************************************************/
 void rsx_utils_bitmap_set_bit(rsx_utils_bm_obj_t* bm_obj, S32 idx, S32 value) {
     S64 *bm = NULL;
-    uS64 segment, tmp;
+    U64 segment, tmp;
     S32 sh;
     
     
@@ -133,7 +133,7 @@ void rsx_utils_bitmap_set_bit(rsx_utils_bm_obj_t* bm_obj, S32 idx, S32 value) {
     
     sh = idx - ((idx / bm_obj->seg_base) * bm_obj->seg_base);
     segment = bm[idx / bm_obj->seg_base];
-    tmp = ((segment & ~((uS64)1 <<sh)) | ((value & (uS64)1) <<sh));
+    tmp = ((segment & ~((U64)1 <<sh)) | ((value & (U64)1) <<sh));
     bm[idx / bm_obj->seg_base] = tmp;
     
     return;
@@ -164,7 +164,7 @@ void rsx_utils_bitmap_create(rsx_utils_bm_obj_t* bm_obj, S64 val_1, S32 item_tot
     bm_obj->seg_count  = seg_count;
     
     // allocate bitmap
-    bitmap = lv1_kmalloc(seg_count * sizeof(uS64));
+    bitmap = lv1_kmalloc(seg_count * sizeof(U64));
     if (bitmap == NULL) {
         printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
         return;
@@ -178,7 +178,7 @@ void rsx_utils_bitmap_create(rsx_utils_bm_obj_t* bm_obj, S64 val_1, S32 item_tot
       return;
     
     // else, init full allocated bitmap with 1
-    memset(bitmap, 0xFF, seg_count * sizeof(uS64));
+    memset(bitmap, 0xFF, seg_count * sizeof(U64));
     
     // init usable part of bitmap with 0(unset)
     for(i = 0; i < item_total; i++)

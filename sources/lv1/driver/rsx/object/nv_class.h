@@ -5,14 +5,12 @@
 
 #pragma once
 
-#ifndef __RSX_OBJECT_NV_CLASS_H__
-#define __RSX_OBJECT_NV_CLASS_H__
-
+#include "common/types.h"
 
 S32 rsx_object_nv_class_get_object_size(void);
 S64 rsx_object_nv_class_get_BAR2_address(rsx_nv_class_obj_t* nv_obj);
-uS32 rsx_object_nv_class_get_object_class(rsx_nv_class_obj_t* nv_obj);
-void rsx_object_nv_class_create_object(rsx_nv_class_obj_t* nv_obj, uS32 arg1, uS32 arg2);
+U32 rsx_object_nv_class_get_object_class(rsx_nv_class_obj_t* nv_obj);
+void rsx_object_nv_class_create_object(rsx_nv_class_obj_t* nv_obj, U32 arg1, U32 arg2);
 
 
 

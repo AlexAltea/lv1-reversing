@@ -337,7 +337,7 @@ void rsx_core_device_finalize(rsx_dev_core_obj_t* core) {
 * 
 ***********************************************************************/
 S32 rsx_core_device_close_device(S32 dev_core_id) {
-    uS64 value = 0;
+    U64 value = 0;
     rsx_dev_core_obj_t* core = NULL;
     
     
@@ -681,7 +681,7 @@ static void rsx_core_device_init(rsx_dev_core_obj_t* dev_core, S32 arg1, S32 dev
 * create the device core object
 ***********************************************************************/
 S32 rsx_core_device_open(S32 arg1, S32 dev_core_id) {
-    uS64 value = 0;
+    U64 value = 0;
     rsx_dev_core_obj_t* dev_core = NULL;
     
   

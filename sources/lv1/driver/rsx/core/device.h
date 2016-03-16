@@ -5,9 +5,7 @@
 
 #pragma once
 
-#ifndef __RSX_CORE_DEVICE_H__
-#define __RSX_CORE_DEVICE_H__
-
+#include "common/types.h"
 
 S32 rsx_core_device_map_device(rsx_dev_core_obj_t* core, S32 device_id, S64 *dev_lpar_addr, S64 *dev_lpar_size);
 void rsx_core_device_finalize(rsx_dev_core_obj_t* core);

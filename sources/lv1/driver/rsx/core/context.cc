@@ -229,13 +229,13 @@ static S32 rsx_core_context_2146F4(rsx_ctx_obj_t* rsx_ctx) {
     
     // store count of GRAPH units(8) into driver info 0x0028:
     value = read_BAR0(0x28000001540);        // NV40_PMC_GRAPH_UNITS           
-    DRVI_write08(rsx_ctx->idx, (int8_t)count_set_bits((value & 0x1FF00) >>8), 0x28);  // value[15:23], GRAPH units
-    DRVI_write08(rsx_ctx->idx, (int8_t)count_set_bits(value & 0xFF) * 4, 0x29);       // value[24:31], ? 6 of 8 are set, but no idea which one
+    DRVI_write08(rsx_ctx->idx, (S8)count_set_bits((value & 0x1FF00) >>8), 0x28);  // value[15:23], GRAPH units
+    DRVI_write08(rsx_ctx->idx, (S8)count_set_bits(value & 0xFF) * 4, 0x29);       // value[24:31], ? 6 of 8 are set, but no idea which one
     
-  // ?
-  value = read_BAR0(0x28000100200);
+    // ?
+    value = read_BAR0(0x28000100200);
     value &= 3;                        // value[30:31]
-    DRVI_write08(rsx_ctx->idx, (int8_t)(value + 1), 0x2A); // 2
+    DRVI_write08(rsx_ctx->idx, (S8)(value + 1), 0x2A); // 2
     
     // ? reports offsets
     DRVI_write32(rsx_ctx->idx, (S32)(rsx_ctx->unk_0E0 - rsx_ctx->reports_addr), 0x2C);  // ctx 0: offset 0x1000
@@ -323,7 +323,7 @@ static S32 rsx_core_context_2146F4(rsx_ctx_obj_t* rsx_ctx) {
     
     value = read_BAR0(0x28000001540);
     value &= 0xFF;                          // value[24:31], unk
-    DRVI_write32(rsx_ctx->idx, (int8_t)value, 0x2B66);
+    DRVI_write32(rsx_ctx->idx, (S8)value, 0x2B66);
     
     return 1;
 }
