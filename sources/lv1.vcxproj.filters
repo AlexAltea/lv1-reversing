@@ -1,0 +1,157 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="driver">
+      <UniqueIdentifier>{870cba6d-f936-4c7b-9371-3b8f1acee200}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="driver\rsx">
+      <UniqueIdentifier>{d1a29306-f14d-4316-9c25-5f178e11091b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="driver\rsx\bus">
+      <UniqueIdentifier>{1ef512ca-34f8-429d-85d5-8bab4e04d959}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="driver\rsx\core">
+      <UniqueIdentifier>{501db742-d87c-4b26-88a9-38839255a54d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="driver\rsx\device">
+      <UniqueIdentifier>{772414a3-733d-4169-9657-010edfa6add3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="driver\rsx\object">
+      <UniqueIdentifier>{a8f77474-86f1-48bb-bab0-111dcae3ac63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="driver\rsx\utils">
+      <UniqueIdentifier>{4985c6e0-6c17-4307-953c-e739e4344f6d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="lv1\driver\rsx\object.h">
+      <Filter>driver\rsx</Filter>
+    </ClInclude>
+    <ClInclude Include="lv1\driver\rsx\utils\bitmap.h">
+      <Filter>driver\rsx\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="lv1\driver\rsx\utils\debugger.h">
+      <Filter>driver\rsx\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="lv1\driver\rsx\object\vfb.h">
+      <Filter>driver\rsx\object</Filter>
+    </ClInclude>
+    <ClInclude Include="lv1\driver\rsx\object\video_rsx.h">
+      <Filter>driver\rsx\object</Filter>
+    </ClInclude>
+    <ClInclude Include="lv1\driver\rsx\object\channel.h">
+      <Filter>driver\rsx\object</Filter>
+    </ClInclude>
+    <ClInclude Include="lv1\driver\rsx\object\context_dma.h">
+      <Filter>driver\rsx\object</Filter>
+    </ClInclude>
+    <ClInclude Include="lv1\driver\rsx\object\hash_table.h">
+      <Filter>driver\rsx\object</Filter>
+    </ClInclude>
+    <ClInclude Include="lv1\driver\rsx\object\nv_class.h">
+      <Filter>driver\rsx\object</Filter>
+    </ClInclude>
+    <ClInclude Include="lv1\driver\rsx\object\sw_class.h">
+      <Filter>driver\rsx\object</Filter>
+    </ClInclude>
+    <ClInclude Include="lv1\driver\rsx\device\clock.h">
+      <Filter>driver\rsx\device</Filter>
+    </ClInclude>
+    <ClInclude Include="lv1\driver\rsx\device\eic.h">
+      <Filter>driver\rsx\device</Filter>
+    </ClInclude>
+    <ClInclude Include="lv1\driver\rsx\device\fb.h">
+      <Filter>driver\rsx\device</Filter>
+    </ClInclude>
+    <ClInclude Include="lv1\driver\rsx\device\fifo.h">
+      <Filter>driver\rsx\device</Filter>
+    </ClInclude>
+    <ClInclude Include="lv1\driver\rsx\device\graph.h">
+      <Filter>driver\rsx\device</Filter>
+    </ClInclude>
+    <ClInclude Include="lv1\driver\rsx\device\master.h">
+      <Filter>driver\rsx\device</Filter>
+    </ClInclude>
+    <ClInclude Include="lv1\driver\rsx\device\audio.h">
+      <Filter>driver\rsx\device</Filter>
+    </ClInclude>
+    <ClInclude Include="lv1\driver\rsx\core\device.h">
+      <Filter>driver\rsx\core</Filter>
+    </ClInclude>
+    <ClInclude Include="lv1\driver\rsx\core\memory.h">
+      <Filter>driver\rsx\core</Filter>
+    </ClInclude>
+    <ClInclude Include="lv1\driver\rsx\core\context.h">
+      <Filter>driver\rsx\core</Filter>
+    </ClInclude>
+    <ClInclude Include="lv1\driver\rsx\bus\ioif0.h">
+      <Filter>driver\rsx\bus</Filter>
+    </ClInclude>
+    <ClInclude Include="lv1\lv1.h" />
+    <ClInclude Include="lv1\lv1_misc.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="lv1\driver\rsx\utils\debugger.cc">
+      <Filter>driver\rsx\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="lv1\driver\rsx\utils\bitmap.cc">
+      <Filter>driver\rsx\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="lv1\driver\rsx\object\vfb.cc">
+      <Filter>driver\rsx\object</Filter>
+    </ClCompile>
+    <ClCompile Include="lv1\driver\rsx\object\video_rsx.cc">
+      <Filter>driver\rsx\object</Filter>
+    </ClCompile>
+    <ClCompile Include="lv1\driver\rsx\object\channel.cc">
+      <Filter>driver\rsx\object</Filter>
+    </ClCompile>
+    <ClCompile Include="lv1\driver\rsx\object\context_dma.cc">
+      <Filter>driver\rsx\object</Filter>
+    </ClCompile>
+    <ClCompile Include="lv1\driver\rsx\object\hash_table.cc">
+      <Filter>driver\rsx\object</Filter>
+    </ClCompile>
+    <ClCompile Include="lv1\driver\rsx\object\nv_class.cc">
+      <Filter>driver\rsx\object</Filter>
+    </ClCompile>
+    <ClCompile Include="lv1\driver\rsx\object\sw_class.cc">
+      <Filter>driver\rsx\object</Filter>
+    </ClCompile>
+    <ClCompile Include="lv1\driver\rsx\device\eic.cc">
+      <Filter>driver\rsx\device</Filter>
+    </ClCompile>
+    <ClCompile Include="lv1\driver\rsx\device\fb.cc">
+      <Filter>driver\rsx\device</Filter>
+    </ClCompile>
+    <ClCompile Include="lv1\driver\rsx\device\fifo.cc">
+      <Filter>driver\rsx\device</Filter>
+    </ClCompile>
+    <ClCompile Include="lv1\driver\rsx\device\graph.cc">
+      <Filter>driver\rsx\device</Filter>
+    </ClCompile>
+    <ClCompile Include="lv1\driver\rsx\device\master.cc">
+      <Filter>driver\rsx\device</Filter>
+    </ClCompile>
+    <ClCompile Include="lv1\driver\rsx\device\audio.cc">
+      <Filter>driver\rsx\device</Filter>
+    </ClCompile>
+    <ClCompile Include="lv1\driver\rsx\device\clock.cc">
+      <Filter>driver\rsx\device</Filter>
+    </ClCompile>
+    <ClCompile Include="lv1\driver\rsx\core\device.cc">
+      <Filter>driver\rsx\core</Filter>
+    </ClCompile>
+    <ClCompile Include="lv1\driver\rsx\core\memory.cc">
+      <Filter>driver\rsx\core</Filter>
+    </ClCompile>
+    <ClCompile Include="lv1\driver\rsx\core\context.cc">
+      <Filter>driver\rsx\core</Filter>
+    </ClCompile>
+    <ClCompile Include="lv1\driver\rsx\bus\ioif0.cc">
+      <Filter>driver\rsx\bus</Filter>
+    </ClCompile>
+    <ClCompile Include="lv1\hvcalls.c" />
+    <ClCompile Include="lv1\lv1_misc.c" />
+  </ItemGroup>
+</Project>

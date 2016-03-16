@@ -1,0 +1,179 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{156B7706-BDA5-4958-8AB1-8290EE4F79EF}</ProjectGuid>
+    <RootNamespace>lv1</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)/bin</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)/bin/</OutDir>
+    <IntDir>$(SolutionDir)/temp/$(Platform)/$(Configuration)/</IntDir>
+    <TargetName>$(ProjectName)-$(Platform)</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)/bin</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)/bin/</OutDir>
+    <IntDir>$(SolutionDir)/temp/$(Platform)/$(Configuration)/</IntDir>
+    <TargetName>$(ProjectName)-$(Platform)</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="lv1\driver\rsx\bus\ioif0.h" />
+    <ClInclude Include="lv1\driver\rsx\core\context.h" />
+    <ClInclude Include="lv1\driver\rsx\core\device.h" />
+    <ClInclude Include="lv1\driver\rsx\core\memory.h" />
+    <ClInclude Include="lv1\driver\rsx\device\audio.h" />
+    <ClInclude Include="lv1\driver\rsx\device\clock.h" />
+    <ClInclude Include="lv1\driver\rsx\device\eic.h" />
+    <ClInclude Include="lv1\driver\rsx\device\fb.h" />
+    <ClInclude Include="lv1\driver\rsx\device\fifo.h" />
+    <ClInclude Include="lv1\driver\rsx\device\graph.h" />
+    <ClInclude Include="lv1\driver\rsx\device\master.h" />
+    <ClInclude Include="lv1\driver\rsx\object.h" />
+    <ClInclude Include="lv1\driver\rsx\object\channel.h" />
+    <ClInclude Include="lv1\driver\rsx\object\context_dma.h" />
+    <ClInclude Include="lv1\driver\rsx\object\hash_table.h" />
+    <ClInclude Include="lv1\driver\rsx\object\nv_class.h" />
+    <ClInclude Include="lv1\driver\rsx\object\sw_class.h" />
+    <ClInclude Include="lv1\driver\rsx\object\vfb.h" />
+    <ClInclude Include="lv1\driver\rsx\object\video_rsx.h" />
+    <ClInclude Include="lv1\driver\rsx\utils\bitmap.h" />
+    <ClInclude Include="lv1\driver\rsx\utils\debugger.h" />
+    <ClInclude Include="lv1\lv1.h" />
+    <ClInclude Include="lv1\lv1_misc.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="lv1\driver\rsx\bus\ioif0.cc" />
+    <ClCompile Include="lv1\driver\rsx\core\context.cc" />
+    <ClCompile Include="lv1\driver\rsx\core\device.cc" />
+    <ClCompile Include="lv1\driver\rsx\core\memory.cc" />
+    <ClCompile Include="lv1\driver\rsx\device\audio.cc" />
+    <ClCompile Include="lv1\driver\rsx\device\clock.cc" />
+    <ClCompile Include="lv1\driver\rsx\device\eic.cc" />
+    <ClCompile Include="lv1\driver\rsx\device\fb.cc" />
+    <ClCompile Include="lv1\driver\rsx\device\fifo.cc" />
+    <ClCompile Include="lv1\driver\rsx\device\graph.cc" />
+    <ClCompile Include="lv1\driver\rsx\device\master.cc" />
+    <ClCompile Include="lv1\driver\rsx\object\channel.cc" />
+    <ClCompile Include="lv1\driver\rsx\object\context_dma.cc" />
+    <ClCompile Include="lv1\driver\rsx\object\hash_table.cc" />
+    <ClCompile Include="lv1\driver\rsx\object\nv_class.cc" />
+    <ClCompile Include="lv1\driver\rsx\object\sw_class.cc" />
+    <ClCompile Include="lv1\driver\rsx\object\vfb.cc" />
+    <ClCompile Include="lv1\driver\rsx\object\video_rsx.cc" />
+    <ClCompile Include="lv1\driver\rsx\utils\bitmap.cc" />
+    <ClCompile Include="lv1\driver\rsx\utils\debugger.cc" />
+    <ClCompile Include="lv1\hvcalls.c" />
+    <ClCompile Include="lv1\lv1_misc.c" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
