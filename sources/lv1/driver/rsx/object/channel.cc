@@ -1,42 +1,32 @@
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
+/**
+ * (c) 2016 The LV1RE Project.
+ * Released under MIT license. Read LICENSE for more details.
+ */
 
-#include "inc/rsx_lv1.h"
+#include "channel.h"
 
-
-
-
-
-
-/***********************************************************************
-* 
-***********************************************************************/
-int64_t rsx_object_channel_get_dma_controll_lpar_address(rsx_channel_obj_t *ch_obj)
-{
+S64 rsx_object_channel_t::get_dma_control_lpar_address() {
 	rsx_dev_core_obj_t *core = NULL;
 	rsx_fifo_obj_t *fifo = NULL;
 	
 	
 	// get RSX device core
 	core = rsx_core_device_get_core_object_by_id(g_rsx_core_id);
-  if(core == NULL)
-  {
-	  printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-    return 0;
-  }
+    if(core == NULL) {
+	    printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
+        return 0;
+    }
 	
 	// get RSX device core FIFO object
 	fifo = (void*)core->dev_fifo_obj;
 	 
-	return rsx_device_fifo_get_channel_dma_control_lpar_address((void*)fifo, ch_obj->id);
+	return rsx_device_fifo_get_channel_dma_control_lpar_address((void*)fifo, id);
 }
 
 /***********************************************************************
 * 
 ***********************************************************************/
-int32_t rsx_object_channel_get_id(rsx_channel_obj_t *ch_obj)
+S32 rsx_object_channel_get_id()
 {
 	return ch_obj->id;
 }
@@ -44,11 +34,11 @@ int32_t rsx_object_channel_get_id(rsx_channel_obj_t *ch_obj)
 /***********************************************************************
 * 
 ***********************************************************************/
-void rsx_object_channel_create_sw_object_hash_table_entry(rsx_channel_obj_t *ch_obj, rsx_sw_class_obj_t *sw_obj)
+void rsx_object_channel_t::create_sw_object_hash_table_entry(rsx_object_sw_class_t *sw_obj)
 {
-	uint32_t class;
-	int64_t bar2_addr;
-	int32_t bar2_offset;
+	U32 class;
+	S64 bar2_addr;
+	S32 bar2_offset;
 	rsx_dev_core_obj_t *core = NULL;
 	rsx_core_mem_obj_t *core_mem = NULL;
 	rsx_hash_tbl_obj_t *hash_tbl = NULL;
@@ -86,7 +76,7 @@ void rsx_object_channel_create_sw_object_hash_table_entry(rsx_channel_obj_t *ch_
 	bar2_offset = rsx_core_memory_get_BAR2_offset_by_address((void*)core_mem, bar2_addr);
 	
 	// create sw object hash table entry
-	rsx_object_hash_table_create_entry((void*)hash_tbl, ch_obj->id, class, bar2_offset, 2);
+	rsx_object_hash_table_create_entry((void*)hash_tbl, id, class, bar2_offset, 2);
 	
 	return;
 }
@@ -94,11 +84,11 @@ void rsx_object_channel_create_sw_object_hash_table_entry(rsx_channel_obj_t *ch_
 /***********************************************************************
 * 
 ***********************************************************************/
-void rsx_object_channel_create_nv_object_hash_table_entry(rsx_channel_obj_t *ch_obj, rsx_nv_class_obj_t *nv_obj)
+void rsx_object_channel_t::create_nv_object_hash_table_entry(rsx_object_nv_class_t* nv_obj)
 {
-	uint32_t class;
-	int64_t bar2_addr;
-	int32_t bar2_offset;
+	U32 class;
+	S64 bar2_addr;
+	S32 bar2_offset;
 	rsx_dev_core_obj_t *core = NULL;
 	rsx_core_mem_obj_t *core_mem = NULL;
 	rsx_hash_tbl_obj_t *hash_tbl = NULL;
@@ -144,11 +134,11 @@ void rsx_object_channel_create_nv_object_hash_table_entry(rsx_channel_obj_t *ch_
 /***********************************************************************
 * 
 ***********************************************************************/
-void rsx_object_channel_create_dma_object_hash_table_entry(rsx_channel_obj_t *ch_obj, rsx_ctx_dma_obj_t *dma_obj)
+void rsx_object_channel_create_dma_object_hash_table_entry(rsx_object_context_dma_t *dma_obj)
 {
-	uint32_t class;
-	int64_t bar2_addr;
-	int32_t bar2_offset;
+	U32 class;
+	S64 bar2_addr;
+	S32 bar2_offset;
 	rsx_dev_core_obj_t *core = NULL;
 	rsx_core_mem_obj_t *core_mem = NULL;
 	rsx_hash_tbl_obj_t *hash_tbl = NULL;
@@ -194,8 +184,7 @@ void rsx_object_channel_create_dma_object_hash_table_entry(rsx_channel_obj_t *ch
 /***********************************************************************
 * 
 ***********************************************************************/
-static int32_t rsx_object_channel_2209B0(rsx_channel_obj_t *ch_obj)
-{
+static S32 rsx_object_channel_t::sub2209B0() {
 	rsx_dev_core_obj_t *core = NULL;
 	rsx_fifo_obj_t *fifo = NULL;
 	
@@ -217,8 +206,8 @@ static int32_t rsx_object_channel_2209B0(rsx_channel_obj_t *ch_obj)
   }
 	
 	/**/
-	int64_t ret1, ret2, ret3;
-	int64_t r11 = 0, r31 = 0, r3 = 0, r9 = 0;
+	S64 ret1, ret2, ret3;
+	S64 r11 = 0, r31 = 0, r3 = 0, r9 = 0;
 	
 	// ?
 	ret1 = rsx_device_fifo_21B7DC((void*)fifo, 1);  // ? ret 0x80
@@ -300,16 +289,16 @@ loc_220A64:
 	r3 = r9 | r3;
 	
 	//printf("r3: 0x%08X\n", r3);
-	return (int32_t)r3;
+	return (S32)r3;
 }
 
 /***********************************************************************
 * 
 ***********************************************************************/
-static void rsx_object_channel_220B00(rsx_channel_obj_t *ch_obj)
+static void rsx_object_channel_220B00()
 {
-	int32_t i, fc1_offset, fc2_offset, value, tmp, offset;
-	int64_t addr;
+	S32 i, fc1_offset, fc2_offset, value, tmp, offset;
+	S64 addr;
 	rsx_dev_core_obj_t *core = NULL;
 	rsx_core_mem_obj_t *core_mem = NULL;
 	rsx_graph_obj_t *graph = NULL;
@@ -327,8 +316,8 @@ static void rsx_object_channel_220B00(rsx_channel_obj_t *ch_obj)
 	core_mem = (void*)core->core_mem_obj;
 	
 	// get channel fc1 and fc2 offset
-	fc1_offset = rsx_core_memory_get_BAR2_offset_by_address((void*)core_mem, ch_obj->fc1_addr);
-	fc2_offset = rsx_core_memory_get_BAR2_offset_by_address((void*)core_mem, ch_obj->fc2_addr);
+	fc1_offset = rsx_core_memory_get_BAR2_offset_by_address((void*)core_mem, fc1_addr);
+	fc2_offset = rsx_core_memory_get_BAR2_offset_by_address((void*)core_mem, fc2_addr);
 	
 	// init channel fc2 with 0, e.g. channel 0 (start: 0x28002030000 size: 0x1000(4 KB))
 	for(i = 0; i < 512; i++)
@@ -405,9 +394,9 @@ static void rsx_object_channel_220B00(rsx_channel_obj_t *ch_obj)
 /***********************************************************************
 * 
 ***********************************************************************/
-void rsx_object_channel_220D0C(rsx_channel_obj_t *ch_obj, int32_t channel_id, rsx_ctx_dma_obj_t *dma_obj)
+void rsx_object_channel_220D0C(S32 channel_id, rsx_object_context_dma_t *dma_obj)
 {
-	int32_t offset;
+	S32 offset;
 	rsx_dev_core_obj_t *core = NULL;
 	rsx_fifo_obj_t *fifo = NULL;
 	rsx_graph_obj_t *graph = NULL;
@@ -468,13 +457,13 @@ void rsx_object_channel_220D0C(rsx_channel_obj_t *ch_obj, int32_t channel_id, rs
 /***********************************************************************
 * 
 ***********************************************************************/
-rsx_channel_obj_t *rsx_object_channel_create_object(rsx_ctx_dma_obj_t *dma_obj)
+rsx_object_channel_t *rsx_object_channel_create_object(rsx_object_context_dma_t *dma_obj)
 {
-	int32_t ret = -1;
-	int64_t channel_id;
+	S32 ret = -1;
+	S64 channel_id;
 	rsx_dev_core_obj_t *core = NULL;
 	rsx_utils_bm_obj_t *bm_channels = NULL;
-	rsx_channel_obj_t *ch_obj = NULL;
+	 = NULL;
 	
 	
 	// get RSX device core
@@ -494,7 +483,7 @@ rsx_channel_obj_t *rsx_object_channel_create_object(rsx_ctx_dma_obj_t *dma_obj)
 	  return NULL;
 	
 	// allocate new channel object
-	ch_obj = lv1_kmalloc(sizeof(rsx_channel_obj_t));
+	ch_obj = lv1_kmalloc(sizeof(rsx_object_channel_t));
 	if(ch_obj == NULL)
 	{
 		printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
@@ -503,7 +492,7 @@ rsx_channel_obj_t *rsx_object_channel_create_object(rsx_ctx_dma_obj_t *dma_obj)
 	
 	// init channel object
 	// TODO: not finished
-	rsx_object_channel_220D0C((void*)ch_obj, (int32_t)channel_id, (void*)dma_obj);
+	rsx_object_channel_220D0C((void*)ch_obj, (S32)channel_id, (void*)dma_obj);
 	
 	
 	

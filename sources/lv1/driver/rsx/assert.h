@@ -5,6 +5,10 @@
 
 #pragma once
 
+#include "common/assert.h"
+
+#include <cstdio>
+
 #define RSX_ASSERT_LIGHT(condition) \
     if (!(condition)) { printf("RSX driver assert failed: [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__); return; }
 

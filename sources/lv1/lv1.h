@@ -5,32 +5,13 @@
 
 #include "common/types.h"
 
-#include "../../memory.h"
-#include "lv1_misc.h"
-#include "rsx_object.h"
-
-#include "rsx_utils_debugger.h"
-#include "rsx_utils_bitmap.h"
-#include "rsx_bus_ioif0.h"
-#include "rsx_device_clock.h"
-#include "rsx_device_eic.h"
-#include "rsx_device_master.h"
-#include "rsx_device_fb.h"
-#include "rsx_device_fifo.h"
-#include "rsx_device_graph.h"
-#include "rsx_device_audio.h"
-#include "rsx_core_device.h"
-#include "rsx_core_memory.h"
-#include "rsx_core_context.h"
-#include "rsx_object_hash_table.h"
-#include "rsx_object_channel.h"
-#include "rsx_object_context_dma.h"
-#include "rsx_object_nv_class.h"
-#include "rsx_object_sw_class.h"
-#include "rsx_object_video_rsx.h"
-#include "rsx_object_vfb.h"
-
-
+// LV1 Configuration
+#define LV1_CONFIG_SYS_BOOT_GOS         0                     // boot graphical OS ? 0(yes)
+#define LV1_CONFIG_SYS_LV1_RSXENABLE    3                     // ?
+#define LV1_CONFIG_SYS_LV1_RSXDEBUG     0                     // debuging level, 0(off), ..., 3(max debug output)
+#define LV1_CONFIG_SYS_AC_MISC2         0x1000000000000001ULL // ?
+#define LV1_CONFIG_SYS_RDCY_2           0xFFFFFFFFFFFFFFFFULL // ?
+#define LV1_CONFIG_BE_0_TB_CLOCK        0x0000000004C1A6C0ULL // CELL BE clock
 
 // LV1 Return Codes
 enum {
@@ -61,17 +42,3 @@ enum {
     LV1_INVALID_OPERATION            = -26,
     LV1_INTERNAL_ERROR               = -32768,
 };
-
-
-
-// repo node values, rsx related
-#define SYS_BOOT_GOS         0                     // boot graphical OS ? 0(yes)
-#define SYS_LV1_RSXENABLE    3                     // ?
-#define SYS_LV1_RSXDEBUG     0                     // debuging level, 0(off), ..., 3(max debug output)
-#define SYS_AC_MISC2         0x1000000000000001ULL // ?
-#define SYS_RDCY_2           0xFFFFFFFFFFFFFFFFULL // ?
-#define BE_0_TB_CLOCK        0x0000000004C1A6C0ULL // CELL BE clock
-
-
-
-void lv1_test(void);

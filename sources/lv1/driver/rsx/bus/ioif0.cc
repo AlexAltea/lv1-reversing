@@ -8,7 +8,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "inc/rsx_lv1.h"
 
 
 
@@ -99,7 +98,7 @@ S32 rsx_bus_ioif0_read_BAR0_by_offset(rsx_bus_ioif0_obj_t* ioif0, S64 offset) {
 ***********************************************************************/
 void rsx_bus_ioif0_217814(rsx_bus_ioif0_obj_t* ioif0) {
     
-    uS64 value1 = 0x94A1510, value2 = 0xEE6B28;
+    U64 value1 = 0x94A1510, value2 = 0xEE6B28;
     S32  value;
     
     /* bulshit
@@ -116,9 +115,9 @@ void rsx_bus_ioif0_217814(rsx_bus_ioif0_obj_t* ioif0) {
     
     
     
-    uS64 r6, r9, r11;
-    uS64 r0 = 0x66666667;
-    uS64 r10 = r0;
+    U64 r6, r9, r11;
+    U64 r0 = 0x66666667;
+    U64 r10 = r0;
     
     
     

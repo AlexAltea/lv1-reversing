@@ -8,7 +8,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "inc/rsx_lv1.h"
 
 
 
@@ -21,7 +20,7 @@
 /***********************************************************************
 * 
 ***********************************************************************/
-void rsx_object_sw_class_create_object(rsx_sw_class_obj_t* sw_obj, U32 class, S64 *opd) {
+void rsx_object_sw_class_create_object(rsx_object_sw_class_t* sw_obj, U32 class, S64 *opd) {
     
     
     

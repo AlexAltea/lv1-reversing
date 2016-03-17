@@ -71,7 +71,7 @@ struct rsx_core_mem_obj_t {
 } rsx_core_mem_obj;
 
 S32 rsx_core_memory_get_BAR1_offset_by_address(rsx_core_mem_obj_t* core_mem, S64 addr);
-rsx_mem_ctx_obj_t* rsx_core_memory_get_memory_context_by_id(rsx_core_mem_obj_t* core_mem, S32 mem_ctx_id);
+rsx_mem_ctx_obj_t* rsx_core_memory_get_memory_context_by_id(rsx_core_mem_obj_t* core_mem, U32 mem_ctx_id);
 rsx_core_mem_obj_t* rsx_core_memory_allocate_memory_context(rsx_core_mem_obj_t* core_mem, S32 local_size, S64 arg1, S64 arg2, S64 arg3, S64 arg4);
 S32 rsx_core_memory_value_div_by_16(rsx_core_mem_obj_t* core_mem, S32 offset);
 S32 rsx_core_memory_get_BAR2_offset_by_address(rsx_core_mem_obj_t* core_mem, S64 addr);

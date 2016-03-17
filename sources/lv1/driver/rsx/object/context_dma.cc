@@ -3,30 +3,16 @@
  * Released under MIT license. Read LICENSE for more details.
  */
 
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
+#include "context_dma.h"
 
-#include "inc/rsx_lv1.h"
-
-
-
-
-/***********************************************************************
-* get size of a context dma object
-***********************************************************************/
-S32 rsx_object_context_dma_get_object_size() {
+S32 rsx_object_context_dma_t::get_object_size() {
     return 0x10;
 }
-
-
-
 
 /***********************************************************************
 * 
 ***********************************************************************/
-void rsx_object_context_dma_220064(rsx_ctx_dma_obj_t* dma_obj, S32 arg1, S32 arg2, S64 addr, S32 size) {
+void rsx_object_context_dma_t::sub220064(S32 arg1, S32 arg2, S64 addr, S32 size) {
     S32 value1 = 0, value2 = 0, offset = 0;
     rsx_dev_core_obj_t* core = NULL;
     
@@ -93,13 +79,13 @@ void rsx_object_context_dma_220064(rsx_ctx_dma_obj_t* dma_obj, S32 arg1, S32 arg
 /***********************************************************************
 * 
 ***********************************************************************/
-rsx_ctx_dma_obj_t* rsx_object_context_dma_create_obj(U32 type) {
+rsx_object_context_dma_t::rsx_object_context_dma_t(U32 type) {
     S32 ret = -1;
     S64 idx;
     rsx_dev_core_obj_t* core = NULL;
     rsx_core_mem_obj_t* core_mem = NULL;
     rsx_utils_bm_obj_t* bm_ctx_dma = NULL;
-    rsx_ctx_dma_obj_t* dma_obj = NULL;
+     = NULL;
     
     
     // get RSX device core object
@@ -123,7 +109,7 @@ rsx_ctx_dma_obj_t* rsx_object_context_dma_create_obj(U32 type) {
   }
     
     // allocate object
-    dma_obj = lv1_kmalloc(sizeof(rsx_ctx_dma_obj_t));
+    dma_obj = lv1_kmalloc(sizeof(rsx_object_context_dma_t));
     if (dma_obj == NULL) {
         printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
         return 0;

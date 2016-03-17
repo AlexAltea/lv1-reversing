@@ -89,6 +89,10 @@
     </ClInclude>
     <ClInclude Include="lv1\lv1.h" />
     <ClInclude Include="lv1\lv1_misc.h" />
+    <ClInclude Include="lv1\driver\rsx\assert.h">
+      <Filter>driver\rsx</Filter>
+    </ClInclude>
+    <ClInclude Include="lv1\hvcalls.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="lv1\driver\rsx\utils\debugger.cc">

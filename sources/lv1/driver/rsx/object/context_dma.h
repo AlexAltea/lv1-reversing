@@ -7,17 +7,19 @@
 
 #include "common/types.h"
 
+// LV1 RSX object context DMA object, size 0x18
+struct rsx_object_context_dma_t {
+    U32 obj_class;              // 0x00: 
+    S32 unk_04;                 // 0x04: 
+    S64 bar2_offset;            // 0x08: BAR2(PRAMIN) offset
+    S64 bar1_offset;            // 0x10: BAR1(VRAM) offset
 
+    // Methods
+    S32 get_object_size();
+    U32 get_object_class();
+    S64 get_bar1_offset();
+    S64 get_bar2_offset();
 
-
-S32 rsx_object_context_dma_get_object_size(void);
-S64 rsx_object_context_dma_object_get_BAR2_address(rsx_ctx_dma_obj_t* dma_obj);
-U32 rsx_object_context_dma_get_object_class(rsx_ctx_dma_obj_t* dma_obj);
-
-
-void rsx_object_context_dma_220064(rsx_ctx_dma_obj_t* dma_obj, S32 arg1, S32 arg2, S64 addr, S32 size);
-rsx_ctx_dma_obj_t* rsx_object_context_dma_create_obj(U32 type);
-
-
-
-#endif // __RSX_OBJECT_CONTEXT_DMA_H__
+    rsx_object_context_dma_t(U32 type);
+    void sub220064(rsx_object_context_dma_t* dma_obj, S32 arg1, S32 arg2, S64 addr, S32 size);
+};

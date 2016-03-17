@@ -3,18 +3,8 @@
  * Released under MIT license. Read LICENSE for more details.
  */
 
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
+#include "debugger.h"
 
-#include "inc/rsx_lv1.h"
-
-
-
-/***********************************************************************
-* 
-***********************************************************************/
 S32 rsx_utils_debugger_ctor(void) {
     U64 value = 0;
     rsx_dbg_obj_t* dbg_obj = NULL;
@@ -41,4 +31,3 @@ S32 rsx_utils_debugger_ctor(void) {
     
     return 0;  // OK
 }
-

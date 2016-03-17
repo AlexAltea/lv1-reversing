@@ -3,164 +3,110 @@
  * Released under MIT license. Read LICENSE for more details.
  */
 
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
+#include "context.h"
 
-#include "inc/rsx_lv1.h"
-
+#include "lv1/lv1.h"
+#include "lv1/lv1_misc.h"
+#include "lv1/driver/rsx/assert.h"
 
 
-
-
-
-
-/***********************************************************************
-* 
-***********************************************************************/
-S32 rsx_core_context_iomap(rsx_ctx_obj_t* rsx_ctx, uS64 ea, S64 lm_offset, S32 size, uS64 flags) {
-    S32 ret = -1, page_size = rsx_ctx->page_size, done = 0;
-    
-    
-    // check size alignment
+S32 rsx_core_context_t::iomap(U64 ea, S64 lm_offset, S32 size, U64 flags) {
+    // Check size alignment
     if ((size / page_size) != ((size / page_size) * page_size))
-      return LV1_ILLEGAL_PARAMETER_VALUE;
+        return LV1_ILLEGAL_PARAMETER_VALUE;
     
-    // check ea alignment
+    // Check EA alignment
     if ((ea / page_size) != ((ea / page_size) * page_size))
-      return LV1_ILLEGAL_PARAMETER_VALUE;
+        return LV1_ILLEGAL_PARAMETER_VALUE;
     
-    // check lm_offset alignment
+    // Check lm_offset alignment
     if ((lm_offset / page_size) != ((lm_offset / page_size) * page_size))
-      return LV1_ILLEGAL_PARAMETER_VALUE;
+        return LV1_ILLEGAL_PARAMETER_VALUE;
     
-    // check io size range
+    // Check IO size range
     if ((size + ea) > rsx_ctx->io_size)
-      return LV1_ILLEGAL_PARAMETER_VALUE;
+        return LV1_ILLEGAL_PARAMETER_VALUE;
     
-    // check flags
+    // Check flags
     if (flags == 0)
-      flags = 0xE000000000000000;
+        flags = 0xE000000000000000;
     
     if (size == 0)
-      return LV1_SUCCESS;
+        return LV1_SUCCESS;
     
-    // map pages
-    while(done <= size) {
-        ret = lv1_sub_2D7A14(0, ea + rsx_ctx->io_offset + done, lm_offset + done, 1, flags, 1);
-        if (ret == 0)
-          return LV1_ILLEGAL_PARAMETER_VALUE;
-          
-        done += page_size;
+    // Map pages
+    for (S32 done = 0; done <= size; done += page_size) {
+        S32 ret = lv1_sub_2D7A14(0, ea + io_offset + done, lm_offset + done, 1, flags, 1);
+        if (ret == 0) {
+            return LV1_ILLEGAL_PARAMETER_VALUE;
+        } 
     }
-    
     return 0;
 }
 
+S64 rsx_core_context_t::get_dma_control_lpar_address() {
+    RSX_ASSERT(ch_obj);
+    return ch_obj->get_dma_control_lpar_address();
+}
 
+S64 rsx_core_context_t::get_driver_info_lpar_addr() {
+    return driver_info_lpar;
+}
 
+U32 rsx_core_context_t::get_rsx_context_id() {
+    return id;
+}
 
+S32 rsx_core_context_t::get_size_of_reports() {
+    return 0x4000;  // 16 KB. Report size per context
+}
 
-
-
-
-/***********************************************************************
-* 
-***********************************************************************/
-S64 rsx_core_context_get_dma_control_lpar_address(rsx_ctx_obj_t* rsx_ctx) {
-    rsx_channel_obj_t* ch_obj = NULL;
-    
-    
-    ch_obj = (void*)rsx_ctx->ch_obj;
-    if (ch_obj == NULL) {
-        printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-        return 0;
+rsx_object_context_dma_t* rsx_core_context_t::get_dma_object_by_index(S32 index) {
+    RSX_ASSERT(index < 16);
+    if (idx < 8) {
+        return dma_array_0[idx];
+    } else {
+        return dma_array_1[idx - 8];
     }
-    
-    return rsx_object_channel_get_dma_controll_lpar_address((void*)ch_obj);
 }
 
-/***********************************************************************
-* 
-***********************************************************************/
-S64 rsx_core_context_get_driver_info_lpar_addr(rsx_ctx_obj_t* rsx_ctx) {
-    return rsx_ctx->driver_info_lpar;
-}
-
-/***********************************************************************
-* 
-***********************************************************************/
-uS32 rsx_core_context_get_rsx_context_id(rsx_ctx_obj_t* rsx_ctx) {
-    return rsx_ctx->id;
-}
-
-/***********************************************************************
-* 
-***********************************************************************/
-S32 rsx_core_context_get_size_of_reports() {
-    return 0x4000;  // 16 KB, report size per context
-}
-
-/***********************************************************************
-* 
-***********************************************************************/
-static rsx_ctx_dma_obj_t* rsx_core_context_get_dma_object_by_index(rsx_ctx_obj_t* rsx_ctx, S32 idx) {
-    // is index valid? 0 to 15
-    if (idx > 15) {
-    printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-    return NULL;
-  }
-    
-    if (idx < 8)
-        return (void*)rsx_ctx->dma_array_0[idx];
-    
-    return (void*)rsx_ctx->dma_array_1[idx - 8];
-    
-}
-
-/***********************************************************************
-* 
-***********************************************************************/
-static void rsx_core_context_213614(rsx_ctx_obj_t* rsx_ctx) {
-    S32 ret = -1;
-    
-    
+void rsx_core_context_t::sub213614() {
     // TODO: eic stuff
-    ret = rsx_device_eic_219C18(rsx_ctx->idx + 7, &rsx_ctx->unk_020);
+    S32 ret = rsx_device_eic_219C18(index + 7, &unk_020);
     if (ret != 0) {
         printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
         return;
     }
     
     // ? 
-    DRVI_write32(rsx_ctx->idx, rsx_ctx->unk_020, 0x12B8);
-    DRVI_write32(rsx_ctx->idx, ret, 0x12BC);
+    DRVI_write32(index, unk_020, 0x12B8);
+    DRVI_write32(index, ret, 0x12BC);
     
     // ? RSX context display buffer flag[0]
-    if (rsx_ctx->db_flag[0] == 0)
-      DRVI_write32(rsx_ctx->idx, -1, 0x12C0);  // store -1
-    DRVI_write32(rsx_ctx->idx, 0, 0x12C0);     // store  0
-    
+    if (rsx_ctx->db_flag[0] == 0) {
+        DRVI_write32(rsx_ctx->idx, -1, 0x12C0);  // store -1
+    } else {
+        DRVI_write32(rsx_ctx->idx,  0, 0x12C0);  // store  0
+    }
     return;
 }
 
 /***********************************************************************
 * 
 ***********************************************************************/
-static S32 rsx_core_context_2146F4(rsx_ctx_obj_t* rsx_ctx) {
+static S32 rsx_core_context_2146F4() {
     S32 i, ret = -1, value;
-    uS32 class;
+    U32 class;
     rsx_dev_core_obj_t* core = NULL;
     rsx_core_mem_obj_t* core_mem = NULL;
     rsx_utils_bm_obj_t* bm_driver_info = NULL;
     rsx_bus_ioif0_obj_t* ioif0 = NULL;
     rsx_mem_ctx_obj_t* mem_ctx = NULL;
-    rsx_channel_obj_t* ch_obj = NULL;
+    rsx_object_channel_t* ch_obj = NULL;
     rsx_dev_clock_obj_t* clock = NULL;
-    rsx_ctx_dma_obj_t* dma_obj = NULL;
-    rsx_nv_class_obj_t* nv_obj = NULL;
-    rsx_sw_class_obj_t* sw_obj = NULL;
+    rsx_object_context_dma_t* dma_obj = NULL;
+    rsx_object_nv_class_t* nv_obj = NULL;
+    rsx_object_sw_class_t* sw_obj = NULL;
     
     
     // get RSX device core object
@@ -331,12 +277,12 @@ static S32 rsx_core_context_2146F4(rsx_ctx_obj_t* rsx_ctx) {
 /***********************************************************************
 * 
 ***********************************************************************/
-static void rsx_core_context_2136CC(rsx_ctx_obj_t* rsx_ctx) {
+void rsx_core_context_t::sub2136CC() {
     S32 i;
-    rsx_channel_obj_t* ch_obj = NULL;
-    rsx_ctx_dma_obj_t* dma_obj = NULL;
-    rsx_nv_class_obj_t* nv_obj = NULL;
-    rsx_sw_class_obj_t* sw_obj = NULL;
+    rsx_object_channel_t* ch_obj = NULL;
+    rsx_object_context_dma_t* dma_obj = NULL;
+    rsx_object_nv_class_t* nv_obj = NULL;
+    rsx_object_sw_class_t* sw_obj = NULL;
     
     
     // if system mode flag [27:27]("flag local pb") is set, get...
@@ -359,10 +305,10 @@ static void rsx_core_context_2136CC(rsx_ctx_obj_t* rsx_ctx) {
     // TODO: not finished
     ch_obj = (void*)rsx_object_channel_create_object((void*)dma_obj);
     if (ch_obj == NULL) {
-    printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-    return;
-  }
-  rsx_ctx->ch_obj = (void*)ch_obj;
+        printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
+        return;
+    }
+    rsx_ctx->ch_obj = (void*)ch_obj;
     
     
     
@@ -421,29 +367,14 @@ static void rsx_core_context_2136CC(rsx_ctx_obj_t* rsx_ctx) {
     rsx_object_channel_create_dma_object_hash_table_entry((void*)ch_obj, (void*)dma_obj);
   
   
-  nv_obj = (void*)rsx_ctx->nv_obj[0];  // 0x00000000
-  rsx_object_channel_create_nv_object_hash_table_entry((void*)ch_obj, (void*)nv_obj);
-  
-  nv_obj = (void*)rsx_ctx->nv_obj[1];  // 0x31337000
-  rsx_object_channel_create_nv_object_hash_table_entry((void*)ch_obj, (void*)nv_obj);
-  
-  nv_obj = (void*)rsx_ctx->nv_obj[2];  // 0x31337303
-  rsx_object_channel_create_nv_object_hash_table_entry((void*)ch_obj, (void*)nv_obj);
-    
-    nv_obj = (void*)rsx_ctx->nv_obj[3];  // 0x3137C0DE
-  rsx_object_channel_create_nv_object_hash_table_entry((void*)ch_obj, (void*)nv_obj);
-  
-  nv_obj = (void*)rsx_ctx->nv_obj[4];  // 0x31337A73
-  rsx_object_channel_create_nv_object_hash_table_entry((void*)ch_obj, (void*)nv_obj);
-  
-  nv_obj = (void*)rsx_ctx->nv_obj[5];  // 0x313371C3
-  rsx_object_channel_create_nv_object_hash_table_entry((void*)ch_obj, (void*)nv_obj);
-  
-  nv_obj = (void*)rsx_ctx->nv_obj[6];  // 0x3137AF00
-  rsx_object_channel_create_nv_object_hash_table_entry((void*)ch_obj, (void*)nv_obj);
-  
-  nv_obj = (void*)rsx_ctx->nv_obj[7];  // 0x31337808
-  rsx_object_channel_create_nv_object_hash_table_entry((void*)ch_obj, (void*)nv_obj);
+    ch_obj->create_nv_object_hash_table_entry(nv_obj[0]); // 0x00000000
+    ch_obj->create_nv_object_hash_table_entry(nv_obj[1]); // 0x31337000
+    ch_obj->create_nv_object_hash_table_entry(nv_obj[2]); // 0x31337303
+    ch_obj->create_nv_object_hash_table_entry(nv_obj[3]); // 0x3137C0DE
+    ch_obj->create_nv_object_hash_table_entry(nv_obj[4]); // 0x31337A73
+    ch_obj->create_nv_object_hash_table_entry(nv_obj[5]); // 0x313371C3
+    ch_obj->create_nv_object_hash_table_entry(nv_obj[6]); // 0x3137AF00
+    ch_obj->create_nv_object_hash_table_entry(nv_obj[7]); // 0x31337808
   
   
   // TODO: sw object not complete yet
@@ -463,10 +394,10 @@ static void rsx_core_context_2136CC(rsx_ctx_obj_t* rsx_ctx) {
 /***********************************************************************
 * 
 ***********************************************************************/
-static void rsx_core_context_212F78(rsx_ctx_obj_t* rsx_ctx) {
+static void rsx_core_context_212F78() {
     S64 addr;
     S32 i, size;
-    rsx_ctx_dma_obj_t* dma_obj = NULL;
+    rsx_object_context_dma_t* dma_obj = NULL;
     rsx_mem_ctx_obj_t* mem_ctx = NULL;
     rsx_core_mem_obj_t* core_mem = NULL;
     
@@ -500,9 +431,9 @@ static void rsx_core_context_212F78(rsx_ctx_obj_t* rsx_ctx) {
     // create and store dma object, 0xFEED0001
     dma_obj = rsx_object_context_dma_create_obj(0xFEED0001);
     if (dma_obj == NULL) {
-    printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-    return;
-  }
+        printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
+        return;
+    }
     rsx_ctx->dma_0A8 = (void*)dma_obj;
     
     // size = IO size, 256 MB
@@ -631,7 +562,7 @@ static void rsx_core_context_212F78(rsx_ctx_obj_t* rsx_ctx) {
 /***********************************************************************
 * 
 ***********************************************************************/
-static S32 rsx_core_context_214C58(rsx_ctx_obj_t* rsx_ctx) {
+static S32 rsx_core_context_214C58() {
     S32 ret = -1, sh = 0;
     S64 channel_id;
     rsx_dev_core_obj_t* core = NULL;
@@ -666,7 +597,7 @@ static S32 rsx_core_context_214C58(rsx_ctx_obj_t* rsx_ctx) {
     
     
     for(sh = 63; sh > -1; sh--)
-        if (rsx_ctx->page_size & ((uS64)1<<sh))
+        if (rsx_ctx->page_size & ((U64)1<<sh))
           break;
     
     // if system_mode[21:21](?) not set
@@ -736,14 +667,14 @@ static S32 rsx_core_context_214C58(rsx_ctx_obj_t* rsx_ctx) {
 /***********************************************************************
 * 
 ***********************************************************************/
-static void rsx_core_context_214040(rsx_ctx_obj_t* rsx_ctx) {
-    rsx_nv_class_obj_t* nv_obj = NULL;
-    rsx_sw_class_obj_t* sw_obj = NULL;
+static void rsx_core_context_214040() {
+    rsx_object_nv_class_t* nv_obj = NULL;
+    rsx_object_sw_class_t* sw_obj = NULL;
     
     
     //////////////////////////////////////////////////////////////////////
     // allocate and create nv object, ctx 0(0x00000030, 0x00000000, 0x28002050000)
-    nv_obj = lv1_kmalloc(sizeof(rsx_nv_class_obj_t));
+    nv_obj = lv1_kmalloc(sizeof(rsx_object_nv_class_t));
     if (nv_obj == NULL) {
         printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
         return;
@@ -753,7 +684,7 @@ static void rsx_core_context_214040(rsx_ctx_obj_t* rsx_ctx) {
     
     
     // allocate and create nv object, ctx 0(0x00004097, 0x31337000, 0x28002050020)
-    nv_obj = lv1_kmalloc(sizeof(rsx_nv_class_obj_t));
+    nv_obj = lv1_kmalloc(sizeof(rsx_object_nv_class_t));
     if (nv_obj == NULL) {
         printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
         return;
@@ -766,7 +697,7 @@ static void rsx_core_context_214040(rsx_ctx_obj_t* rsx_ctx) {
     
     //////////////////////////////////////////////////////////////////////
     // allocate and create nv object, ctx 0(0x00000039, 0x31337303, 0x28002050040)
-    nv_obj = lv1_kmalloc(sizeof(rsx_nv_class_obj_t));
+    nv_obj = lv1_kmalloc(sizeof(rsx_object_nv_class_t));
     if (nv_obj) {
         rsx_object_nv_class_create_object((void*)nv_obj, 0x39, 0x31337303);
         rsx_ctx->nv_obj[2] = (void*)nv_obj;
@@ -774,7 +705,7 @@ static void rsx_core_context_214040(rsx_ctx_obj_t* rsx_ctx) {
     }
     
     // allocate and create nv object, ctx 0(0x00000039, 0x3137C0DE, 0x28002050060)
-    nv_obj = lv1_kmalloc(sizeof(rsx_nv_class_obj_t));
+    nv_obj = lv1_kmalloc(sizeof(rsx_object_nv_class_t));
     if (nv_obj) {
         rsx_object_nv_class_create_object((void*)nv_obj, 0x39, 0x3137C0DE);
         rsx_ctx->nv_obj[3] = (void*)nv_obj;
@@ -791,7 +722,7 @@ static void rsx_core_context_214040(rsx_ctx_obj_t* rsx_ctx) {
     
     //////////////////////////////////////////////////////////////////////
     // allocate and create nv object, ctx 0(0x0000309E, 0x31337A73, 0x28002050080)
-    nv_obj = lv1_kmalloc(sizeof(rsx_nv_class_obj_t));
+    nv_obj = lv1_kmalloc(sizeof(rsx_object_nv_class_t));
     if (nv_obj) {
         rsx_object_nv_class_create_object((void*)nv_obj, 0x309E, 0x31337A73);
         rsx_ctx->nv_obj[4] = (void*)nv_obj;
@@ -799,7 +730,7 @@ static void rsx_core_context_214040(rsx_ctx_obj_t* rsx_ctx) {
     }
     
     // allocate and create nv object, ctx 0(0x00003062, 0x313371C3, 0x280020500A0)
-    nv_obj = lv1_kmalloc(sizeof(rsx_nv_class_obj_t));
+    nv_obj = lv1_kmalloc(sizeof(rsx_object_nv_class_t));
     if (nv_obj) {
         rsx_object_nv_class_create_object((void*)nv_obj, 0x3062, 0x313371C3);
         rsx_ctx->nv_obj[5] = (void*)nv_obj;
@@ -816,7 +747,7 @@ static void rsx_core_context_214040(rsx_ctx_obj_t* rsx_ctx) {
     
     //////////////////////////////////////////////////////////////////////
     // allocate and create nv object, ctx 0(0x00003089, 0x3137AF00, 0x280020500C0)
-    nv_obj = lv1_kmalloc(sizeof(rsx_nv_class_obj_t));
+    nv_obj = lv1_kmalloc(sizeof(rsx_object_nv_class_t));
     if (nv_obj) {
         rsx_object_nv_class_create_object((void*)nv_obj, 0x3089, 0x3137AF00);
         rsx_ctx->nv_obj[6] = (void*)nv_obj;
@@ -824,7 +755,7 @@ static void rsx_core_context_214040(rsx_ctx_obj_t* rsx_ctx) {
     }
     
     // allocate and create nv object, ctx 0(0x0000308A, 0x31337808, 0x280020500E0)
-    nv_obj = lv1_kmalloc(sizeof(rsx_nv_class_obj_t));
+    nv_obj = lv1_kmalloc(sizeof(rsx_object_nv_class_t));
     if (nv_obj) {
         rsx_object_nv_class_create_object((void*)nv_obj, 0x308A, 0x31337808);
         rsx_ctx->nv_obj[7] = (void*)nv_obj;
@@ -840,7 +771,7 @@ static void rsx_core_context_214040(rsx_ctx_obj_t* rsx_ctx) {
     
     
     // allocate and create the sw class object
-    sw_obj = lv1_kmalloc(sizeof(rsx_sw_class_obj_t));
+    sw_obj = lv1_kmalloc(sizeof(rsx_object_sw_class_t));
     if (sw_obj == NULL) {
         printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
         return;
@@ -859,13 +790,13 @@ static void rsx_core_context_214040(rsx_ctx_obj_t* rsx_ctx) {
 /***********************************************************************
 * 
 ***********************************************************************/
-static S32 rsx_core_context_2143E0(rsx_ctx_obj_t* rsx_ctx) {
+static S32 rsx_core_context_2143E0() {
     S32 i, k, ret = -1;
     rsx_dev_core_obj_t* core = NULL;
     rsx_utils_bm_obj_t* bm_reports = NULL;
     rsx_mem_ctx_obj_t* mem_ctx = NULL;
     rsx_core_mem_obj_t* core_mem = NULL;
-    rsx_ctx_dma_obj_t* dma_obj = NULL;
+    rsx_object_context_dma_t* dma_obj = NULL;
     
     
     // get RSX core memory object bitmap-reports
@@ -990,7 +921,7 @@ static S32 rsx_core_context_2143E0(rsx_ctx_obj_t* rsx_ctx) {
 /***********************************************************************
 * 
 ***********************************************************************/
-void rsx_core_context_init(rsx_ctx_obj_t* rsx_ctx, uS64 *out, S64 core_id, rsx_mem_ctx_obj_t* mem_ctx, uS64 system_mode, S32 idx) {
+void rsx_core_context_t::init(U64 *out, S64 core_id, rsx_mem_ctx_obj_t* mem_ctx, U64 system_mode, S32 idx) {
     S32 i, value;
     rsx_dev_core_obj_t* core = NULL;
     
@@ -1016,15 +947,15 @@ void rsx_core_context_init(rsx_ctx_obj_t* rsx_ctx, uS64 *out, S64 core_id, rsx_m
     if (system_mode & 8) {
       system_mode &= 0xFFFFFFFFFFFFFFBF;    // unset system_mode[25:25](?)
       rsx_ctx->sys_mode = system_mode;
-  }  
+    }  
     
     // if system_mode[24:24](?) set
     if (system_mode & 0x80) {
         rsx_core_device_get_core_object_by_id(g_rsx_core_id);
         if (core == NULL) {
-          printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-          return;
-      }
+            printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
+            return;
+        }
         
         // pause FIFO
         rsx_device_fifo_pause((void*)core->dev_fifo_obj);
@@ -1126,15 +1057,15 @@ void rsx_core_context_init(rsx_ctx_obj_t* rsx_ctx, uS64 *out, S64 core_id, rsx_m
 /***********************************************************************
 * 
 ***********************************************************************/
-rsx_ctx_obj_t* rsx_core_context_allocate(S64 core_id, rsx_mem_ctx_obj_t* mem_ctx, uS64 system_mode) {
+rsx_core_context_t* rsx_core_context_allocate(S64 core_id, rsx_mem_ctx_obj_t* mem_ctx, U64 system_mode) {
     S32 idx;
-  uS64 out = 0;
+  U64 out = 0;
     rsx_mem_ctx_obj_t* rsx_ctx = NULL;
     
     
     for(idx = 0; idx < 16; idx++) {
         if (g_rsx_ctx_tbl[idx] == NULL) {
-            rsx_ctx = lv1_kmalloc(sizeof(rsx_ctx_obj_t));
+            rsx_ctx = lv1_kmalloc(sizeof(rsx_core_context_t));
             if (rsx_ctx == NULL) {
             printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
             return NULL;

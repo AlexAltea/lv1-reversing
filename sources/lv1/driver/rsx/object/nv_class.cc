@@ -8,7 +8,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "inc/rsx_lv1.h"
 
 
 
@@ -27,7 +26,7 @@ S32 rsx_object_nv_class_get_object_size() {
 /***********************************************************************
 * 
 ***********************************************************************/
-void rsx_object_nv_class_create_object(rsx_nv_class_obj_t* nv_obj, U32 arg1, U32 arg2) {
+void rsx_object_nv_class_create_object(rsx_object_nv_class_t* nv_obj, U32 arg1, U32 arg2) {
     S32 ret = -1, offset, value1, value2;
     rsx_dev_core_obj_t* core = NULL;
     rsx_core_mem_obj_t* core_mem = NULL;

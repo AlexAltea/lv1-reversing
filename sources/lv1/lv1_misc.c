@@ -1,10 +1,13 @@
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
+/**
+ * (c) 2016 The LV1RE Project.
+ * Released under MIT license. Read LICENSE for more details.
+ */
 
-#include "inc/lv1_misc.h"
+#include "lv1_misc.h"
+#include "lv1/lv1.h"
 
+#include <cstdlib>
+#include <cstring>
 
 
 
@@ -19,76 +22,58 @@
 /***********************************************************************
 * setup a unk LV1 struct with given values, maybe interrupt related?
 * 
-* lv1_unk_obj_00_t* obj = (IN) struct to set
-* S64 arg1          = (IN) ?, e.g. 0
-* S64 opd_64        = (IN) a pointer to a OPD, for test here no pointer, interrupt thread/callback?
-* void *obj_1           = (IN) a pointer to a object, e.g. the RSX object-video-rsx object
+* lv1_unk_obj_00_t* obj   = (IN) struct to set
+* S64 arg1                = (IN) ?, e.g. 0
+* S64 opd_64              = (IN) a pointer to a OPD, for test here no pointer, interrupt thread/callback?
+* void *obj_1             = (IN) a pointer to a object, e.g. the RSX object-video-rsx object
 ***********************************************************************/
-void lv1_sub_2CA414(lv1_unk_obj_00_t* obj_0, S64 arg1, S64 opd_64, void *obj_1) {
-	obj_0->unk_00 = arg1;
-	obj_0->unk_08 = opd_64;
-	obj_0->unk_10 = obj_1;
-	obj_0->unk_18 = 0;
-	obj_0->unk_20 = 0;
-	return;
+void lv1_sub_2CA414(lv1_unk_obj_00_t* obj_0, S64 arg1, S64 opd_64, void* obj_1) {
+    obj_0->unk_00 = arg1;
+    obj_0->unk_08 = opd_64;
+    obj_0->unk_10 = (S64*)obj_1;
+    obj_0->unk_18 = 0;
+    obj_0->unk_20 = 0;
+    return;
 }
 
 /***********************************************************************
 * in real, a checksum from the name is builded, thats the base value for
 * compute the offset into param list.
 ***********************************************************************/
-void get_param_value(const char *name, U64 *value) {
-	if ((strcmp(name, "sys.boot.gos")) == 0)
-	{
-	  *value = SYS_BOOT_GOS;
-	  return;
-	}
-	
-	if ((strcmp(name, "sys.lv1.rsxenable")) == 0)
-	{
-	  *value = SYS_LV1_RSXENABLE;
-	  return;
-	}
-	
-	if ((strcmp(name, "sys.lv1.rsxdebug")) == 0)
-	{
-	  *value = SYS_LV1_RSXDEBUG;
-	  return;
-	}
-	
-	if ((strcmp(name, "sys.ac.misc2")) == 0)
-	{
-	  *value = SYS_AC_MISC2;
-	  return;
-	}
-	
-	if ((strcmp(name, "sys.rdcy.2")) == 0)
-	{
-	  *value = SYS_RDCY_2;
-	  return;
-	}
-	
-	if ((strcmp(name, "be.0.tb_clk")) == 0)
-	{
-	  *value = BE_0_TB_CLOCK;
-	  return;
-	}
-	
-	return;
+U64 get_param_value(const char* name) {
+    if (!strcmp(name, "sys.boot.gos")) {
+        return LV1_CONFIG_SYS_BOOT_GOS;
+    }
+    if (!strcmp(name, "sys.lv1.rsxenable")) {
+        return LV1_CONFIG_SYS_LV1_RSXENABLE;
+    }
+    if (!strcmp(name, "sys.lv1.rsxdebug")) {
+        return LV1_CONFIG_SYS_LV1_RSXDEBUG;
+    }
+    if (!strcmp(name, "sys.ac.misc2")) {
+        return LV1_CONFIG_SYS_AC_MISC2;
+    }
+    if (!strcmp(name, "sys.rdcy.2")) {
+        return LV1_CONFIG_SYS_RDCY_2;
+    }
+    if (!strcmp(name, "be.0.tb_clk")) {
+        return LV1_CONFIG_BE_0_TB_CLOCK;
+    }
+    return 0;
 }
 
 /***********************************************************************
 * 
 ***********************************************************************/
 void *lv1_kmalloc(S32 size) {
-	return (void*)(malloc(size));
+    return (void*)(malloc(size));
 }
 
 /***********************************************************************
 * 
 ***********************************************************************/
 void lv1_kfree(void *addr) {
-	free(addr);
+    free(addr);
 }
 
 /***********************************************************************
@@ -101,71 +86,70 @@ void lv1_kfree(void *addr) {
 * S64 *lpar_addr = (OUT) mapped logical partition address
 ***********************************************************************/
 S32 rsx_map_io_to_lpar(S32 core_id, S64 io_addr, S32 page_sh, S32 io_size, S64 *lpar_addr) {
-	switch(io_addr)
-	{
-		case 0x28000000000:             // rsx device  0, BAR0
-		  *lpar_addr = 0;
-		  break;
-		case 0x2808FF20000:             // rsx device  1, audio
-		  *lpar_addr = 0x30000001B000;
-		  break;
-		case 0x28000080100:             // rsx device  2, unk(DEX)?
-		  *lpar_addr = -1;
-		  break;
-		case 0x28001000000:             // rsx device  3, unk(DEX)?
-		  *lpar_addr = -1;
-		  break;
-		case 0x28001800000:             // rsx device  4, unk(DEX)?
-		  *lpar_addr = -1;
-		  break;
-		case 0x2800008A000:             // rsx device  5, unk(DEX)?
-		  *lpar_addr = -1;
-		  break;
-		case 0x28000200000:             // rsx device  6, unk(DEX)?
-		  *lpar_addr = -1;
-		  break;
-		case 0x28000600000:             // rsx device  7, unk(DEX)?
-		  *lpar_addr = -1;
-		  break;
-		case 0x2808FF10000:             // rsx device  8, GPU, global semaphore
-		  *lpar_addr = 0x300000020000;
-		  break;
-		case 0x28000400000:             // rsx device  9, unk(DEX)?
-		  *lpar_addr = -1;
-		  break;
-		case 0x28000100000:             // rsx device 10, unk(DEX)?
-		  *lpar_addr = -1;
-		  break;
-		case 0x2800000A000:             // rsx device 11, unk(DEX)?
-		  *lpar_addr = -1;
-		  break;
-		case 0x28000680000:             // rsx device 12, unk(DEX)?
-		  *lpar_addr = -1;
-		  break;
-		case 0x28000090000:             // rsx device 13, unk(DEX)?
-		  *lpar_addr = -1;
-		  break;
-		case 0x28000002000:             // rsx device 14, unk(DEX)?
-		  *lpar_addr = -1;
-		  break;
-		case 0x28000088000:             // rsx device 15, unk(DEX)?
-		  *lpar_addr = -1;
-		  break;
-		case 0x28080000000:             // map local memory
-		  *lpar_addr = 0x7000B0000000;
-		  break;
-		case 0x2808FE00000:             // map reports
-		  *lpar_addr = 0x480000340000;
-		  break;
-		case 0x28000C00000:             // map dma control
-		  *lpar_addr = 0x4400001C0000;
-		  break;
-	}
-	
-	if ((io_addr < 0x28000000000) && (io_size == 0xC000))  // map driver info
-	  *lpar_addr = 0x4000000C0000;
-	
-	return 0;  // OK
+    switch(io_addr) {
+        case 0x28000000000:             // rsx device  0, BAR0
+          *lpar_addr = 0;
+          break;
+        case 0x2808FF20000:             // rsx device  1, audio
+          *lpar_addr = 0x30000001B000;
+          break;
+        case 0x28000080100:             // rsx device  2, unk(DEX)?
+          *lpar_addr = -1;
+          break;
+        case 0x28001000000:             // rsx device  3, unk(DEX)?
+          *lpar_addr = -1;
+          break;
+        case 0x28001800000:             // rsx device  4, unk(DEX)?
+          *lpar_addr = -1;
+          break;
+        case 0x2800008A000:             // rsx device  5, unk(DEX)?
+          *lpar_addr = -1;
+          break;
+        case 0x28000200000:             // rsx device  6, unk(DEX)?
+          *lpar_addr = -1;
+          break;
+        case 0x28000600000:             // rsx device  7, unk(DEX)?
+          *lpar_addr = -1;
+          break;
+        case 0x2808FF10000:             // rsx device  8, GPU, global semaphore
+          *lpar_addr = 0x300000020000;
+          break;
+        case 0x28000400000:             // rsx device  9, unk(DEX)?
+          *lpar_addr = -1;
+          break;
+        case 0x28000100000:             // rsx device 10, unk(DEX)?
+          *lpar_addr = -1;
+          break;
+        case 0x2800000A000:             // rsx device 11, unk(DEX)?
+          *lpar_addr = -1;
+          break;
+        case 0x28000680000:             // rsx device 12, unk(DEX)?
+          *lpar_addr = -1;
+          break;
+        case 0x28000090000:             // rsx device 13, unk(DEX)?
+          *lpar_addr = -1;
+          break;
+        case 0x28000002000:             // rsx device 14, unk(DEX)?
+          *lpar_addr = -1;
+          break;
+        case 0x28000088000:             // rsx device 15, unk(DEX)?
+          *lpar_addr = -1;
+          break;
+        case 0x28080000000:             // map local memory
+          *lpar_addr = 0x7000B0000000;
+          break;
+        case 0x2808FE00000:             // map reports
+          *lpar_addr = 0x480000340000;
+          break;
+        case 0x28000C00000:             // map dma control
+          *lpar_addr = 0x4400001C0000;
+          break;
+    }
+    
+    if ((io_addr < 0x28000000000) && (io_size == 0xC000))  // map driver info
+      *lpar_addr = 0x4000000C0000;
+    
+    return 0;  // OK
 }
 
 

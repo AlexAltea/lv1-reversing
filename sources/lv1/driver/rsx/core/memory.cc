@@ -11,7 +11,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "inc/rsx_lv1.h"
 
 
 
@@ -57,15 +56,15 @@ S32 rsx_core_memory_get_BAR1_offset_by_address(rsx_core_mem_obj_t* core_mem, S64
 * get RSX memory context by ID
 * 
 * rsx_core_mem_obj_t* core_mem = RSX device core object
-* uS32 mem_ctx_id          = RSX memory context ID
+* U32 mem_ctx_id          = RSX memory context ID
 ***********************************************************************/
-rsx_mem_ctx_obj_t* rsx_core_memory_get_memory_context_by_id(rsx_core_mem_obj_t* core_mem, uS32 mem_ctx_id) {
+rsx_mem_ctx_obj_t* rsx_core_memory_get_memory_context_by_id(rsx_core_mem_obj_t* core_mem, U32 mem_ctx_id) {
     rsx_mem_ctx_obj_t* mem_ctx = NULL;
     
     
     // if id out of range
     if ((mem_ctx_id ^ 0x5A5A5A5A) > 15)
-      return NULL;
+      return nullptr;
     
     mem_ctx = (void*)core_mem->rsx_mem_ctx[mem_ctx_id ^ 0x5A5A5A5A];
     
@@ -134,7 +133,7 @@ rsx_core_mem_obj_t* rsx_core_memory_allocate_memory_context(rsx_core_mem_obj_t* 
                     rsx_utils_bitmap_dealloc((void*)core_mem->bm_unk_03, out5, item_count);
                 }
                 
-                return NULL;
+                return nullptr;
             }
             
             // allocate RSX memory context object
@@ -169,7 +168,7 @@ rsx_core_mem_obj_t* rsx_core_memory_allocate_memory_context(rsx_core_mem_obj_t* 
     }
     
     // no free memory context 
-    return NULL;
+    return nullptr;
 }
 
 /***********************************************************************
@@ -536,23 +535,19 @@ rsx_core_mem_obj_t* rsx_core_memory_ctor(S64 rsx_core_id) {
     S64 BAR1_addr;
     S32 BAR1_size;
     S64 BAR2_addr;
-    rsx_dev_core_obj_t* core = NULL;
-    rsx_bus_ioif0_obj_t* ioif0 = NULL;
-    rsx_core_mem_obj_t* core_mem = NULL;
-    
     
     // Get device core
-    core = rsx_core_device_get_core_object_by_id(rsx_core_id);
+    rsx_dev_core_obj_t* core = rsx_core_device_get_core_object_by_id(rsx_core_id);
     RSX_ASSERT(core);
     
     // Get IOIF0
-    ioif0 = (void*)core->ioif0;
+    rsx_bus_ioif0_obj_t* ioif0  = (void*)core->ioif0;
     RSX_ASSERT(ioif0);
     
     // check: is there alraedy a global memory core object?
     if (g_core_mem_obj != NULL) {
         printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-        return NULL;
+        return nullptr;
     }
     
     // get needed values
@@ -562,10 +557,10 @@ rsx_core_mem_obj_t* rsx_core_memory_ctor(S64 rsx_core_id) {
     BAR2_addr    = rsx_bus_ioif0_get_BAR2_addr(ioif0);
     
     // allocate RSX core memory object
-    core_mem = lv1_kmalloc(sizeof(rsx_core_mem_obj_t));
+    rsx_core_mem_obj_t* core_mem = lv1_kmalloc(sizeof(rsx_core_mem_obj_t));
     if (core_mem == NULL) {
         printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-        return NULL;
+        return nullptr;
     }
     
     // set new core memory object
