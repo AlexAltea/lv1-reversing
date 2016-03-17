@@ -38,7 +38,7 @@ void rsx_object_nv_class_create_object(rsx_object_nv_class_t* nv_obj, U32 type, 
     RSX_ASSERT(ret);
   
     // Get offset from core memory object
-    core_mem = core->core_mem_obj;
+    core_mem = core->core_mem;
     offset = core_mem->get_bar2_offset_by_address(nv_obj->bar2_offset);
   
     // ?

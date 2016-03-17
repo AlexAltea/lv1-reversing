@@ -79,7 +79,7 @@ void rsx_device_fifo_21C234(rsx_device_fifo_t* fifo, S32 channel_id) {
   }
     
     // get FIFO object again and pause FIFO
-    _fifo = (void*)core->dev_fifo_obj;
+    _fifo = (void*)core->fifo;
     rsx_device_fifo_pause(_fifo);
     
     
@@ -130,7 +130,7 @@ void rsx_device_fifo_21CCC0(rsx_device_fifo_t* fifo, S32 channel_id, S32 offset)
     fc1_addr = rsx_device_fifo_get_fc1_channel_address_by_id(fifo, channel_id);
     
     // get channel fc1 offset
-    core_mem = (void*)core->core_mem_obj;
+    core_mem = (void*)core->core_mem;
     fc1_offset = rsx_core_memory_get_BAR2_offset_by_address(core_mem, fc1_addr);
     
     // 
@@ -492,10 +492,10 @@ void rsx_device_fifo_21BA08(rsx_device_fifo_t* fifo) {
     }
     
     // get fc1 offset, if offset is valid(not out of address range)
-    fc1_offset = rsx_core_memory_get_BAR2_offset_by_address((void*)core->core_mem_obj, fifo->fc1_addr);
+    fc1_offset = rsx_core_memory_get_BAR2_offset_by_address((void*)core->core_mem, fifo->fc1_addr);
     
     // get fc2 offset, if offset is valid(not out of address range)
-    fc2_offset = rsx_core_memory_get_BAR2_offset_by_address((void*)core->core_mem_obj, fifo->fc2_addr);
+    fc2_offset = rsx_core_memory_get_BAR2_offset_by_address((void*)core->core_mem, fifo->fc2_addr);
     
     // update BAR0 registers
     value = read_BAR0(0x28000002230);
@@ -516,8 +516,8 @@ void rsx_device_fifo_21BA08(rsx_device_fifo_t* fifo) {
     write_BAR0(value, 0x28000002220);              // value now 0x????30002
     
     // get run_out address, 0x28002018000 and size, 0x200(512 byte)
-    fifo->run_out_addr = rsx_core_memory_get_mem_reg_addr_by_id((void*)core->core_mem_obj, 3);
-    fifo->run_out_size = rsx_core_memory_get_mem_reg_size_by_id((void*)core->core_mem_obj, 3);
+    fifo->run_out_addr = rsx_core_memory_get_mem_reg_addr_by_id((void*)core->core_mem, 3);
+    fifo->run_out_size = rsx_core_memory_get_mem_reg_size_by_id((void*)core->core_mem, 3);
     
     if (fifo->run_out_size <= 0x1FF) {
         printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
@@ -532,7 +532,7 @@ void rsx_device_fifo_21BA08(rsx_device_fifo_t* fifo) {
     //////////////////////////////////////////////////////////////////////
     
     // get run_out offset, if offset is valid(not out of address range)
-    run_out_offset = rsx_core_memory_get_BAR2_offset_by_address((void*)core->core_mem_obj, fifo->run_out_addr);
+    run_out_offset = rsx_core_memory_get_BAR2_offset_by_address((void*)core->core_mem, fifo->run_out_addr);
     
     //////////////////////////////////////////////////////////////////////
     // update BAR0 registers
@@ -543,7 +543,7 @@ void rsx_device_fifo_21BA08(rsx_device_fifo_t* fifo) {
     //////////////////////////////////////////////////////////////////////
     
     // get run_out offset, if offset is valid(not out of address range)
-    run_out_offset = rsx_core_memory_get_BAR2_offset_by_address((void*)core->core_mem_obj, fifo->run_out_addr);
+    run_out_offset = rsx_core_memory_get_BAR2_offset_by_address((void*)core->core_mem, fifo->run_out_addr);
     
     // init FIFO run_out memory, with 0xFADEFADE
     while (fifo->run_out_size > ctr) {
@@ -636,22 +636,22 @@ void rsx_device_fifo_init(rsx_device_fifo_t* fifo) {
     }
     
     // get fc1 address, 0x28002020000
-    fifo->fc1_addr = rsx_core_memory_get_mem_reg_addr_by_id((void*)core->core_mem_obj, 4);
+    fifo->fc1_addr = rsx_core_memory_get_mem_reg_addr_by_id((void*)core->core_mem, 4);
     
     // get fc2 address, 0x28002030000
-    fifo->fc2_addr = rsx_core_memory_get_mem_reg_addr_by_id((void*)core->core_mem_obj, 5);
+    fifo->fc2_addr = rsx_core_memory_get_mem_reg_addr_by_id((void*)core->core_mem, 5);
     
     // get fc1 size, 0x200(512 byte)
-    fifo->fc1_size = rsx_core_memory_get_mem_reg_size_by_id((void*)core->core_mem_obj, 4);
+    fifo->fc1_size = rsx_core_memory_get_mem_reg_size_by_id((void*)core->core_mem, 4);
     
     // get fc2 size, 0x4000(16 KB)
-    fifo->fc2_size = rsx_core_memory_get_mem_reg_size_by_id((void*)core->core_mem_obj, 5);
+    fifo->fc2_size = rsx_core_memory_get_mem_reg_size_by_id((void*)core->core_mem, 5);
     
     // get fc1 offset, if offset is valid(not out of address range)
-    fc1_offset = rsx_core_memory_get_BAR2_offset_by_address((void*)core->core_mem_obj, fifo->fc1_addr);
+    fc1_offset = rsx_core_memory_get_BAR2_offset_by_address((void*)core->core_mem, fifo->fc1_addr);
     
     // get fc2 offset, if offset is valid(not out of address range)
-    fc2_offset = rsx_core_memory_get_BAR2_offset_by_address((void*)core->core_mem_obj, fifo->fc2_addr);
+    fc2_offset = rsx_core_memory_get_BAR2_offset_by_address((void*)core->core_mem, fifo->fc2_addr);
     
     // init fc1 memory, with 0xDEADBEEF
     if (fifo->fc1_size != 0) {

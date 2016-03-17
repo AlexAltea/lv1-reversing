@@ -7,12 +7,20 @@
 
 #include "common/types.h"
 
+#include "lv1/driver/rsx/bus/ioif0.h"
 #include "lv1/driver/rsx/core/memory.h"
+
+// Devices
 #include "lv1/driver/rsx/device/audio.h"
 #include "lv1/driver/rsx/device/clock.h"
+#include "lv1/driver/rsx/device/eic.h"
 #include "lv1/driver/rsx/device/fb.h"
 #include "lv1/driver/rsx/device/fifo.h"
 #include "lv1/driver/rsx/device/graph.h"
+#include "lv1/driver/rsx/device/master.h"
+
+// Objects
+
 
 // Maximum RSX devices
 #define MAX_DEV  16
@@ -22,10 +30,10 @@ struct rsx_core_device_t {
     S32 unk_000;                 // 0x000: ?
     S32 *unk_004;                // 0x004: ? address
     S64 device_id;               // 0x008: RSX device ID
-    S64 *ioif0;                  // 0x010: RSX IO interface 0 object
+    rsx_bus_ioif0_t* ioif0;      // 0x010: RSX IO interface 0 object
     S64 core_id;                 // 0x018: RSX device core object ID  
     //S32 unk_01C;               // 0x01C: sometime RSX device core object ID as 32bit
-    rsx_core_memory_t* core_mem_obj;           // 0x020: RSX core memory object
+    rsx_core_memory_t* core_mem;           // 0x020: RSX core memory object
     //--------------------------------------------------------------------
     S64 *rsx_ctx[3];             // 0x028: RSX context 0(ID: 0x55555555), 1(ID: 0x55555554) and 3(ID: 0x55555553)
     //--------------------------------------------------------------------
@@ -34,19 +42,22 @@ struct rsx_core_device_t {
     S64 dev_lpar_addr[MAX_DEV];  // 0x048: logical partition addresses of asserted devices, 0 to 15.
                                      //        E.g. idx 1 = RSX audio device,
                                      //        E.g. idx 8 = RSX device 8, our GPU.
-    //--- objects --------------------------------------------------------
-    rsx_device_clock_t* dev_clock_1_obj;        // 0x0C8: RSX device clock object 1, "nvclk"
-    rsx_device_clock_t* dev_clock5;        // 0x0D0: RSX device clock object 5, "display clk"
-    S64* eic_obj;                // 0x0D8: RSX external interrupt controller object
-    rsx_device_fb_t* dev_fb_obj;             // 0x0E0: RSX device framebuffer object
-    rsx_device_graph_t* dev_graph_obj;          // 0x0E8: RSX device graph object
-    S64* unk_0F0;                // 0x0F0: ?
-    rsx_device_fifo_t* fifo;           // 0x0F8: RSX device fifo object
-    rsx_device_audio_t* dev_audio_obj;          // 0x100: RSX device audio object
-    S64* obj_hash_tbl_obj;       // 0x108: RSX object hash table object
-    S64* obj_video_rsx_obj;      // 0x110: RSX object video_rsx object
-    S64* obj_vfb_obj;            // 0x118: RSX object video framebuffer, vfb object ever zero, seams to be the 2D stuff for otherOS(no 3D)
-    S64* bm_obj_channels;        // 0x120: a RSX utils bitmap object, 4 items, the max(4) RSX channels
+
+    // Devices
+    rsx_device_clock_t* dev_clock1;   // 0x0C8: RSX device clock object 1, "nvclk"
+    rsx_device_clock_t* dev_clock5;   // 0x0D0: RSX device clock object 5, "display clk"
+    rsx_device_eic_t* dev_eic;        // 0x0D8: RSX device external interrupt controller object
+    rsx_device_fb_t* dev_fb;          // 0x0E0: RSX device framebuffer object
+    rsx_device_graph_t* dev_graph;    // 0x0E8: RSX device graph object
+    rsx_device_master_t* dev_master;  // 0x0F0: RSX device master object
+    rsx_device_fifo_t* dev_fifo;      // 0x0F8: RSX device fifo object
+    rsx_device_audio_t* dev_audio;    // 0x100: RSX device audio object
+
+    // Objects
+    S64* obj_hash_tbl_obj;            // 0x108: RSX object hash table object
+    S64* obj_video_rsx_obj;           // 0x110: RSX object video_rsx object
+    S64* obj_vfb_obj;                 // 0x118: RSX object video framebuffer, vfb object ever zero, seams to be the 2D stuff for otherOS(no 3D)
+    S64* bm_obj_channels;             // 0x120: a RSX utils bitmap object, 4 items, the max(4) RSX channels
     //--------------------------------------------------------------------
     // ??? tb values, for mesure things like total time used for interrupts, and other things
     S64 unk_128;                 // 0x128: ?

@@ -147,7 +147,6 @@
     <ClInclude Include="lv1\driver\rsx\device\fifo.h" />
     <ClInclude Include="lv1\driver\rsx\device\graph.h" />
     <ClInclude Include="lv1\driver\rsx\device\master.h" />
-    <ClInclude Include="lv1\driver\rsx\object.h" />
     <ClInclude Include="lv1\driver\rsx\object\channel.h" />
     <ClInclude Include="lv1\driver\rsx\object\context_dma.h" />
     <ClInclude Include="lv1\driver\rsx\object\hash_table.h" />

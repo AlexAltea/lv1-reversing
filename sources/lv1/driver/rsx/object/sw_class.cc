@@ -48,5 +48,3 @@ void rsx_object_sw_class_create_object(rsx_object_sw_class_t* sw_obj, U32 handle
     return;
 }
 
-
-

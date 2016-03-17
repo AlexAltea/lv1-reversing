@@ -659,7 +659,7 @@ void rsx_device_graph_21D01C(rsx_device_graph_t* graph) {
 void rsx_device_graph_21E9CC(S64 *vtab) {
     S32 i, value = 0, chip_revision;
     rsx_core_device_t* core = NULL;
-    rsx_bus_ioif0_obj_t* ioif0 = NULL;
+    rsx_bus_ioif0_t* ioif0 = NULL;
     
     
     // get device core
@@ -1016,7 +1016,7 @@ void rsx_device_graph_21DA04(rsx_device_graph_t* graph, S32 idx) {
     }
     
     // get address offset, if offset is valid(not out of address range)
-    offset = rsx_core_memory_get_BAR2_offset_by_address((void*)core->core_mem_obj, graph->channel_addr[idx]); 
+    offset = rsx_core_memory_get_BAR2_offset_by_address((void*)core->core_mem, graph->channel_addr[idx]); 
     
     //////////////////////////////////////////////////////////////////////
     write_BAR0(0xFF3F, 0x28000001540);   // TEST: 8 units like in original dump
@@ -1099,11 +1099,11 @@ void rsx_device_graph_21DD9C(rsx_device_graph_t* graph) {
     }
     
     // get graph address, 0x28002060000 and size, 0x80000(512 KB)
-    graph->graph_addr = rsx_core_memory_get_mem_reg_addr_by_id((void*)core->core_mem_obj, 6);
-    graph->graph_size = rsx_core_memory_get_mem_reg_size_by_id((void*)core->core_mem_obj, 6);
+    graph->graph_addr = rsx_core_memory_get_mem_reg_addr_by_id((void*)core->core_mem, 6);
+    graph->graph_size = rsx_core_memory_get_mem_reg_size_by_id((void*)core->core_mem, 6);
     
     // get graph offset, if offset is valid(not out of address range)
-    graph->graph_offset = rsx_core_memory_get_BAR2_offset_by_address((void*)core->core_mem_obj, graph->graph_addr);
+    graph->graph_offset = rsx_core_memory_get_BAR2_offset_by_address((void*)core->core_mem, graph->graph_addr);
     
     
     // ? store some offset values into graph object

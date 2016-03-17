@@ -23,7 +23,7 @@ struct rsx_mem_reg_setting_t {
 
 // LV1 RSX memory context object, size 0x50
 struct rsx_mem_ctx_obj_t {
-    rsx_core_memory_t* core_mem_obj;          // 0x00: RSX device core memory object
+    rsx_core_memory_t* core_mem;          // 0x00: RSX device core memory object
     S32 id;                     // 0x08: RSX memory context ID, (index XOR 0x5A5A5A5A)
     S32 unk_0C;                 // 0x0C: 
     //--------------------------------------------------------------------
@@ -101,9 +101,9 @@ struct rsx_core_memory_t {
     S32 get_bar1_offset_by_address(S64 addr);
     S32 get_bar2_offset_by_address(S64 addr);
 
-    S32 get_mem_reg_by_id(S32 mem_region_id, S64 *addr, S32 *size);
-    S64 get_mem_reg_addr_by_id(S32 mem_region_id);
-    S32 get_mem_reg_size_by_id(S32 mem_region_id);
+    S32 get_mem_region_by_id(S32 mem_region_id, S64 *addr, S32 *size);
+    S64 get_mem_region_addr_by_id(S32 mem_region_id);
+    S32 get_mem_region_size_by_id(S32 mem_region_id);
 };
 
 rsx_core_memory_t* rsx_core_memory_ctor(S64 rsx_core_id);

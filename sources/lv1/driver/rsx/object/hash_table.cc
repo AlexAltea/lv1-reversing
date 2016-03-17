@@ -3,13 +3,10 @@
  * Released under MIT license. Read LICENSE for more details.
  */
 
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
+#include "hash_table.h"
 
-
-
+#include "lv1/driver/rsx/assert.h"
+#include "lv1/driver/rsx/core/device.h"
 
 /*
 class_type: e.g. 0xCAFEBABE, 0xFEED0001, 0xFEED0000, 0x66604200 to 0x6660420F
@@ -30,6 +27,100 @@ entry in hash table:
 */
 
 
+/***********************************************************************
+* rsx_hash_tbl_obj_t* hash_tbl = RSX obect hash table object to set up
+***********************************************************************/
+void rsx_object_hash_table_t::init() {
+    S32 offset = 0, value;
+    rsx_core_device_t* core = nullptr;
+    rsx_core_memory_t* mem = nullptr;
+    
+    unk_00 = 0x1000;     // ?
+    size_0 = 0x8000;     // ?
+    
+    
+    // get device core object, we need IOIF0 next
+    core = rsx_core_device_get_core_object_by_id(g_rsx_core_id);
+    RSX_ASSERT(core);
+    
+    mem = core->core_mem;
+    // Get and store RSX hash table address, 0x28002010000
+    io_addr = mem->get_mem_region_addr_by_id(2);  
+    
+    // Get and store RSX hash table size, 0x8000 (32 KB)
+    size_1 = mem->get_mem_region_size_by_id(2);  
+    
+    // Get and store offset of the hash table, if offset is valid (not bigger than size)
+    bar0_offset = rsx_core_memory_2120EC((void*)core->core_mem, io_addr);
+    
+    // check size
+    if (size_1 < size_0) {
+        printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
+        return;
+    }
+    
+    // check alignment
+    if ((io_addr & 0x3FF) != 0) {
+        printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
+        return;
+    }
+    
+    // init hash table with 0
+    if (size_0 != 0)
+        while (size_0 > offset) {
+            DDR_write32(0, io_addr + offset);
+            offset+=4;
+        }
+    }
+    
+    // set/update BAR0 registers
+    value = read_BAR0(0x28000002210);
+    value &= 0xFFFFFE0F;                        // unset value[23:27]
+    value |= (bar0_offset >> 12);
+    write_BAR0(value, 0x28000002210);
+    
+    value = read_BAR0(0x28000002210);
+    value &= 0xFFFCFFFF;                        // unset value[14:15]
+    value |= 0x20000;                           // set value[14:14]
+    write_BAR0(value, 0x28000002210);
+    
+    value = read_BAR0(0x28000002210);
+    value &= 0xF8FFFFFF;                        // unset value[05:07]
+    write_BAR0(value, 0x28000002210);
+    
+    return;
+}
+
+
+void rsx_object_hash_table_t::finalize() {
+    S32 value, offset = 0;
+    
+    
+    // if table, clean table
+    if (size_0 != 0)
+        while (size_0 > offset) {
+            DDR_write32(0, offset + io_addr);
+            offset+=4;
+        }
+    
+    // set/update BAR0 registers
+    value = read_BAR0(0x28000002210);
+    value &= 0xFFFFFE0F;                        // unset value[23:27]
+    write_BAR0(value, 0x28000002210);
+    
+    value = read_BAR0(0x28000002210);
+    value &= 0xFFFCFFFF;                        // unset value[14:15]
+    write_BAR0(value, 0x28000002210);
+    
+    value = read_BAR0(0x28000002210);
+    value &= 0xF8FFFFFF;                        // unset value[05:07]
+    write_BAR0(value, 0x28000002210);
+    
+    return;
+}
+
+
+
 
 /***********************************************************************
 * rsx_hash_tbl_obj_t* hash_tbl = RSX device core hash table object
@@ -41,7 +132,7 @@ entry in hash table:
 * S32 offset               = 
 * S32 arg1                 = ?, 1 or 2
 ***********************************************************************/
-void rsx_object_hash_table_create_entry(rsx_hash_tbl_obj_t* hash_tbl, S32 channel_id, U32 class_type, S32 offset, S32 arg1) {
+void rsx_object_hash_table_t::create_entry(S32 channel_id, U32 class_type, S32 offset, S32 arg1) {
     rsx_core_device_t* core = NULL;
     rsx_utils_bitmap_t* bm_channels = NULL;
     S32 value, max_channels, entry_offset = 0;
@@ -71,7 +162,7 @@ void rsx_object_hash_table_create_entry(rsx_hash_tbl_obj_t* hash_tbl, S32 channe
     entry_offset = (((class_type & 0x3FF800) >>11) ^ (class_type & 0x7FF) ^
                    ((channel_id & 7) <<7) ^ (class_type >>22)) << 3;
     
-    entry_offset += hash_tbl->bar0_offset;
+    entry_offset += bar0_offset;
     
     // ?
     if (arg1 == 1) {
@@ -93,7 +184,7 @@ void rsx_object_hash_table_create_entry(rsx_hash_tbl_obj_t* hash_tbl, S32 channe
     DDR_write32(class_type, entry_offset + g_rsx_bar2_addr);
     
     // prepare offset
-    offset = rsx_core_memory_value_div_by_16((void*)core->core_mem_obj, offset) & 0xFFFFF;
+    offset = rsx_core_memory_value_div_by_16((void*)core->core_mem, offset) & 0xFFFFF;
     
     // store offset into hash table entry
     value = DDR_read32(entry_offset + g_rsx_bar2_addr + 4);
@@ -118,7 +209,7 @@ void rsx_object_hash_table_create_entry(rsx_hash_tbl_obj_t* hash_tbl, S32 channe
 *                                hv  e.g. 0x31337303, 0x3137C0DE, ...
 *                                dma e.g. 0xFEED0001, 0xFEED0000, 0x66604200 to 0x6660420F, ...
 ***********************************************************************/
-void rsx_object_hash_table_invalidate_entry(rsx_hash_tbl_obj_t* hash_tbl, S32 channel_id, U32 class_type) {
+void rsx_object_hash_table_t::invalidate_entry(S32 channel_id, U32 class_type) {
     rsx_core_device_t* core = NULL;
     rsx_utils_bitmap_t* bm_channels = NULL;
     S32 value, max_channels, entry_offset = 0;
@@ -148,7 +239,7 @@ void rsx_object_hash_table_invalidate_entry(rsx_hash_tbl_obj_t* hash_tbl, S32 ch
     entry_offset = (((class_type & 0x3FF800) >>11) ^ (class_type & 0x7FF) ^
                    ((channel_id & 7) <<7) ^ (class_type >>22)) << 3;
     
-    entry_offset += hash_tbl->bar0_offset;
+    entry_offset += bar0_offset;
     
     // no idea why, old value read but not used
     value = DDR_read32(entry_offset + g_rsx_bar2_addr);
@@ -169,100 +260,3 @@ void rsx_object_hash_table_invalidate_entry(rsx_hash_tbl_obj_t* hash_tbl, S32 ch
     
     return;
 }
-
-/***********************************************************************
-* rsx_hash_tbl_obj_t* hash_tbl = RSX obect hash table object to set up
-***********************************************************************/
-void rsx_object_hash_table_init(rsx_hash_tbl_obj_t* hash_tbl) {
-    S32 offset = 0, value;
-    rsx_core_device_t* core = NULL;
-    
-    
-    hash_tbl->unk_00 = 0x1000;     // ?
-    hash_tbl->size_0 = 0x8000;     // ?
-    
-    
-    // get device core object, we need IOIF0 next
-    core = rsx_core_device_get_core_object_by_id(g_rsx_core_id);
-    if (core == NULL) {
-        printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-        return;
-    }
-    
-    // get and store RSX hash table address, 0x28002010000
-    hash_tbl->io_addr = rsx_core_memory_get_mem_reg_addr_by_id((void*)core->core_mem_obj, 2);  
-    
-    // get and store RSX hash table size, 0x8000(32 KB)
-    hash_tbl->size_1 = rsx_core_memory_get_mem_reg_size_by_id((void*)core->core_mem_obj, 2);  
-    
-    // get and store offset of the hash table, if offset is valid(not bigger than size)
-    hash_tbl->bar0_offset = rsx_core_memory_2120EC((void*)core->core_mem_obj, hash_tbl->io_addr);
-    
-    // check size
-    if (hash_tbl->size_1 < hash_tbl->size_0) {
-        printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-        return;
-    }
-    
-    // check alignment
-    if ((hash_tbl->io_addr & 0x3FF) != 0) {
-        printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-        return;
-    }
-    
-    // init hash table with 0
-    if (hash_tbl->size_0 != 0)
-    while (hash_tbl->size_0 > offset) {
-      DDR_write32(0, hash_tbl->io_addr + offset);
-      offset+=4;
-      }
-    
-    // set/update BAR0 registers
-    value = read_BAR0(0x28000002210);
-    value &= 0xFFFFFE0F;                        // unset value[23:27]
-    value |= (hash_tbl->bar0_offset >>12);
-    write_BAR0(value, 0x28000002210);
-    
-    value = read_BAR0(0x28000002210);
-    value &= 0xFFFCFFFF;                        // unset value[14:15]
-    value |= 0x20000;                           // set value[14:14]
-    write_BAR0(value, 0x28000002210);
-    
-    value = read_BAR0(0x28000002210);
-    value &= 0xF8FFFFFF;                        // unset value[05:07]
-    write_BAR0(value, 0x28000002210);
-    
-    return;
-}
-
-/***********************************************************************
-* rsx_hash_tbl_obj_t* hash_tbl = RSX obect hash table object to kill
-***********************************************************************/
-void rsx_object_hash_table_finalize(rsx_hash_tbl_obj_t* hash_tbl) {
-    S32 value, offset = 0;
-    
-    
-    // if table, clean table
-    if (hash_tbl->size_0 != 0)
-        while (hash_tbl->size_0 > offset) {
-            DDR_write32(0, offset + hash_tbl->io_addr);
-            offset+=4;
-        }
-    
-    // set/update BAR0 registers
-    value = read_BAR0(0x28000002210);
-    value &= 0xFFFFFE0F;                        // unset value[23:27]
-    write_BAR0(value, 0x28000002210);
-    
-    value = read_BAR0(0x28000002210);
-    value &= 0xFFFCFFFF;                        // unset value[14:15]
-    write_BAR0(value, 0x28000002210);
-    
-    value = read_BAR0(0x28000002210);
-    value &= 0xF8FFFFFF;                        // unset value[05:07]
-    write_BAR0(value, 0x28000002210);
-    
-    return;
-}
-
-

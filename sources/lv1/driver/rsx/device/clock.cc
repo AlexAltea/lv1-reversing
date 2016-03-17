@@ -3,13 +3,7 @@
  * Released under MIT license. Read LICENSE for more details.
  */
 
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
-
-
-
+#include "clock.h"
 
 // RSX device clock settings
 static rsx_dev_clock_setting_t set[3] = {

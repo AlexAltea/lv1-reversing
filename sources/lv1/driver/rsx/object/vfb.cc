@@ -3,30 +3,16 @@
  * Released under MIT license. Read LICENSE for more details.
  */
 
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
+#include "vfb.h"
 
-
-
-
-/***********************************************************************
-* 
-***********************************************************************/
-void rsx_object_vfb_init(rsx_obj_vfb_obj_t* vfb_obj) {
-    vfb_obj->unk_00 = 0;
-    vfb_obj->unk_08 = 0;
-    vfb_obj->unk_10 = 0;
-    vfb_obj->unk_18 = 0;
-    vfb_obj->unk_1C = 0;
-    vfb_obj->unk_20 = 0;
-    vfb_obj->unk_28 = 0;
-    vfb_obj->unk_30 = 0;
-    vfb_obj->unk_38 = 0;
-  
-    return;
+void rsx_object_vfb_t::init() {
+    unk_00 = 0;
+    unk_08 = 0;
+    unk_10 = 0;
+    unk_18 = 0;
+    unk_1C = 0;
+    unk_20 = 0;
+    unk_28 = 0;
+    unk_30 = 0;
+    unk_38 = 0;
 }
-
-
-

@@ -24,9 +24,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="lv1\driver\rsx\object.h">
-      <Filter>driver\rsx</Filter>
-    </ClInclude>
     <ClInclude Include="lv1\driver\rsx\utils\bitmap.h">
       <Filter>driver\rsx\utils</Filter>
     </ClInclude>

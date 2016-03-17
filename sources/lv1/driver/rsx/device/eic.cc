@@ -110,5 +110,3 @@ void rsx_device_eic_init_flags(void) {
     return;
 }
 
-
-

@@ -18,7 +18,7 @@ S64 rsx_object_channel_t::get_dma_control_lpar_address() {
     }
 	
 	// get RSX device core FIFO object
-	fifo = (void*)core->dev_fifo_obj;
+	fifo = (void*)core->fifo;
 	 
 	return rsx_device_fifo_get_channel_dma_control_lpar_address((void*)fifo, id);
 }
@@ -60,7 +60,7 @@ void rsx_object_channel_t::create_sw_object_hash_table_entry(rsx_object_sw_class
   }
   
   // get RSX device core memory object
-	core_mem = (void*)core->core_mem_obj;
+	core_mem = (void*)core->core_mem;
 	
 	// get RSX device core hash table object
 	hash_tbl = (void*)core->obj_hash_tbl_obj;
@@ -110,7 +110,7 @@ void rsx_object_channel_t::create_nv_object_hash_table_entry(rsx_object_nv_class
   }
   
   // get RSX device core memory object
-	core_mem = (void*)core->core_mem_obj;
+	core_mem = (void*)core->core_mem;
 	
 	// get RSX device core hash table object
 	hash_tbl = (void*)core->obj_hash_tbl_obj;
@@ -160,7 +160,7 @@ void rsx_object_channel_create_dma_object_hash_table_entry(rsx_object_context_dm
   }
   
   // get RSX device core memory object
-	core_mem = (void*)core->core_mem_obj;
+	core_mem = (void*)core->core_mem;
 	
 	// get RSX device core hash table object
 	hash_tbl = (void*)core->obj_hash_tbl_obj;
@@ -198,7 +198,7 @@ static S32 rsx_object_channel_t::sub2209B0() {
   }
 	
 	// get device core FIFO object
-	fifo = (void*)core->dev_fifo_obj;
+	fifo = (void*)core->fifo;
 	if(fifo == NULL)
   {
 	  printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
@@ -313,7 +313,7 @@ static void rsx_object_channel_220B00()
   }
 	
 	// get core memory object
-	core_mem = (void*)core->core_mem_obj;
+	core_mem = (void*)core->core_mem;
 	
 	// get channel fc1 and fc2 offset
 	fc1_offset = rsx_core_memory_get_BAR2_offset_by_address((void*)core_mem, fc1_addr);
@@ -415,7 +415,7 @@ void rsx_object_channel_220D0C(S32 channel_id, rsx_object_context_dma_t *dma_obj
   }
 	
 	// get device core FIFO object
-	fifo = (void*)core->dev_fifo_obj;
+	fifo = (void*)core->fifo;
 	if(fifo == NULL)
   {
 	  printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
@@ -441,7 +441,7 @@ void rsx_object_channel_220D0C(S32 channel_id, rsx_object_context_dma_t *dma_obj
 	rsx_object_channel_220B00(ch_obj);
 	
 	// ?
-	core_mem = (void*)core->core_mem_obj;
+	core_mem = (void*)core->core_mem;
 	offset = rsx_core_memory_get_BAR2_offset_by_address((void*)core_mem, ch_obj->graph_addr);
 	//printf("ch_obj->graph_addr: 0x%016llX addr: 0x%08X\n", ch_obj->graph_addr, offset);
 	
@@ -498,6 +498,3 @@ rsx_object_channel_t *rsx_object_channel_create_object(rsx_object_context_dma_t 
 	
 	return (void*)ch_obj;
 }
-
-
-

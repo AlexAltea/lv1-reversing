@@ -40,7 +40,7 @@ void rsx_object_context_dma_t::sub220064(S32 arg1, S32 arg2, S64 addr, S32 size)
   
     // ? based on arg2
     if (arg2 == 4) {
-        addr = rsx_core_memory_get_BAR1_offset_by_address((void*)core->core_mem_obj, addr);
+        addr = rsx_core_memory_get_BAR1_offset_by_address((void*)core->core_mem, addr);
         value2 = (addr <<20) | value1;
     }
     else if (arg2 == 8)
@@ -66,7 +66,7 @@ void rsx_object_context_dma_t::sub220064(S32 arg1, S32 arg2, S64 addr, S32 size)
     dma_obj->unk_10 = (S32)addr;
     
     // get entry offset
-    offset = rsx_core_memory_2120EC((void*)core->core_mem_obj, dma_obj->unk_08);
+    offset = rsx_core_memory_2120EC((void*)core->core_mem, dma_obj->unk_08);
     
     // write entry
     DDR_write32(  value2, offset + g_rsx_bar2_addr);
@@ -92,7 +92,7 @@ rsx_object_context_dma_t::rsx_object_context_dma_t(U32 handle) : handle(handle),
     RSX_ASSERT(core);
   
     // Get core memory object
-    core_mem = (void*)core->core_mem_obj;
+    core_mem = (void*)core->core_mem;
   
     // Get context DMA object bitmap
     bm_ctx_dma = (void*)core_mem->bm_ctx_dma;

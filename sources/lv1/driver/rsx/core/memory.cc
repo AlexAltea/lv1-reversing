@@ -128,7 +128,7 @@ rsx_core_memory_t* rsx_core_memory_allocate_memory_context(S32 local_size, S64 a
             mem_ctx->ddr_lpar = core_mem->ddr_lpar_addr;         // memory context DDR base LPAR
             mem_ctx->lm_start_lpar = out1;                       // memory context DDR start LPAR
             
-            mem_ctx->core_mem_obj = core_mem;                    // core memory object
+            mem_ctx->core_mem = core_mem;                    // core memory object
             mem_ctx->id = ctx_id ^ 0x5A5A5A5A;                   // memory context ID
             
             mem_ctx->unk_30 = core_mem->unk_0B8 * out3;          // ?
@@ -162,29 +162,19 @@ S32 rsx_core_memory_t::get_bar1_offset_by_address(S64 addr) {
 }
 
 S32 rsx_core_memory_t::get_bar2_offset_by_address(S64 addr) {
-    S64 size;
-    
-    
-    // addr - start address(0x28002000000) = offset
-    addr -= get_mem_reg_addr_by_id(1);
+    // offset = addr - start address(0x28002000000)
+    S64 offset = addr - get_mem_region_addr_by_id(1);
     
     // get BAR0 size, 0x100000
-    size = get_mem_reg_size_by_id(1);
+    S64 size = get_mem_region_size_by_id(1);
     
-    // offset out of range ?
-    if (addr > size) {
-        printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-        return 0;
-    }
-    
-    return addr;  // return offset into area 0x28002000000 BAR2
+    // Check whether offset out of range
+    RSX_ASSERT(offset <= size);
+    return offset;  // Return offset into area 0x28002000000 BAR2
 }
 
 
-/***********************************************************************
-* 
-***********************************************************************/
-S32 rsx_core_memory_t::get_mem_reg_by_id(S32 mem_region_id, S64 *addr, S32 *size) {
+S32 rsx_core_memory_t::get_mem_region_by_id(S32 mem_region_id, S64* addr, S32* size) {
     if (rsx_mem_seg_set_max == 0) {
         return LV1_ILLEGAL_PARAMETER_VALUE;
     }
@@ -210,41 +200,23 @@ S32 rsx_core_memory_t::get_mem_reg_by_id(S32 mem_region_id, S64 *addr, S32 *size
     return LV1_ILLEGAL_PARAMETER_VALUE;
 }
 
-/***********************************************************************
-* 
-***********************************************************************/
-S64 rsx_core_memory_t::get_mem_reg_addr_by_id(S32 mem_region_id) {
-    S32 ret = -1;
+
+S64 rsx_core_memory_t::get_mem_region_addr_by_id(S32 mem_region_id) {
     S64 addr;
     S32 size;
-    
-  
-    ret = rsx_core_memory_get_mem_reg_addr_and_size_by_id(core_mem, mem_region_id, &addr, &size);
-    if (ret != 0) {
-        printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-        return 0;
-    }
-    
+    S32 ret = get_mem_region_by_id(mem_region_id, &addr, &size);
+    RSX_ASSERT(ret == LV1_SUCCESS);
     return addr;
 }
 
-/***********************************************************************
-* 
-***********************************************************************/
-S32 rsx_core_memory_t::get_mem_reg_size_by_id(S32 mem_region_id) {
-    S32 ret = -1;
+
+S32 rsx_core_memory_t::get_mem_region_size_by_id(S32 mem_region_id) {
     S64 addr;
     S32 size;
-    
-    ret = rsx_core_memory_get_mem_reg_addr_and_size_by_id(core_mem, mem_region_id, &addr, &size);
-    if (ret != 0) {
-        printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-        return 0;
-    }
-    
+    S32 ret = get_mem_region_by_id(mem_region_id, &addr, &size);
+    RSX_ASSERT(ret == LV1_SUCCESS);
     return size;
 }
-
 
 /***********************************************************************
 * 
@@ -515,7 +487,7 @@ rsx_core_memory_t* rsx_core_memory_ctor(S64 rsx_core_id) {
     RSX_ASSERT(core);
     
     // Get IOIF0
-    rsx_bus_ioif0_obj_t* ioif0  = (void*)core->ioif0;
+    rsx_bus_ioif0_t* ioif0  = (void*)core->ioif0;
     RSX_ASSERT(ioif0);
     
     // check: is there alraedy a global memory core object?

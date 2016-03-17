@@ -16,7 +16,7 @@ struct rsx_object_nv_class_t {
     // Methods
     S32 get_object_size();
     U32 get_object_handle();
-    S64 get_bar2_address();
+    S64 get_bar2_offset();
 };
 
 void rsx_object_nv_class_create_object(rsx_object_nv_class_t* nv_obj, U32 type, U32 handle);

@@ -18,6 +18,15 @@ enum {
     L1GPU_DEVICE_CLOCK_ID_HOST_CLK            = 6,  // host clk
 };
 
+// RSX device clock setting
+struct rsx_dev_clock_setting_t {
+    S32 unk_00;               // 0x00: 
+    S32 unk_04;               // 0x04: 
+    S32 offset_0;             // 0x08: 
+    S32 offset_1;             // 0x0C: 
+    S32 unk_10;               // 0x10: 
+};
+
 // LV1 RSX device clock object, size 0x30
 struct rsx_device_clock_t {
     S64 vtab;                 // 0x00: pointer -> virtual table

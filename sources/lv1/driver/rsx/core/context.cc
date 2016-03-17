@@ -100,7 +100,7 @@ S32 rsx_core_context_t::sub2146F4() {
     rsx_core_device_t* core = NULL;
     rsx_core_memory_t* core_mem = NULL;
     rsx_utils_bitmap_t* bm_driver_info = NULL;
-    rsx_bus_ioif0_obj_t* ioif0 = NULL;
+    rsx_bus_ioif0_t* ioif0 = NULL;
     rsx_mem_ctx_obj_t* mem_ctx = NULL;
     rsx_object_channel_t* ch_obj = NULL;
     rsx_device_clock_t* clock = NULL;
@@ -111,7 +111,7 @@ S32 rsx_core_context_t::sub2146F4() {
     RSX_ASSERT(core);
     
     // get RSX core memory object
-    core_mem = (void*)core->core_mem_obj;
+    core_mem = (void*)core->core_mem;
     
     // allocate the driver info for our new RSX context
     bm_driver_info = (void*)core_mem->bm_driver_info;
@@ -152,7 +152,7 @@ S32 rsx_core_context_t::sub2146F4() {
     
     
     // store NV clock frequency(0x1DCD6500(500 MHz)) into driver info 0x0010:
-    clock = (void*)core->dev_clock_1_obj;
+    clock = (void*)core->dev_clock1;
     DRVI_write32(index, (S32)rsx_device_clock_rsx_get_frequency((void*)clock), 0x10);
     
     // store display clock frequency(0x26BE3680(650 MHz)) into driver info 0x0014:
@@ -219,8 +219,8 @@ S32 rsx_core_context_t::sub2146F4() {
     DRVI_write32(index, (S32)io_offset, 0x2B60);
     
     // ? IO start address?
-    value = core_mem->bar_1_addr + (mem_ctx->lm_start_lpar - core_mem->ddr_lpar_addr);
-    DRVI_write32(index, (S32)(value - rsx_bus_ioif0_get_BAR1_addr((void*)ioif0)), 0x2B5C);
+    value = core_mem->bar1_addr + (mem_ctx->lm_start_lpar - core_mem->ddr_lpar_addr);
+    DRVI_write32(index, (S32)(value - ioif0->get_bar1_addr()), 0x2B5C);
     
     // BAR0
     value = read_BAR0(0x28000001540);
@@ -337,7 +337,7 @@ void rsx_core_context_t::sub212F78() {
     mem_ctx = (void*)mem_ctx;
     
     // get RSX core memory object
-    core_mem = (void*)mem_ctx->core_mem_obj;
+    core_mem = (void*)mem_ctx->core_mem;
     
     // size = local memory size of our RSX memory context
     size = mem_ctx->lm_end_lpar - mem_ctx->lm_start_lpar;
@@ -723,7 +723,7 @@ S32 rsx_core_context_t::sub2143E0() {
     
     // get RSX core memory object bitmap-reports
     mem_ctx = (void*)mem_ctx;
-    core_mem = (void*)mem_ctx->core_mem_obj;
+    core_mem = (void*)mem_ctx->core_mem;
     bm_reports = (void*)core_mem->bm_reports;
     
     // allocate a reports area for our new RSX context
@@ -756,7 +756,7 @@ S32 rsx_core_context_t::sub2143E0() {
   }
     
     // get memory region 12 start address, 0x2808FF10000
-    unk_0F0 = rsx_core_memory_get_mem_reg_addr_by_id((void*)core->core_mem_obj, 12);
+    unk_0F0 = rsx_core_memory_get_mem_reg_addr_by_id((void*)core->core_mem, 12);
     
     
     

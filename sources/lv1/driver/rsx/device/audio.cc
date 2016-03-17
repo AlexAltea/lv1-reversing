@@ -43,11 +43,11 @@ void rsx_device_audio_init(rsx_device_audio_t* dev_audio) {
     }
     
     // get device audio address, 0x2808FF20000
-    io_addr = rsx_core_memory_get_mem_reg_addr_by_id((void*)core->core_mem_obj, 9);
+    io_addr = rsx_core_memory_get_mem_reg_addr_by_id((void*)core->core_mem, 9);
     dev_audio->io_addr = io_addr;
     
     // get device audio size, 0x1000(4 KB)
-    dev_audio->lpar_size = rsx_core_memory_get_mem_reg_size_by_id((void*)core->core_mem_obj, 9);
+    dev_audio->lpar_size = rsx_core_memory_get_mem_reg_size_by_id((void*)core->core_mem, 9);
     
     // init RSX device audio LPAR address with 0
     dev_audio->lpar_addr = 0;           
@@ -85,6 +85,4 @@ void rsx_device_audio_init(rsx_device_audio_t* dev_audio) {
     
     return;
 }
-
-
 

@@ -5,10 +5,7 @@
 
 #include "hvcalls.h"
 
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
+#include "lv1/lv1.h"
 
 /***********************************************************************
 * hypercall 217
@@ -17,12 +14,12 @@ void lv1_gpu_context_allocate(U32 mem_ctx_id, U64 system_mode) {
     S32 idx;
     rsx_core_device_t* core = NULL;
     rsx_mem_ctx_obj_t* mem_ctx = NULL;
-     = NULL;
+    rsx_ctx_obj_t *rsx_ctx = NULL;
     
     
     if (g_rsx_open_status != 0)    {
         // extldi    r0, r4, 63,59 # system_mode, unset [58:58]
-    // extldi    r0, r0, 60,5  # system_mode, unset [60:63]
+        // extldi    r0, r0, 60,5  # system_mode, unset [60:63]
         //if ((ROTL64((ROTL64(system_mode, 59) & 0xFFFFFFFFFFFFFFFE), 5) & 0xFFFFFFFFFFFFFFF0) != 0)
         if (((system_mode & 0xFFFFFFFFFFFFFFD0) != 0) && (g_rsx_open_status > 1)) {
             g_r3 = LV1_SUCCESS;
@@ -40,13 +37,13 @@ void lv1_gpu_context_allocate(U32 mem_ctx_id, U64 system_mode) {
     }
     
     // pause FIFO
-    rsx_device_fifo_pause((void*)core->dev_fifo_obj);
+    rsx_device_fifo_pause((void*)core->fifo);
     
     // ? pause GRAPH ?
     rsx_device_graph_21D054((void*)core->dev_graph_obj);
     
     // get our RSX memory context
-    mem_ctx = rsx_core_memory_get_memory_context_by_id((void*)core->core_mem_obj, mem_ctx_id);
+    mem_ctx = rsx_core_memory_get_memory_context_by_id((void*)core->core_mem, mem_ctx_id);
     if (mem_ctx == NULL) {
         g_r3 = LV1_ILLEGAL_PARAMETER_VALUE;
         return;
@@ -108,7 +105,7 @@ void lv1_gpu_memory_allocate(S32 local_size, S64 arg1, S64 arg2, S64 arg3, S64 a
     }
     
     // allocate
-    mem_ctx = (void*)rsx_core_memory_allocate_memory_context((void*)core->core_mem_obj, // (IN) RSX device core memory object
+    mem_ctx = (void*)rsx_core_memory_allocate_memory_context((void*)core->core_mem, // (IN) RSX device core memory object
                                                              size,                      // (IN) local memory size to allocate
                                                              arg1,                      // (IN) ?, 8
                                                              arg2,                      // (IN) ?, 0x30000
@@ -222,52 +219,5 @@ void lv1_gpu_open(S32 arg1) {
     ret = rsx_core_device_open(arg1, dev_core_id);
     
     g_r3 = ret;
-    return;
-}
-
-/***********************************************************************
-* test
-***********************************************************************/
-void lv1_test() {
-    /*
-    S32 i;
-    S64 *map = NULL;
-    rsx_utils_bitmap_t* bm_obj = NULL;
-    rsx_core_device_t* core = NULL;
-    rsx_core_memory_t* core_mem = NULL;
-    
-    
-    
-    // get device core object
-    core = (void*)g_rsx_core_obj_tbl[g_rsx_core_id];
-    
-    core_mem = (void*)core->core_mem_obj;
-    
-    bm_obj = (void*)core_mem->bm_local_mem;
-    map = bm_obj->bitmap;
-    */
-    /*
-    printf("value1: 0x%016llX\nitem_total: 0x%016llX\n", bm_obj->value1, bm_obj->item_total);
-    printf("seg_count: 0x%08X\n", bm_obj->seg_count);
-    */
-    
-    
-    //rsx_utils_bitmap_dealloc(bm_obj, 0x7000B0500000, 249);
-    //rsx_utils_bitmap_dealloc(bm_obj, 0x7000B0000000, 5);
-    
-    /*
-    S32 test = 62;
-    for (i = 0; i < test; i++)
-      rsx_utils_bitmap_set_bit(bm_obj, i, 1);
-    
-    
-    
-    rsx_utils_bitmap_set_bit(bm_obj, 4, 1);
-    
-    rsx_utils_bitmap_set_bit(bm_obj, 4, 0);
-    
-    for (i = 0; i < bm_obj->seg_count; i++)
-      printf("seg %i: 0x%016llX\n", i, map[i]);
-    */
     return;
 }

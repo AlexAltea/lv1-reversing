@@ -3,100 +3,56 @@
  * Released under MIT license. Read LICENSE for more details.
  */
 
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
+#include "ioif0.h"
 
+#include "lv1/driver/rsx/assert.h"
 
-
-
-/***********************************************************************
-* 
-***********************************************************************/
-const char *rsx_bus_ioif0_get_class_name_string() {
+const char* rsx_bus_ioif0_get_class_name_string() {
     return "rsx ioif0 bus";
 }
 
-/***********************************************************************
-* 
-***********************************************************************/
-S32 rsx_bus_ioif0_get_init_flag(rsx_bus_ioif0_obj_t* ioif0) {
-    return ioif0->init;
+// Get members
+S32 rsx_bus_ioif0_t::get_init_flag() {
+    return init;
+}
+S32 rsx_bus_ioif0_t::get_chip_revision() {
+    return chip_revision;
+}
+S64 rsx_bus_ioif0_t::get_bar0_addr() {
+    return bar0_addr;
+}
+S32 rsx_bus_ioif0_t::get_bar0_size() {
+    return bar0_size;
+}
+S64 rsx_bus_ioif0_t::get_bar1_addr() {
+    return bar1_addr;
+}
+S32 rsx_bus_ioif0_t::get_bar1_size() {
+    return bar1_2_size;
+}
+S64 rsx_bus_ioif0_t::get_bar2_addr() {
+    return bar2_addr;
+}
+S32 rsx_bus_ioif0_t::get_bar2_size() {
+    return bar1_2_size;
+}
+S32 rsx_bus_ioif0_t::get_unk_38() {
+    return unk_38;
 }
 
-/***********************************************************************
-* 
-***********************************************************************/
-S32 rsx_bus_ioif0_get_chip_revision(rsx_bus_ioif0_obj_t* ioif0) {
-    return ioif0->chip_revision;
+// Access BAR0
+void rsx_bus_ioif0_t::write_bar0(S32 offset, S32 value) {
+    write_BAR0(value, bar0_addr + offset);
 }
-
-/***********************************************************************
-* 
-***********************************************************************/
-S64 rsx_bus_ioif0_get_BAR0_addr(rsx_bus_ioif0_obj_t* ioif0) {
-    return ioif0->bar_0_addr;
-}
-
-/***********************************************************************
-* 
-***********************************************************************/
-S32 rsx_bus_ioif0_get_BAR0_size(rsx_bus_ioif0_obj_t* ioif0) {
-    return ioif0->bar_0_size;
-}
-
-/***********************************************************************
-* 
-***********************************************************************/
-S64 rsx_bus_ioif0_get_BAR1_addr(rsx_bus_ioif0_obj_t* ioif0) {
-    return ioif0->bar_1_addr;
-}
-
-/***********************************************************************
-* 
-***********************************************************************/
-S32 rsx_bus_ioif0_get_BAR1_size(rsx_bus_ioif0_obj_t* ioif0) {
-    return ioif0->bar_1_2_size;
-}
-
-/***********************************************************************
-* 
-***********************************************************************/
-S64 rsx_bus_ioif0_get_BAR2_addr(rsx_bus_ioif0_obj_t* ioif0) {
-    return ioif0->bar_2_addr;
-}
-
-/***********************************************************************
-* 
-***********************************************************************/
-S32 rsx_bus_ioif0_get_unk_38(rsx_bus_ioif0_obj_t* ioif0) {
-    return ioif0->unk_38;
-}
-
-/***********************************************************************
-* 
-***********************************************************************/
-void rsx_bus_ioif0_write_BAR0_by_offset(rsx_bus_ioif0_obj_t* ioif0, S32 offset, S32 value) {
-    write_BAR0(value, ioif0->bar_0_addr + offset);
-    return;
-}
-
-/***********************************************************************
-* 
-***********************************************************************/
-S32 rsx_bus_ioif0_read_BAR0_by_offset(rsx_bus_ioif0_obj_t* ioif0, S64 offset) {
-    return read_BAR0(ioif0->bar_0_addr + offset);
+S32 rsx_bus_ioif0_t::read_bar0(S64 offset) {
+    return read_BAR0(bar0_addr + offset);
 }
 
 
-
-
-
 /***********************************************************************
 * 
 ***********************************************************************/
-void rsx_bus_ioif0_217814(rsx_bus_ioif0_obj_t* ioif0) {
+void rsx_bus_ioif0_t::sub217814() {
     
     U64 value1 = 0x94A1510, value2 = 0xEE6B28;
     S32  value;
@@ -142,12 +98,12 @@ void rsx_bus_ioif0_217814(rsx_bus_ioif0_obj_t* ioif0) {
   
   
   
-  // store the result of the shit above in BAR0
-  write_BAR0(value1, 0x28000009200);
-  write_BAR0(value2, 0x28000009210);
+    // store the result of the shit above in BAR0
+    write_BAR0(value1, 0x28000009200);
+    write_BAR0(value2, 0x28000009210);
   
   
-  value = read_BAR0(0x28000088140);
+    value = read_BAR0(0x28000088140);
     value |= 0x80000000;                  // set value[00:00]
     write_BAR0(value, 0x28000088140);
     
@@ -205,9 +161,9 @@ void rsx_bus_ioif0_217814(rsx_bus_ioif0_obj_t* ioif0) {
     
     value = read_BAR0(0x28000088140);
     value |= 0x10000;                     // set value[15:15]
-  write_BAR0(value, 0x28000088140);
+    write_BAR0(value, 0x28000088140);
   
-  value = read_BAR0(0x28000088140);
+    value = read_BAR0(0x28000088140);
     value |= 0x8000;                      // set value[16:16]
     write_BAR0(value, 0x28000088140);
     
@@ -265,7 +221,7 @@ void rsx_bus_ioif0_217814(rsx_bus_ioif0_obj_t* ioif0) {
     
     value = read_BAR0(0x28000088140);
     value |= 1;                           // set value[31:31]
-  write_BAR0(value, 0x28000088140);
+    write_BAR0(value, 0x28000088140);
   
     return;
 }
@@ -275,7 +231,7 @@ void rsx_bus_ioif0_217814(rsx_bus_ioif0_obj_t* ioif0) {
 /***********************************************************************
 * 
 ***********************************************************************/
-void rsx_bus_ioif0_219018(rsx_bus_ioif0_obj_t* ioif0) {
+void rsx_bus_ioif0_t::sub219018() {
     S32 i, value;
     S64 addr = 0;
     
@@ -323,16 +279,16 @@ void rsx_bus_ioif0_219018(rsx_bus_ioif0_obj_t* ioif0) {
     value |= 0x100;                        // set value[23:23]
     write_BAR0(value, 0x28000088208);
   
-  value = read_BAR0(0x28000088208);
+    value = read_BAR0(0x28000088208);
     value &= 0xFFFF8FFF;                   // unset value[17:19]
     value |= 0x1000;                       // set value[19:19]
     write_BAR0(value, 0x28000088208);
   
-  value = read_BAR0(0x28000088304);
+    value = read_BAR0(0x28000088304);
     value |= 0x20000000;                   // set value[02:02]
     write_BAR0(value, 0x28000088304);
   
-  value = read_BAR0(0x28000088304);
+    value = read_BAR0(0x28000088304);
     value &= 1;                            // unset value[01:01]
     write_BAR0(value, 0x28000088304);
   
@@ -353,7 +309,7 @@ void rsx_bus_ioif0_219018(rsx_bus_ioif0_obj_t* ioif0) {
 /***********************************************************************
 * 
 ***********************************************************************/
-void rsx_bus_ioif0_set_chip_revision(rsx_bus_ioif0_obj_t* ioif0) {
+void rsx_bus_ioif0_t::set_chip_revision() {
     //S32 value1, value2;
     
     /*
@@ -392,32 +348,25 @@ void rsx_bus_ioif0_set_chip_revision(rsx_bus_ioif0_obj_t* ioif0) {
 /***********************************************************************
 * 
 ***********************************************************************/
-rsx_bus_ioif0_obj_t* rsx_bus_ioif0_init(void) {
-    rsx_bus_ioif0_obj_t* ioif0 = NULL;
-    
-    
-    // check whether global RSX IOIF0 object already exists
-    if (g_rsx_ioif_obj != NULL) {
-        printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-        return NULL;
-    }
+rsx_bus_ioif0_t* rsx_bus_ioif0_init(void) {
+    rsx_bus_ioif0_t* ioif0 = nullptr;
+
+    // Check whether global RSX IOIF0 object already exists
+    RSX_ASSERT(g_rsx_ioif_obj == nullptr);
     
     // allocate RSX IO interface 0 object
-    ioif0 = lv1_kmalloc(sizeof(rsx_bus_ioif0_obj_t));
-    if (ioif0 == NULL) {
-        printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-        return NULL;
-    }
+    ioif0 = lv1_kmalloc(sizeof(rsx_bus_ioif0_t));
+    RSX_ASSERT(ioif0);
     
     // set members
     //ioif0->vtab = ;                      // useless in C
-    ioif0->bar_1_addr   = 0x28080000000;   // BAR1(VRAM) start address
-    ioif0->bar_2_addr   = 0x28002000000;   // BAR2(RAMIN) start address
-    ioif0->bar_0_size   = 0x2000000;       // BAR0 size, (32 MB)
-    ioif0->bar_1_2_size = 0x10000000;      // BAR1 and BAR2 size, (256 MB)
-    ioif0->init         = 0;               // init flag unset
-    ioif0->base_addr    = 0x28000000000;   
-    ioif0->bar_0_addr   = 0x28000000000;   // BAR0 start address
+    ioif0->bar0_addr   = 0x28000000000;   // BAR0 start address
+    ioif0->bar1_addr   = 0x28080000000;   // BAR1(VRAM) start address
+    ioif0->bar2_addr   = 0x28002000000;   // BAR2(RAMIN) start address
+    ioif0->bar0_size   = 0x2000000;       // BAR0 size, (32 MB)
+    ioif0->bar1_2_size = 0x10000000;      // BAR1 and BAR2 size, (256 MB)
+    ioif0->init        = 0;               // init flag unset
+    ioif0->base_addr   = 0x28000000000;   
     
     // store global RSX IOIF0 object
     g_rsx_ioif_obj = (void*)ioif0;
@@ -425,11 +374,8 @@ rsx_bus_ioif0_obj_t* rsx_bus_ioif0_init(void) {
     // invalidate a value in BAR0, init/reset ?
     write_BAR0(0xFFFFFFFF, 0x28000088100);
     
-  // get RSX chip revision
+    // get RSX chip revision
     rsx_bus_ioif0_set_chip_revision(ioif0);
     
     return ioif0;
 }
-
-
-

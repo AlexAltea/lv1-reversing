@@ -5,9 +5,12 @@
 
 #include "device.h"
 
+// Maximum RSX core object count
+#define MAX_RSX_CORE_ID  16
+
+
 // RSX device core ID(0 to 15), init 0xFF(invalid)
 S32 g_rsx_core_id = 0xFF;
-
 
 /***********************************************************************
 * 
@@ -162,8 +165,8 @@ S32 rsx_core_device_map_device(rsx_core_device_t* core, S32 device_id, S64 *dev_
         //////////////////////////////////////////////////////////////////////
       // RSX device 8, GPU
       case  8: {
-          io_addr = rsx_core_memory_get_mem_reg_addr_by_id((void*)core->core_mem_obj, 12);
-          io_size = rsx_core_memory_get_mem_reg_size_by_id((void*)core->core_mem_obj, 12);
+          io_addr = rsx_core_memory_get_mem_reg_addr_by_id((void*)core->core_mem, 12);
+          io_size = rsx_core_memory_get_mem_reg_size_by_id((void*)core->core_mem, 12);
           *dev_lpar_size = io_size;
           
           // map device
@@ -419,18 +422,18 @@ rsx_core_device_t* rsx_core_device_get_core_object_by_id(S32 dev_core_id) {
 static void rsx_core_device_init(rsx_core_device_t* dev_core, S32 arg1, S32 dev_core_id) {
     S32 i;
     rsx_utils_bitmap_t* bm_obj_channels = NULL;
-    rsx_bus_ioif0_obj_t* ioif0 = NULL;
+    rsx_bus_ioif0_t* ioif0 = NULL;
+    rsx_device_audio_t* dev_audio = NULL;
     rsx_device_clock_t* clock1 = NULL;
     rsx_device_clock_t* clock5 = NULL;
+    rsx_device_fifo_t* fifo = NULL;
+    rsx_device_graph_t* graph = NULL;
     rsx_core_memory_t* core_mem = NULL;
     S64 *unk_0F0 = NULL;
     rsx_device_fb_t* fb = NULL;
     rsx_hash_tbl_obj_t* hash_tbl = NULL;
-    rsx_device_fifo_t* fifo = NULL;
-    rsx_device_graph_t* graph = NULL;
     rsx_obj_video_rsx_t* video_rsx = NULL;
-    rsx_device_audio_t* dev_audio = NULL;
-    rsx_obj_vfb_obj_t* vfb_obj = NULL;
+    rsx_object_vfb_t* vfb_obj = NULL;
     
     
     // set some core object values
@@ -496,7 +499,7 @@ static void rsx_core_device_init(rsx_core_device_t* dev_core, S32 arg1, S32 dev_
     rsx_device_clock_rsx_create(clock1, 1, 1);
     
     // store RSX device clock object 1 into core object
-    dev_core->dev_clock_1_obj = (void*)clock1;
+    dev_core->dev_clock1 = (void*)clock1;
     
     
     // allocate RSX device clock object 5, "display clk"
@@ -525,7 +528,7 @@ static void rsx_core_device_init(rsx_core_device_t* dev_core, S32 arg1, S32 dev_
     }
     
     // store RSX core memory object into core object
-    dev_core->core_mem_obj = (void*)core_mem;
+    dev_core->core_mem = (void*)core_mem;
     
     
     // TODO:
@@ -637,7 +640,7 @@ static void rsx_core_device_init(rsx_core_device_t* dev_core, S32 arg1, S32 dev_
     
     //////////////////////////////////////////////////////////////////////
     // allocate RSX object v framebuffer object
-    vfb_obj = lv1_kmalloc(sizeof(rsx_obj_vfb_obj_t));
+    vfb_obj = lv1_kmalloc(sizeof(rsx_object_vfb_t));
     if (vfb_obj == NULL) {
         printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
         return;

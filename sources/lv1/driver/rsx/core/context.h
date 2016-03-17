@@ -24,6 +24,18 @@ enum {
     L1GPU_SYSTEM_MODE_UNK800          = (1 << 11),  // Set IRQ mask to 0x00000000 (otherwise 0xFFFFFFFF)
 };
 
+// LV1 RSX context display buffer object, size 0x28
+struct rsx_ctx_dbuf_obj_t {
+    S08 unk_00;                  // 0x00: flag
+    S08 pad0[3];                 // 0x01: 
+    S32 width;                  // 0x04: display buffer width in pixels
+    S32 height;                 // 0x08: display buffer height in pixels
+    S32 pitch;                  // 0x0C: display buffer pitch size in byte
+    S64 unk_10;                 // 0x10: 
+    S64 bar1_addr;              // 0x18: BAR1(VRAM) address of display buffer
+    S64 dma_obj;                // 0x20: DMA object, e.g. 0xDAC10001
+};
+
 // LV1 RSX context object, size 0x340
 class rsx_core_context_t {
     S64 core_id;                // 0x000: RSX core object ID
@@ -62,18 +74,14 @@ class rsx_core_context_t {
     S64 unk_0F8;                // 0x0F8: BAR1 address: ctx 0(0x2808FE01400), ctx 1(0x2808FE11400)
     //--------------------------------------------------------------------
     rsx_object_context_dma_t* dma_array_0[8];        // 0x100: dma class objects, 0x66604200 to 0x66604207
-    //--------------------------------------------------------------------
     rsx_object_context_dma_t* dma_array_1[8];        // 0x140: dma class objects, 0x66604208 to 0x6660420F
     //--------------------------------------------------------------------
     rsx_object_context_dma_t* dma_180;               // 0x180: dma class object, 0x66606660
     rsx_object_context_dma_t* dma_188;               // 0x188: dma class object, 0x66616661
-    //-------------------------------------------------------------------- 
     rsx_object_context_dma_t* dma_190;               // 0x190: dma class object, 0x66626660
     rsx_object_context_dma_t* dma_198;               // 0x198: dma class object, 0xBAD68000
-    //--------------------------------------------------------------------
     rsx_object_context_dma_t* dma_1A0;               // 0x1A0: dma class object, 0x13378086
     rsx_object_context_dma_t* dma_1A8;               // 0x1A8: dma class object, 0x13378080
-    //-------------------------------------------------------------------- 
     rsx_object_context_dma_t* dma_1B0;               // 0x1B0: dma class object, 0x56616660
     rsx_object_context_dma_t* dma_1B8;               // 0x1B8: dma class object, 0x56616661
     //-------------------------------------------------------------------- 
@@ -83,7 +91,7 @@ class rsx_core_context_t {
     S64 unk_1D8;                // 0x1D8: BAR1 address: ctx 0(0x2808FE01400), ctx 1(0x2808FE11400)
     //--------------------------------------------------------------------
     S08 db_flag[8];             // 0x1E0: display buffer flag, 0 to 7
-    rsx_ctx_dbuf_obj_t d_buf[8];    // 0x1E8: display buffer objects, 0 to 7
+    rsx_ctx_dbuf_obj_t d_buf[8];// 0x1E8: display buffer objects, 0 to 7
     //--------------------------------------------------------------------
     S64 driver_info_addr;       // 0x328: driver info address
     S64 driver_info_lpar;       // 0x330: driver info LPAR address
