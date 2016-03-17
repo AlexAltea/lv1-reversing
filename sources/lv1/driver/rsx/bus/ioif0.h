@@ -34,8 +34,8 @@ struct rsx_bus_ioif0_t {
     S32 get_unk_38();
 
     // Access BAR0
-    void write_bar0(S32 offset, S32 value);
-    S32 read_bar0(S64 offset);
+    void bar0_write(S32 offset, S32 value);
+    S32 bar0_read(S64 offset);
 
     void set_chip_revision();
     void sub219018();

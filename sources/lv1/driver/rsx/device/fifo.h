@@ -8,7 +8,12 @@
 #include "common/types.h"
 
 // RSX device FIFO object, size 0x80
-struct rsx_device_fifo_t {
+class rsx_device_fifo_t {
+private:
+    inline void enable_interrupt(U32 bits);
+    inline void disable_interrupt(U32 bits);
+
+public:
     S64 fc1_addr;           // 0x00: 0x28002020000(memory region 4 address)
     S32 fc1_size;           // 0x08: 0x200(memory region 4 size)
     S32 unk_0C;             // 0x0C: ?
@@ -42,6 +47,7 @@ struct rsx_device_fifo_t {
     void init();
 
     S64  get_channel_dma_control_lpar_address(S32 channel_id);
+    void sub21B0B0();
     void sub21B668(S32 channel_id, S32 arg1);
     void sub21C234(S32 channel_id);
     void sub21CCC0(S32 channel_id, S32 offset);

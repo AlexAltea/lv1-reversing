@@ -1,68 +1,76 @@
-#ifndef __MEMORY_H__
-#define __MEMORY_H__
+/**
+ * (c) 2016 The LV1RE Project.
+ * Released under MIT license. Read LICENSE for more details.
+ */
 
+#pragma once
 
-#define GB  *1024*1024*1024
-#define MB       *1024*1024
-#define KB            *1024
+#include "common/types.h"
 
-#define ES16(v)((uint16_t)(((v & 0xFF00) >> 8 ) | \
-                           ((v & 0x00FF) << 8 )))
+// Constants
+#define _512_KB  (512*1024)
+#define _256_MB  (256*1024*1024)
 
-#define ES32(v)((uint32_t)(((v & 0xFF000000) >> 24) | \
-                           ((v & 0x00FF0000) >> 8 ) | \
-							             ((v & 0x0000FF00) << 8 ) | \
-							             ((v & 0x000000FF) << 24)))
+#define ES16(v) ((U16)( \
+    (((v) & 0xFF00) >> 8 ) | \
+    (((v) & 0x00FF) << 8 )))
+
+#define ES32(v) ((U32)( \
+    (((v) & 0xFF000000) >> 24) | \
+    (((v) & 0x00FF0000) >> 8 ) | \
+	(((v) & 0x0000FF00) << 8 ) | \
+	(((v) & 0x000000FF) << 24)))
 							          
-#define ES64(v) ((uint64_t)(((((uint64_t)v) & 0xFF00000000000000ULL) >> 56) | \
-							              ((((uint64_t)v) & 0x00FF000000000000ULL) >> 40) | \
-							              ((((uint64_t)v) & 0x0000FF0000000000ULL) >> 24) | \
-							              ((((uint64_t)v) & 0x000000FF00000000ULL) >> 8 ) | \
-							              ((((uint64_t)v) & 0x00000000FF000000ULL) << 8 ) | \
-							              ((((uint64_t)v) & 0x0000000000FF0000ULL) << 24) | \
-							              ((((uint64_t)v) & 0x000000000000FF00ULL) << 40) | \
-							              ((((uint64_t)v) & 0x00000000000000FFULL) << 56)))
+#define ES64(v) ((U64)(\
+    ((((U64)(v)) & 0xFF00000000000000ULL) >> 56) | \
+	((((U64)(v)) & 0x00FF000000000000ULL) >> 40) | \
+	((((U64)(v)) & 0x0000FF0000000000ULL) >> 24) | \
+	((((U64)(v)) & 0x000000FF00000000ULL) >> 8 ) | \
+    ((((U64)(v)) & 0x00000000FF000000ULL) << 8 ) | \
+	((((U64)(v)) & 0x0000000000FF0000ULL) << 24) | \
+	((((U64)(v)) & 0x000000000000FF00ULL) << 40) | \
+	((((U64)(v)) & 0x00000000000000FFULL) << 56)))
 
 
-uint32_t ROTL32(uint32_t v, int32_t n);
-uint64_t ROTL64(uint64_t v, int32_t n);
-uint32_t ROTR32(uint32_t v, int32_t n);
-uint64_t ROTR64(uint64_t v, int32_t n);
+U32 ROTL32(U32 v, S32 n);
+U64 ROTL64(U64 v, S32 n);
+U32 ROTR32(U32 v, S32 n);
+U64 ROTR64(U64 v, S32 n);
 
 
 ////////////////////////////////////////////////////////////////////////
 // LV1 segment 008 globals
-extern int32_t g_rsx_enabled;              // 
-extern int32_t g_rsx_unk_00;               // ? 
-extern int32_t g_rsx_unk_01;               // ? 
-extern int32_t g_rsx_unk_02;               // ?
-extern int64_t g_rsx_bar2_addr;            // 0x28002000000
-extern int64_t g_rsx_bar0_addr;            // 0x28000000000
-extern int64_t *g_rsx_core_obj_tbl[16];    // RSX device core objects, 0 to 15
+extern S32 g_rsx_enabled;              // 
+extern S32 g_rsx_unk_00;               // ? 
+extern S32 g_rsx_unk_01;               // ? 
+extern S32 g_rsx_unk_02;               // ?
+extern S64 g_rsx_bar2_addr;            // 0x28002000000
+extern S64 g_rsx_bar0_addr;            // 0x28000000000
+extern S64 *g_rsx_core_obj_tbl[16];    // RSX device core objects, 0 to 15
 
-extern int32_t g_rsx_ctx_count;            // count of allocated RSX contexts
+extern S32 g_rsx_ctx_count;            // count of allocated RSX contexts
 
-extern int64_t *g_rsx_dbg_obj;
-extern int64_t *g_rsx_ioif_obj;
+extern S64 *g_rsx_dbg_obj;
+extern S64 *g_rsx_ioif_obj;
 
-extern int64_t *g_rsx_ctx_tbl[16];         // ? RSX context related, 0 to 15
+extern S64 *g_rsx_ctx_tbl[16];         // ? RSX context related, 0 to 15
 
-extern int32_t g_rsx_open_status;          // 
-extern int64_t *g_core_mem_obj;            // RSX device memory core object
-extern int32_t g_rsx_core_id;              // 
+extern S32 g_rsx_open_status;          // 
+extern S64 *g_core_mem_obj;            // RSX device memory core object
+extern S32 g_rsx_core_id;              // 
 
-extern int64_t *g_rsx_eic_obj;             // RSX external interrupt object
+extern S64 *g_rsx_eic_obj;             // RSX external interrupt object
 
-extern int8_t g_rsx_clock_flag;            // 
+extern S08 g_rsx_clock_flag;           // 
 
 ////////////////////////////////////////////////////////////////////////
 // LV1 return register
-extern uint64_t g_r3;
-extern uint64_t g_r4;
-extern uint64_t g_r5;
-extern uint64_t g_r6;
-extern uint64_t g_r7;
-extern uint64_t g_r8;
+extern U64 g_r3;
+extern U64 g_r4;
+extern U64 g_r5;
+extern U64 g_r6;
+extern U64 g_r7;
+extern U64 g_r8;
 
 
 
@@ -73,8 +81,8 @@ extern void *BAR0;
 #define BAR0_SIZE    184 KB
 #define BAR0_START   0x28000000000
 
-void write_BAR0(int32_t value, int64_t addr);
-int32_t read_BAR0(int64_t addr);
+void write_BAR0(S32 value, S64 addr);
+S32 read_BAR0(S64 addr);
 ////////////////////////////////////////////////////////////////////////
 
 
@@ -83,14 +91,14 @@ int32_t read_BAR0(int64_t addr);
 extern void *DDR;
 #define DDR_SIZE   256 MB
 
-void DDR_write08(int8_t value, int64_t addr);
-void DDR_write16(int16_t value, int64_t addr);
-void DDR_write32(int32_t value, int64_t addr);
-void DDR_write64(int64_t value, int64_t addr);
-int8_t DDR_read08(int64_t addr);
-int16_t DDR_read16(int64_t addr);
-int32_t DDR_read32(int64_t addr);
-int64_t DDR_read64(int64_t addr);
+void DDR_write08(S08 value, S64 addr);
+void DDR_write16(S16 value, S64 addr);
+void DDR_write32(S32 value, S64 addr);
+void DDR_write64(S64 value, S64 addr);
+S08 DDR_read08(S64 addr);
+S16 DDR_read16(S64 addr);
+S32 DDR_read32(S64 addr);
+S64 DDR_read64(S64 addr);
 ////////////////////////////////////////////////////////////////////////
 
 
@@ -99,21 +107,17 @@ int64_t DDR_read64(int64_t addr);
 extern void *driver_info;
 #define DRVI_SIZE   48 KB
 
-void DRVI_write08(int32_t idx, int8_t value, int32_t offset);
-void DRVI_write16(int32_t idx, int16_t value, int32_t offset);
-void DRVI_write32(int32_t idx, int32_t value, int32_t offset);
-void DRVI_write64(int32_t idx, int64_t value, int32_t offset);
-int8_t DRVI_read08(int32_t idx, int32_t offset);
-int16_t DRVI_read16(int32_t idx, int32_t offset);
-int32_t DRVI_read32(int32_t idx, int32_t offset);
-int64_t DRVI_read64(int32_t idx, int32_t offset);
+void DRVI_write08(S32 idx, S08 value, S32 offset);
+void DRVI_write16(S32 idx, S16 value, S32 offset);
+void DRVI_write32(S32 idx, S32 value, S32 offset);
+void DRVI_write64(S32 idx, S64 value, S32 offset);
+S08 DRVI_read08(S32 idx, S32 offset);
+S16 DRVI_read16(S32 idx, S32 offset);
+S32 DRVI_read32(S32 idx, S32 offset);
+S64 DRVI_read64(S32 idx, S32 offset);
 ////////////////////////////////////////////////////////////////////////
 
 
 // init
 void alloc_lv1_memory(void);
 void free_lv1_memory(void);
-
-
-
-#endif // __MAIN_H__

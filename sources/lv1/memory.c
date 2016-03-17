@@ -1,10 +1,9 @@
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
+/**
+ * (c) 2016 The LV1RE Project.
+ * Released under MIT license. Read LICENSE for more details.
+ */
 
-#include "lv1/inc/rsx_lv1.h"
-
+#include "memory.h"
 
 ////////////////////////////////////////////////////////////////////////
 // BAR0, NV registers, start of address space 0x28000000000
@@ -22,38 +21,38 @@ void *driver_info = NULL;
 
 
 // init LV1 globals
-int32_t g_rsx_enabled           = 1;        // 
-int32_t g_rsx_unk_00            = 0;        // ? 
-int32_t g_rsx_unk_01            = 0;        // ? 
-int32_t g_rsx_unk_02            = 0;        // ? 
-int64_t g_rsx_bar2_addr         = 0;        // 0x28002000000
-int64_t g_rsx_bar0_addr         = 0;        // 0x28000000000
-int64_t *g_rsx_core_obj_tbl[16] = {};       // array for 16 posible device core objects
+S32 g_rsx_enabled           = 1;        // 
+S32 g_rsx_unk_00            = 0;        // ? 
+S32 g_rsx_unk_01            = 0;        // ? 
+S32 g_rsx_unk_02            = 0;        // ? 
+S64 g_rsx_bar2_addr         = 0;        // 0x28002000000
+S64 g_rsx_bar0_addr         = 0;        // 0x28000000000
+S64 *g_rsx_core_obj_tbl[16] = {};       // array for 16 posible device core objects
 
-int32_t g_rsx_ctx_count         = 0;        // count of currently allocated RSX contexts
+S32 g_rsx_ctx_count         = 0;        // count of currently allocated RSX contexts
 
-int64_t *g_rsx_dbg_obj          = NULL;     // RSX debugger object
-int64_t *g_rsx_ioif_obj         = NULL;     // RSX IO interface 0 object
+S64 *g_rsx_dbg_obj          = NULL;     // RSX debugger object
+S64 *g_rsx_ioif_obj         = NULL;     // RSX IO interface 0 object
 
-int64_t *g_rsx_ctx_tbl[16]      = {};       // ? RSX context related, 0 to 15
+S64 *g_rsx_ctx_tbl[16]      = {};       // ? RSX context related, 0 to 15
 
-int32_t g_rsx_open_status       = 0;        // 0(?), 1(?) or 2(?) 
-int64_t *g_core_mem_obj         = NULL;     // RSX device memory core object
-int32_t g_rsx_core_id           = 0xFF;     // RSX device core ID(0 to 15), init 0xFF(invalid)
+S32 g_rsx_open_status       = 0;        // 0(?), 1(?) or 2(?) 
+S64 *g_core_mem_obj         = NULL;     // RSX device memory core object
+S32 g_rsx_core_id           = 0xFF;     // RSX device core ID(0 to 15), init 0xFF(invalid)
 
-int64_t *g_rsx_eic_obj          = NULL;     // RSX external interrupt controller object
+S64 *g_rsx_eic_obj          = NULL;     // RSX external interrupt controller object
 
-int8_t g_rsx_clock_flag         = 1;        // ?
+S08 g_rsx_clock_flag         = 1;       // ?
 
 
 
 // LV1 return registers
-uint64_t g_r3 = 0;
-uint64_t g_r4 = 0;
-uint64_t g_r5 = 0;
-uint64_t g_r6 = 0;
-uint64_t g_r7 = 0;
-uint64_t g_r8 = 0;
+U64 g_r3 = 0;
+U64 g_r4 = 0;
+U64 g_r5 = 0;
+U64 g_r6 = 0;
+U64 g_r7 = 0;
+U64 g_r8 = 0;
 
 
 
@@ -63,23 +62,19 @@ uint64_t g_r8 = 0;
 /***********************************************************************
 * rotate
 ***********************************************************************/
-uint32_t ROTL32(uint32_t v, int32_t n)
-{
+U32 ROTL32(U32 v, S32 n) {
   return (((n &= 32 - 1) == 0) ? v : (v << n) | (v >> (32 - n)));
 }
 
-uint64_t ROTL64(uint64_t v, int32_t n)
-{
+U64 ROTL64(U64 v, S32 n) {
   return (((n &= 64 - 1) == 0) ? v : (v << n) | (v >> (64 - n)));
 }
 
-uint32_t ROTR32(uint32_t v, int32_t n)
-{
+U32 ROTR32(U32 v, S32 n) {
   return (((n &= 32 - 1) == 0) ? v : (v >> n) | (v << (32 - n)));
 }
 
-uint64_t ROTR64(uint64_t v, int32_t n)
-{
+U64 ROTR64(U64 v, S32 n) {
   return (((n &= 64 - 1) == 0) ? v : (v >> n) | (v << (64 - n)));
 }
 
@@ -90,9 +85,8 @@ uint64_t ROTR64(uint64_t v, int32_t n)
 /***********************************************************************
 * write 32bit value to BAR0
 ***********************************************************************/
-void write_BAR0(int32_t value, int64_t addr)
-{
-	int32_t offset;
+void write_BAR0(S32 value, S64 addr) {
+	S32 offset;
 	
 	
 	// invalid address
@@ -103,59 +97,59 @@ void write_BAR0(int32_t value, int64_t addr)
 	
 	// 0x28000000000 - 0x28000004FFF, (20 KB)
 	if((offset >= 0) && (offset < 0x5000))
-		*(int32_t*)(BAR0 + offset) = value;
+		*(S32*)(BAR0 + offset) = value;
 	
 	// 0x28000008000 - 0x2800000AFFF, (12 KB)
 	else if((offset >= 0x8000) && (offset < 0xB000))
-		*(int32_t*)(BAR0 + 0x5000 + offset - 0x8000) = value;
+		*(S32*)(BAR0 + 0x5000 + offset - 0x8000) = value;
 	
 	// 0x2800000C000 - 0x2800000CFFF, (4 KB)
 	else if((offset >= 0xC000) && (offset < 0xD000))
-		*(int32_t*)(BAR0 + 0x8000 + offset - 0xC000) = value;
+		*(S32*)(BAR0 + 0x8000 + offset - 0xC000) = value;
 	
 	// 0x28000080000 - 0x28000088FFF, (36 KB), not perfect
 	else if((offset >= 0x80000) && (offset < 0x89000))
-		*(int32_t*)(BAR0 + 0x9000 + offset - 0x80000) = value;
+		*(S32*)(BAR0 + 0x9000 + offset - 0x80000) = value;
 	
 	// 0x2800008A000 - 0x2800008AFFF, (4 KB)
 	else if((offset >= 0x8A000) && (offset < 0x8B000))
-		*(int32_t*)(BAR0 + 0x12000 + offset - 0x8A000) = value;
+		*(S32*)(BAR0 + 0x12000 + offset - 0x8A000) = value;
 	
 	// 0x2800008C000 - 0x2800008CFFF, (4 KB)
 	else if((offset >= 0x8C000) && (offset < 0x8D000))
-		*(int32_t*)(BAR0 + 0x13000 + offset - 0x8C000) = value;
+		*(S32*)(BAR0 + 0x13000 + offset - 0x8C000) = value;
 	
 	// 0x28000090000 - 0x28000093FFF, (16 KB)
 	else if((offset >= 0x90000) && (offset < 0x94000))
-		*(int32_t*)(BAR0 + 0x14000 + offset - 0x90000) = value;
+		*(S32*)(BAR0 + 0x14000 + offset - 0x90000) = value;
 	
 	// 0x28000100000 - 0x28000100FFF, (4 KB)
 	else if((offset >= 0x100000) && (offset < 0x101000))
-	  *(int32_t*)(BAR0 + 0x18000 + offset - 0x100000) = value;
+	  *(S32*)(BAR0 + 0x18000 + offset - 0x100000) = value;
 	
 	// 0x28000200000 - 0x28000200FFF, (4 KB)
 	else if((offset >= 0x200000) && (offset < 0x201000))
-	  *(int32_t*)(BAR0 + 0x19000 + offset - 0x200000) = value;
+	  *(S32*)(BAR0 + 0x19000 + offset - 0x200000) = value;
 	
 	// 0x28000400000 - 0x2800040FFFF, (64 KB)
 	else if((offset >= 0x400000) && (offset < 0x410000))
-	  *(int32_t*)(BAR0 + 0x1A000 + offset - 0x400000) = value;
+	  *(S32*)(BAR0 + 0x1A000 + offset - 0x400000) = value;
 	
 	// 0x28000600000 - 0x28000600FFF, (4 KB)
 	else if((offset >= 0x600000) && (offset < 0x601000))
-	  *(int32_t*)(BAR0 + 0x2A000 + offset - 0x600000) = value;
+	  *(S32*)(BAR0 + 0x2A000 + offset - 0x600000) = value;
 	
 	// 0x28000602000 - 0x28000602FFF, (4 KB)
 	else if((offset >= 0x602000) && (offset < 0x603000))
-	  *(int32_t*)(BAR0 + 0x2B000 + offset - 0x602000) = value;
+	  *(S32*)(BAR0 + 0x2B000 + offset - 0x602000) = value;
 	
 	// 0x28000680000 - 0x28000680FFF, (4 KB)
 	else if((offset >= 0x680000) && (offset < 0x681000))
-	  *(int32_t*)(BAR0 + 0x2C000 + offset - 0x680000) = value;
+	  *(S32*)(BAR0 + 0x2C000 + offset - 0x680000) = value;
 	
 	// 0x28000682000 - 0x28000682FFF, (4 KB)
 	else if((offset >= 0x682000) && (offset < 0x683000))
-	  *(int32_t*)(BAR0 + 0x2D000 + offset - 0x682000) = value;
+	  *(S32*)(BAR0 + 0x2D000 + offset - 0x682000) = value;
 	  
 	else
 	  return;
@@ -165,9 +159,8 @@ void write_BAR0(int32_t value, int64_t addr)
 /***********************************************************************
 * read 32bit value from BAR0
 ***********************************************************************/
-int32_t read_BAR0(int64_t addr)
-{
-	int32_t offset;
+S32 read_BAR0(S64 addr) {
+	S32 offset;
 	
 	
 	// invalid address
@@ -178,59 +171,59 @@ int32_t read_BAR0(int64_t addr)
 	
 	// 0x28000000000 - 0x28000004FFF, (20 KB)
 	if((offset >= 0) && (offset < 0x5000))
-		return *(int32_t*)(BAR0 + offset);
+		return *(S32*)(BAR0 + offset);
 	
 	// 0x28000008000 - 0x2800000AFFF, (12 KB)
 	else if((offset >= 0x8000) && (offset < 0xB000))
-		return *(int32_t*)(BAR0 + 0x5000 + offset - 0x8000);
+		return *(S32*)(BAR0 + 0x5000 + offset - 0x8000);
 	
 	// 0x2800000C000 - 0x2800000CFFF, (4 KB)
 	else if((offset >= 0xC000) && (offset < 0xD000))
-		return *(int32_t*)(BAR0 + 0x8000 + offset - 0xC000);
+		return *(S32*)(BAR0 + 0x8000 + offset - 0xC000);
 	
 	// 0x28000080000 - 0x28000088FFF, (36 KB), not perfect
 	else if((offset >= 0x80000) && (offset < 0x89000))
-		return *(int32_t*)(BAR0 + 0x9000 + offset - 0x80000);
+		return *(S32*)(BAR0 + 0x9000 + offset - 0x80000);
 	
 	// 0x2800008A000 - 0x2800008AFFF, (4 KB)
 	else if((offset >= 0x8A000) && (offset < 0x8B000))
-		return *(int32_t*)(BAR0 + 0x12000 + offset - 0x8A000);
+		return *(S32*)(BAR0 + 0x12000 + offset - 0x8A000);
 	
 	// 0x2800008C000 - 0x2800008CFFF, (4 KB)
 	else if((offset >= 0x8C000) && (offset < 0x8D000))
-		return *(int32_t*)(BAR0 + 0x13000 + offset - 0x8C000);
+		return *(S32*)(BAR0 + 0x13000 + offset - 0x8C000);
 	
 	// 0x28000090000 - 0x28000093FFF, (16 KB)
 	else if((offset >= 0x90000) && (offset < 0x94000))
-		return *(int32_t*)(BAR0 + 0x14000 + offset - 0x90000);
+		return *(S32*)(BAR0 + 0x14000 + offset - 0x90000);
 	
 	// 0x28000100000 - 0x28000100FFF, (4 KB)
 	else if((offset >= 0x100000) && (offset < 0x101000))
-	  return *(int32_t*)(BAR0 + 0x18000 + offset - 0x100000);
+	  return *(S32*)(BAR0 + 0x18000 + offset - 0x100000);
 	
 	// 0x28000200000 - 0x28000200FFF, (4 KB)
 	else if((offset >= 0x200000) && (offset < 0x201000))
-	  return *(int32_t*)(BAR0 + 0x19000 + offset - 0x200000);
+	  return *(S32*)(BAR0 + 0x19000 + offset - 0x200000);
 	
 	// 0x28000400000 - 0x2800040FFFF, (64 KB)
 	else if((offset >= 0x400000) && (offset < 0x410000))
-	  return *(int32_t*)(BAR0 + 0x1A000 + offset - 0x400000);
+	  return *(S32*)(BAR0 + 0x1A000 + offset - 0x400000);
 	
 	// 0x28000600000 - 0x28000600FFF, (4 KB)
 	else if((offset >= 0x600000) && (offset < 0x601000))
-	  return *(int32_t*)(BAR0 + 0x2A000 + offset - 0x600000);
+	  return *(S32*)(BAR0 + 0x2A000 + offset - 0x600000);
 	
 	// 0x28000602000 - 0x28000602FFF, (4 KB)
 	else if((offset >= 0x602000) && (offset < 0x603000))
-	  return *(int32_t*)(BAR0 + 0x2B000 + offset - 0x602000);
+	  return *(S32*)(BAR0 + 0x2B000 + offset - 0x602000);
 	
 	// 0x28000680000 - 0x28000680FFF, (4 KB)
 	else if((offset >= 0x680000) && (offset < 0x681000))
-	  return *(int32_t*)(BAR0 + 0x2C000 + offset - 0x680000);
+	  return *(S32*)(BAR0 + 0x2C000 + offset - 0x680000);
 	
 	// 0x28000682000 - 0x28000682FFF, (4 KB)
 	else if((offset >= 0x682000) && (offset < 0x683000))
-	  return *(int32_t*)(BAR0 + 0x2D000 + offset - 0x682000);
+	  return *(S32*)(BAR0 + 0x2D000 + offset - 0x682000);
 	
 	else
 	  return -1;
@@ -239,9 +232,8 @@ int32_t read_BAR0(int64_t addr)
 /***********************************************************************
 * 
 ***********************************************************************/
-static void init_BAR0()
-{
-	int64_t bar0_addr = 0x28000000000;
+static void init_BAR0() {
+	S64 bar0_addr = 0x28000000000;
 	
 	
 	// 
@@ -270,18 +262,16 @@ static void init_BAR0()
 ////////////////////////////////////////////////////////////////////////
 // DDR, 256 MB RSX DDR memory
 
-static uint32_t addr_pramin_to_vram(uint32_t offset)
-{
-  uint32_t vram_size = 256 MB;
-  uint32_t rev_size = 512 KB;
+static U32 addr_pramin_to_vram(U32 offset) {
+  U32 vram_size = 0x10000000; // 256 MB
+  U32 rev_size = 0x80000; // 512 KB
   return vram_size - (offset - (offset % rev_size)) - rev_size + (offset % rev_size);
 }
 
 /*
-static uint32_t addr_vram_to_pramin(uint32_t offset)
-{
-  uint32_t vram_size = 256 MB;
-  uint32_t rev_size = 512 KB;
+static U32 addr_vram_to_pramin(U32 offset) {
+  U32 vram_size = 256 MB;
+  U32 rev_size = 512 KB;
   return (offset - vram_size) ^ -rev_size;
 }
 */
@@ -289,49 +279,44 @@ static uint32_t addr_vram_to_pramin(uint32_t offset)
 /***********************************************************************
 * write 32bit value to DDR memory
 ***********************************************************************/
-static void _write_DDR(int32_t size, int64_t value, int64_t addr)
-{
+static void _write_DDR(S32 size, S64 value, S64 addr) {
 	// invalid IO Interface 0 address
   if(!(addr & 0x28000000000))
 	  return;
 	
 	// BAR1: (VRAM) (LV1 process space address), BE
-	if(addr & 0x80000000)
-	{
-		switch(size)
-		{
+	if(addr & 0x80000000) {
+		switch(size) {
 			case  8:
-			  *(int8_t*)(DDR + (addr - 0x28080000000)) = value;
+			  *(S08*)(DDR + (addr - 0x28080000000)) = value;
 			  break;
 			case 16:
-			  *(int16_t*)(DDR + (addr - 0x28080000000)) = ES16(value);
+			  *(S16*)(DDR + (addr - 0x28080000000)) = ES16(value);
 			  break;
 			case 32:
-			  *(int32_t*)(DDR + (addr - 0x28080000000)) = ES32(value);
+			  *(S32*)(DDR + (addr - 0x28080000000)) = ES32(value);
 			  break;
 			case 64:
-			  *(int64_t*)(DDR + (addr - 0x28080000000)) = ES64(value);
+			  *(S64*)(DDR + (addr - 0x28080000000)) = ES64(value);
 			  break;
 		}
 		return;
 	}
 	
 	// BAR2: (PRAMIN) system reserved, LE
-	if(addr & 0x2000000)
-	{
-		switch(size)
-		{
+	if(addr & 0x2000000) {
+		switch(size) {
 			case  8:
-			  *(int8_t*)(DDR + addr_pramin_to_vram(addr & 0xFFFFF)) = value;
+			  *(S08*)(DDR + addr_pramin_to_vram(addr & 0xFFFFF)) = value;
 			  break;
 			case 16:
-			  *(int16_t*)(DDR + addr_pramin_to_vram(addr & 0xFFFFF)) = value;
+			  *(S16*)(DDR + addr_pramin_to_vram(addr & 0xFFFFF)) = value;
 			  break;
 			case 32:
-			  *(int32_t*)(DDR + addr_pramin_to_vram(addr & 0xFFFFF)) = value;
+			  *(S32*)(DDR + addr_pramin_to_vram(addr & 0xFFFFF)) = value;
 			  break;
 			case 64:
-			  *(int64_t*)(DDR + addr_pramin_to_vram(addr & 0xFFFFF)) = value;
+			  *(S64*)(DDR + addr_pramin_to_vram(addr & 0xFFFFF)) = value;
 			  break;
 		}
 		return;
@@ -343,96 +328,83 @@ static void _write_DDR(int32_t size, int64_t value, int64_t addr)
 /***********************************************************************
 * read 32bit value from DDR memory
 ***********************************************************************/
-static int32_t _read_DDR(int32_t size, int64_t addr)
-{
+static S32 _read_DDR(S32 size, S64 addr) {
 	// invalid IO Interface 0 address
 	if(!(addr & 0x28000000000))
 	  return 0;
 	
 	// BAR1: (VRAM)(LV1 process space address), BE
-	if(addr & 0x80000000)
-	{
-		switch(size)
-		{
+	if(addr & 0x80000000) {
+		switch(size) {
 			case  8:
-			  return *(int8_t*)(DDR + (addr - 0x28080000000));
+			  return *(S8*)(DDR + (addr - 0x28080000000));
 			case 16:
-			  return ES16(*(int16_t*)(DDR + (addr - 0x28080000000)));
+			  return ES16(*(S16*)(DDR + (addr - 0x28080000000)));
 			case 32:
-			  return ES32(*(int32_t*)(DDR + (addr - 0x28080000000)));
+			  return ES32(*(S32*)(DDR + (addr - 0x28080000000)));
 			case 64:
-			  return ES64(*(int64_t*)(DDR + (addr - 0x28080000000)));
+			  return ES64(*(S64*)(DDR + (addr - 0x28080000000)));
 		}	
 	}
 		
 	// BAR2: (PRAMIN)system reserved, LE
-	if(addr & 0x2000000)
-	{
-		switch(size)
-		{
+	if(addr & 0x2000000) {
+		switch(size) {
 			case  8:
-			  return *(int8_t*)(DDR + addr_pramin_to_vram(addr & 0xFFFFF));
+			  return *(S8*)(DDR + addr_pramin_to_vram(addr & 0xFFFFF));
 			case 16:
-			  return *(int16_t*)(DDR + addr_pramin_to_vram(addr & 0xFFFFF));
+			  return *(S16*)(DDR + addr_pramin_to_vram(addr & 0xFFFFF));
 			case 32:
-			  return *(int32_t*)(DDR + addr_pramin_to_vram(addr & 0xFFFFF));
+			  return *(S32*)(DDR + addr_pramin_to_vram(addr & 0xFFFFF));
 			case 64:
-			  return *(int64_t*)(DDR + addr_pramin_to_vram(addr & 0xFFFFF));
+			  return *(S64*)(DDR + addr_pramin_to_vram(addr & 0xFFFFF));
 		}
 	}
 	
 	return 0;
 }
 
-void DDR_write08(int8_t value,  int64_t addr){_write_DDR( 8, value, addr); return;}
-void DDR_write16(int16_t value, int64_t addr){_write_DDR(16, value, addr); return;}
-void DDR_write32(int32_t value, int64_t addr){_write_DDR(32, value, addr); return;}
-void DDR_write64(int64_t value, int64_t addr){_write_DDR(64, value, addr); return;}
-int8_t DDR_read08(int64_t addr) {return _read_DDR( 8, addr);}
-int16_t DDR_read16(int64_t addr){return _read_DDR(16, addr);}
-int32_t DDR_read32(int64_t addr){return _read_DDR(32, addr);}
-int64_t DDR_read64(int64_t addr){return _read_DDR(64, addr);}
+void DDR_write08(S08 value,  S64 addr){_write_DDR( 8, value, addr); return;}
+void DDR_write16(S16 value, S64 addr){_write_DDR(16, value, addr); return;}
+void DDR_write32(S32 value, S64 addr){_write_DDR(32, value, addr); return;}
+void DDR_write64(S64 value, S64 addr){_write_DDR(64, value, addr); return;}
+S08 DDR_read08(S64 addr) {return _read_DDR( 8, addr);}
+S16 DDR_read16(S64 addr){return _read_DDR(16, addr);}
+S32 DDR_read32(S64 addr){return _read_DDR(32, addr);}
+S64 DDR_read64(S64 addr){return _read_DDR(64, addr);}
 
 
 ////////////////////////////////////////////////////////////////////////
 // driver info
 
-void DRVI_write08(int32_t idx, int8_t value, int32_t offset)
-{
-	*(int8_t*)((driver_info + idx * 0x4000) + offset) = value;
+void DRVI_write08(S32 idx, S8 value, S32 offset) {
+	*(S8*)((driver_info + idx * 0x4000) + offset) = value;
 	return;
 }
-void DRVI_write16(int32_t idx, int16_t value, int32_t offset)
-{
-	*(int16_t*)((driver_info + idx * 0x4000) + offset) = ES16(value);
+void DRVI_write16(S32 idx, S16 value, S32 offset) {
+	*(S16*)((driver_info + idx * 0x4000) + offset) = ES16(value);
 	return;
 }
-void DRVI_write32(int32_t idx, int32_t value, int32_t offset)
-{
-	*(int32_t*)((driver_info + idx * 0x4000) + offset) = ES32(value);
+void DRVI_write32(S32 idx, S32 value, S32 offset) {
+	*(S32*)((driver_info + idx * 0x4000) + offset) = ES32(value);
 	return;
 }
-void DRVI_write64(int32_t idx, int64_t value, int32_t offset)
-{
-	*(int64_t*)((driver_info + idx * 0x4000) + offset) = ES64(value);
+void DRVI_write64(S32 idx, S64 value, S32 offset) {
+	*(S64*)((driver_info + idx * 0x4000) + offset) = ES64(value);
 	return;
 }
 
-int8_t DRVI_read08(int32_t idx, int32_t offset)
-{
-	return *(int8_t*)((driver_info + idx * 0x4000) + offset);
+S8 DRVI_read08(S32 idx, S32 offset) {
+	return *(S8*)((driver_info + idx * 0x4000) + offset);
 }
-int16_t DRVI_read16(int32_t idx, int32_t offset)
-{
-	return ES16(*(int16_t*)((driver_info + idx * 0x4000) + offset));
+S16 DRVI_read16(S32 idx, S32 offset) {
+	return ES16(*(S16*)((driver_info + idx * 0x4000) + offset));
 }
-int32_t DRVI_read32(int32_t idx, int32_t offset)
-{
-	return ES32(*(int32_t*)((driver_info + idx * 0x4000) + offset));
+S32 DRVI_read32(S32 idx, S32 offset) {
+	return ES32(*(S32*)((driver_info + idx * 0x4000) + offset));
 }
-int64_t DRVI_read64(int32_t idx, int32_t offset)
-{
-	return ES64(*(int64_t*)((driver_info + idx * 0x4000) + offset));
+S64 DRVI_read64(S32 idx, S32 offset) {
+	return ES64(*(S64*)((driver_info + idx * 0x4000) + offset));
 }
 
 
@@ -442,8 +414,7 @@ int64_t DRVI_read64(int32_t idx, int32_t offset)
 /***********************************************************************
 * 
 ***********************************************************************/
-void alloc_lv1_memory()
-{
+void alloc_lv1_memory() {
 	// BAR0
 	BAR0 = malloc(BAR0_SIZE);
 	memset(BAR0, 0, BAR0_SIZE);
@@ -461,8 +432,7 @@ void alloc_lv1_memory()
 /***********************************************************************
 * 
 ***********************************************************************/
-void free_lv1_memory()
-{
+void free_lv1_memory() {
 	free(BAR0);
 	free(DDR);
 	free(driver_info);

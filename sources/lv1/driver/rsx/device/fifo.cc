@@ -3,126 +3,82 @@
  * Released under MIT license. Read LICENSE for more details.
  */
 
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
+#include "fifo.h"
+
+#include "lv1/driver/rsx/assert.h"
+#include "lv1/driver/rsx/mmio.h"
 
 
-
-
-/***********************************************************************
-* 
-***********************************************************************/
-S64 rsx_device_fifo_get_channel_dma_control_lpar_address(rsx_device_fifo_t* fifo, S32 channel_id) {
-    return (fifo->dma_control_lpar + (channel_id <<12));
+inline void rsx_device_fifo_t::enable_interrupt(U32 bits) {
+    U32 reg = rsx_rd32(RSX_PFIFO_INTR_EN_0) | bits;
+    rsx_wr32(RSX_PFIFO_INTR_EN_0, reg);
 }
 
-/***********************************************************************
-* 
-***********************************************************************/
-S64 rsx_device_fifo_21B7DC(rsx_device_fifo_t* fifo, S32 idx) {
-    if ((idx - 1) > 2) {
-      printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-    return 0;
-  }
-    
-    return fifo->unk_50[idx];
+inline void rsx_device_fifo_t::disable_interrupt(U32 bits) {
 }
 
-/***********************************************************************
-* 
-***********************************************************************/
-void rsx_device_fifo_21B668(rsx_device_fifo_t* fifo, S32 channel_id, S32 arg1) {
-    //S32 value;
-    
-    // check channel ID, ??? 32 max channels ???
-    if (channel_id > 31) {
-      printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-    return;
-  }
-  
-  // TODO:
-  
-  
-  
-  
-  
-  
-  
-    
+S64 rsx_device_fifo_t::get_channel_dma_control_lpar_address(S32 channel_id) {
+    return (fifo->dma_control_lpar + (channel_id << 12));
+}
+
+S64 rsx_device_fifo_t::sub21B7DC(S32 index) {
+    RSX_ASSERT(index < 4);
+    return fifo->unk_50[index];
+}
+
+void rsx_device_fifo_t::sub21B668(S32 channel_id, S32 arg1) {
+    S32 value;
+    RSX_ASSERT(channel_id < 32);
+
+    // TODO: ???
+
     return;
 }
 
-/***********************************************************************
-* 
-***********************************************************************/
-void rsx_device_fifo_21C234(rsx_device_fifo_t* fifo, S32 channel_id) {
+void rsx_device_fifo_t::sub21C234(S32 channel_id) {
     //S32 value;
     rsx_core_device_t* core = NULL;
-    rsx_device_fifo_t* _fifo = NULL;
+    rsx_device_fifo_t* fifo = NULL;
     
+    RSX_ASSERT(channel_id < 32);
     
-    
-    
-    // check channel ID, ??? 32 max channels ???
-    if (channel_id > 31) {
-      printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-    return;
-  }
-    
-    // get RSX device core
+    // Get RSX device core
     core = rsx_core_device_get_core_object_by_id(g_rsx_core_id);
-  if (core == NULL) {
-      printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-    return;
-  }
+    RSX_ASSERT(core);
     
-    // get FIFO object again and pause FIFO
-    _fifo = (void*)core->fifo;
-    rsx_device_fifo_pause(_fifo);
+    // Get FIFO object again and pause it
+    fifo = core->fifo;
+    fifo->pause();
     
+    // TODO: ?
+    fifo->sub21B668(channel_id, 1);
     
-    
-    // ? TODO:
-    rsx_device_fifo_21B668(fifo, channel_id, 1);
-    
-    
-    
-    // TODO:
-    
-    
-    
-    
+    // TODO: ???
+
     return;
 }
 
 /***********************************************************************
 * 
 ***********************************************************************/
-void rsx_device_fifo_21CCC0(rsx_device_fifo_t* fifo, S32 channel_id, S32 offset) {
+void rsx_device_fifo_t::sub21CCC0(S32 channel_id, S32 offset) {
     S32 tmp, value, fc1_offset;
     S64 fc1_addr;
     rsx_core_device_t* core = NULL;
     rsx_core_memory_t* core_mem = NULL;
-    
-    
-    
+
     // get RSX device core
     core = rsx_core_device_get_core_object_by_id(g_rsx_core_id);
-  if (core == NULL) {
-      printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-    return;
-  }
+    RSX_ASSERT(core);
     
     tmp = rsx_core_memory_value_div_by_16((void*)core, offset);
     
     // read value from BAR0:0x28000003204
-    value = read_BAR0(0x28000003204);     // unknow value! not inited, here 0
+    value = rsx_rd32(0x28000003204);     // unknow value! not inited, here 0
     value &= 0x1FF;
     
     /*if (value == channel_id) {
-      write_BAR0(tmp, 0x280000032E0);
+      rsx_wr32(tmp, 0x280000032E0);
       return;
     }*/
     
@@ -145,17 +101,14 @@ void rsx_device_fifo_21CCC0(rsx_device_fifo_t* fifo, S32 channel_id, S32 offset)
 /***********************************************************************
 * 
 ***********************************************************************/
-S64 rsx_device_fifo_get_fc2_channel_address_by_id(rsx_device_fifo_t* fifo, S32 channel_id) {
+S64 rsx_device_fifo_t::get_fc2_channel_address_by_id(S32 channel_id) {
     rsx_core_device_t* core = NULL;
     rsx_utils_bitmap_t* bm_channels = NULL;
     
     
     // get RSX device core
     core = rsx_core_device_get_core_object_by_id(g_rsx_core_id);
-  if (core == NULL) {
-      printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-    return 0;
-  }
+    RSX_ASSERT(core);
     
     // get device core memory object channels bitmap
     bm_channels = (void*)core->bm_obj_channels;
@@ -177,17 +130,14 @@ S64 rsx_device_fifo_get_fc2_channel_address_by_id(rsx_device_fifo_t* fifo, S32 c
 /***********************************************************************
 * 
 ***********************************************************************/
-S64 rsx_device_fifo_get_fc1_channel_address_by_id(rsx_device_fifo_t* fifo, S32 channel_id) {
+S64 rsx_device_fifo_t::get_fc1_channel_address_by_id(S32 channel_id) {
     rsx_core_device_t* core = NULL;
     rsx_utils_bitmap_t* bm_channels = NULL;
     
     
     // get RSX device core
     core = rsx_core_device_get_core_object_by_id(g_rsx_core_id);
-  if (core == NULL) {
-      printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-    return 0;
-  }
+    RSX_ASSERT(core);
     
     // get device core memory object channels bitmap
     bm_channels = (void*)core->bm_obj_channels;
@@ -207,22 +157,17 @@ S64 rsx_device_fifo_get_fc1_channel_address_by_id(rsx_device_fifo_t* fifo, S32 c
 }
 
 
-
-
-/***********************************************************************
-* 
-***********************************************************************/
-S32 rsx_device_fifo_pause(rsx_device_fifo_t* fifo) {
+S32 rsx_device_fifo_t::pause() {
     S32 i, value;
     
     
     fifo->pause++;
     
-    value = read_BAR0(0x28000002500);
+    value = rsx_rd32(RSX_PFIFO_CACHES);
     value &= 0xFFFFFFFE;                     // unset value[31:31]
-    write_BAR0(value, 0x28000002500);
+    rsx_wr32(value, RSX_PFIFO_CACHES);
     
-    value = read_BAR0(0x28000002500);
+    value = rsx_rd32(RSX_PFIFO_CACHES);
     
     // if value[28:28] set, wait and try again
     if ((value &= 0xFFFFFFEF) != 0) {
@@ -232,7 +177,7 @@ S32 rsx_device_fifo_pause(rsx_device_fifo_t* fifo) {
       // db16cyc
       // db16cyc
       // eieio
-            value = read_BAR0(0x28000002500);
+            value = rsx_rd32(RSX_PFIFO_CACHES);
             
             // if value[28:28] unset, ok
             if ((value &= 0xFFFFFFEF) == 0)
@@ -240,24 +185,24 @@ S32 rsx_device_fifo_pause(rsx_device_fifo_t* fifo) {
         }
     }
     
-    value = read_BAR0(0x28000003200);
+    value = rsx_rd32(0x28000003200);
     
     // if value[32:32] unset...
     if ((value & 0xFFFFFFFE) == 0)
       return 0;
     
-    value = read_BAR0(0x28000003200);
+    value = rsx_rd32(0x28000003200);
     value &= 0xFFFFFFFE;                     // unset value[31:31]
-    write_BAR0(value, 0x28000003200);
+    rsx_wr32(value, 0x28000003200);
     
-    value = read_BAR0(0x28000003220);
+    value = rsx_rd32(0x28000003220);
     value &= 0xFFFFFFFE;                     // unset value[31:31]
-    write_BAR0(value, 0x28000003220);
+    rsx_wr32(value, 0x28000003220);
     
     
     /**/
     for (i = 0; i < 1000001; i++) {
-        value = read_BAR0(0x28000003250);
+        value = rsx_rd32(0x28000003250);
         if ((value & 0xFFFFEFFF) == 0)         // if value[19:19] unset... {
             // db16cyc                          // wait and try again
       // db16cyc
@@ -266,7 +211,7 @@ S32 rsx_device_fifo_pause(rsx_device_fifo_t* fifo) {
             continue;
         }
         
-        value = read_BAR0(0x28000003304);
+        value = rsx_rd32(0x28000003304);
         if ((value & 0xFFFFFFFE) == 0)         // if value[31:31] unset... {
             // db16cyc                          // wait and try again
       // db16cyc
@@ -275,15 +220,15 @@ S32 rsx_device_fifo_pause(rsx_device_fifo_t* fifo) {
             continue;
         }
         
-        value = read_BAR0(0x28000003250);
+        value = rsx_rd32(0x28000003250);
         value &= 0xFFFFFFFE;                  // unset value[31:31]
-        write_BAR0(value, 0x28000003250);
+        rsx_wr32(value, 0x28000003250);
         
-        value = read_BAR0(0x28000003258);
+        value = rsx_rd32(0x28000003258);
         value &= 0xFEFFFFFF;                  // unset value[07:07]
-        write_BAR0(value, 0x28000003258);
+        rsx_wr32(value, 0x28000003258);
         
-        value = read_BAR0(0x28000003250);
+        value = rsx_rd32(0x28000003250);
         if ((value & 0xFFFFFFEF) == 0)         // if value[27:27] unset... {
             
             
@@ -298,32 +243,29 @@ S32 rsx_device_fifo_pause(rsx_device_fifo_t* fifo) {
 }
 
 
-/***********************************************************************
-* 
-***********************************************************************/
-void rsx_device_fifo_continue(rsx_device_fifo_t* fifo) {
+void rsx_device_fifo_t::resume() {
     S32 value;
     
     
     if (fifo->pause == 0) {
-        value = read_BAR0(0x28000003250);
+        value = rsx_rd32(0x28000003250);
         value |= 1;                         // set value[31:31]
-        write_BAR0(value, 0x28000003250);
+        rsx_wr32(value, 0x28000003250);
         
-        value = read_BAR0(0x28000003200);
+        value = rsx_rd32(0x28000003200);
         value |= 1;                         // set value[31:31]
-        write_BAR0(value, 0x28000003200);
+        rsx_wr32(value, 0x28000003200);
         
-        value = read_BAR0(0x28000003220);
+        value = rsx_rd32(0x28000003220);
         value |= 1;                         // set value[31:31]
-        write_BAR0(value, 0x28000003220);
+        rsx_wr32(value, 0x28000003220);
         
         if (((rsx_core_device_get_rsx_enable_flag()) != 0) && (fifo->init != 1))
           return;
         
-        value = read_BAR0(0x28000002500);
+        value = rsx_rd32(RSX_PFIFO_CACHES);
         value |= 1;                         // set value[31:31]
-        write_BAR0(value, 0x28000002500);
+        rsx_wr32(value, RSX_PFIFO_CACHES);
     }
     
     fifo->pause--;
@@ -335,127 +277,126 @@ void rsx_device_fifo_continue(rsx_device_fifo_t* fifo) {
 /***********************************************************************
 * 
 ***********************************************************************/
-void rsx_device_fifo_21B0B0(rsx_device_fifo_t* fifo) {
+void rsx_device_fifo_t::sub21B0B0() {
     S32 value;
-    
-    
+
     // update BAR0 registers
-    value = read_BAR0(0x28000002230);
+    value = rsx_rd32(RSX_PFIFO_UNK2230);
     value &= 0xFFFFFE00;                 // unset value[23:31]
     value |= 0xFF;                       // set value[24:31]
-    write_BAR0(value, 0x28000002230);
+    rsx_wr32(RSX_PFIFO_UNK2230, value);
     
     // set 32bit values to 0
-    write_BAR0(0, 0x28000003210);
-    write_BAR0(0, 0x28000003270);
-    write_BAR0(0, 0x28000003240);        // reset DMA Put register
-    write_BAR0(0, 0x28000003244);        // reset DMA Get register
-    write_BAR0(0, 0x28000003258);
+    rsx_wr32(RSX_PFIFO_CACHE1_PUT, 0);
+    rsx_wr32(RSX_PFIFO_CACHE1_GET, 0);
+    rsx_wr32(RSX_PFIFO_CACHE1_DMA_PUT, 0);
+    rsx_wr32(RSX_PFIFO_CACHE1_DMA_GET, 0);
+    rsx_wr32(RSX_PFIFO_CACHE1_HASH, 0);
     
-    write_BAR0(0, 0x28000002510);
-    write_BAR0(0, 0x28000002514);
-    write_BAR0(0, 0x28000002518);
-    write_BAR0(0, 0x2800000251C);
-    write_BAR0(0, 0x28000002520);
-    write_BAR0(0, 0x28000002524);
-    write_BAR0(0, 0x28000002528);
-    write_BAR0(0, 0x2800000252C);
-    write_BAR0(0, 0x28000002530);
-    write_BAR0(0, 0x28000002534);
-    write_BAR0(0, 0x28000002538);
-    write_BAR0(0, 0x2800000253C);
-    write_BAR0(0, 0x28000002540);
-    write_BAR0(0, 0x28000002544);
-    write_BAR0(0, 0x28000002548);
-    write_BAR0(0, 0x2800000254C);
-    
+    rsx_wr32(RSX_PFIFO_UNK2510 + 0x00, 0);
+    rsx_wr32(RSX_PFIFO_UNK2510 + 0x04, 0);
+    rsx_wr32(RSX_PFIFO_UNK2510 + 0x08, 0);
+    rsx_wr32(RSX_PFIFO_UNK2510 + 0x0C, 0);
+    rsx_wr32(RSX_PFIFO_UNK2510 + 0x10, 0);
+    rsx_wr32(RSX_PFIFO_UNK2510 + 0x14, 0);
+    rsx_wr32(RSX_PFIFO_UNK2510 + 0x18, 0);
+    rsx_wr32(RSX_PFIFO_UNK2510 + 0x1C, 0);
+    rsx_wr32(RSX_PFIFO_UNK2510 + 0x20, 0);
+    rsx_wr32(RSX_PFIFO_UNK2510 + 0x24, 0);
+    rsx_wr32(RSX_PFIFO_UNK2510 + 0x28, 0);
+    rsx_wr32(RSX_PFIFO_UNK2510 + 0x2C, 0);
+    rsx_wr32(RSX_PFIFO_UNK2510 + 0x30, 0);
+    rsx_wr32(RSX_PFIFO_UNK2510 + 0x34, 0);
+    rsx_wr32(RSX_PFIFO_UNK2510 + 0x38, 0);
+    rsx_wr32(RSX_PFIFO_UNK2510 + 0x3C, 0);
+
     // set flags
-    value = read_BAR0(0x2800000250C);
+    value = rsx_rd32(0x2800000250C);
     value |= 1;                          // set [31:31]
-    write_BAR0(value, 0x2800000250C);
+    rsx_wr32(value, 0x2800000250C);
     
-    value = read_BAR0(0x2800000250C);
+    value = rsx_rd32(0x2800000250C);
     value |= 2;                          // set [30:30]
-    write_BAR0(value, 0x2800000250C);
+    rsx_wr32(value, 0x2800000250C);
     
-    value = read_BAR0(0x2800000250C);
+    value = rsx_rd32(0x2800000250C);
     value |= 4;                          // set [29:29]
-    write_BAR0(value, 0x2800000250C);
+    rsx_wr32(value, 0x2800000250C);
     
-    value = read_BAR0(0x2800000250C);
+    value = rsx_rd32(0x2800000250C);
     value |= 8;                          // set [28:28]
-    write_BAR0(value, 0x2800000250C);
+    rsx_wr32(value, 0x2800000250C);
     
-    value = read_BAR0(0x2800000250C);
+    value = rsx_rd32(0x2800000250C);
     value |= 0x10;                       // set [27:27]
-    write_BAR0(value, 0x2800000250C);
+    rsx_wr32(value, 0x2800000250C);
     
-    value = read_BAR0(0x2800000250C);
+    value = rsx_rd32(0x2800000250C);
     value |= 0x20;                       // set [26:26]
-    write_BAR0(value, 0x2800000250C);
+    rsx_wr32(value, 0x2800000250C);
     
-    value = read_BAR0(0x2800000250C);
+    value = rsx_rd32(0x2800000250C);
     value |= 0x40;                       // set [25:25]
-    write_BAR0(value, 0x2800000250C);
+    rsx_wr32(value, 0x2800000250C);
     
-    value = read_BAR0(0x2800000250C);
+    value = rsx_rd32(0x2800000250C);
     value |= 0x80;                       // set [24:24]
-    write_BAR0(value, 0x2800000250C);
+    rsx_wr32(value, 0x2800000250C);
     
-    value = read_BAR0(0x2800000250C);
+    value = rsx_rd32(0x2800000250C);
     value |= 0x100;                      // set [23:23]
-    write_BAR0(value, 0x2800000250C);
+    rsx_wr32(value, 0x2800000250C);
     
-    value = read_BAR0(0x2800000250C);
+    value = rsx_rd32(0x2800000250C);
     value |= 0x200;                      // set [22:22]
-    write_BAR0(value, 0x2800000250C);
+    rsx_wr32(value, 0x2800000250C);
     
-    value = read_BAR0(0x2800000250C);
+    value = rsx_rd32(0x2800000250C);
     value |= 0x400;                      // set [21:21]
-    write_BAR0(value, 0x2800000250C);
+    rsx_wr32(value, 0x2800000250C);
     
-    value = read_BAR0(0x2800000250C);
+    value = rsx_rd32(0x2800000250C);
     value |= 0x800;                      // set [20:20]
-    write_BAR0(value, 0x2800000250C);
+    rsx_wr32(value, 0x2800000250C);
     
-    value = read_BAR0(0x2800000250C);
+    value = rsx_rd32(0x2800000250C);
     value |= 0x1000;                     // set [19:19]
-    write_BAR0(value, 0x2800000250C);
+    rsx_wr32(value, 0x2800000250C);
     
-    value = read_BAR0(0x2800000250C);
+    value = rsx_rd32(0x2800000250C);
     value |= 0x2000;                     // set [18:18]
-    write_BAR0(value, 0x2800000250C);
+    rsx_wr32(value, 0x2800000250C);
     
-    value = read_BAR0(0x2800000250C);
+    value = rsx_rd32(0x2800000250C);
     value |= 0x4000;                     // set [17:17]
-    write_BAR0(value, 0x2800000250C);
+    rsx_wr32(value, 0x2800000250C);
     
-    value = read_BAR0(0x2800000250C);
+    value = rsx_rd32(0x2800000250C);
     value |= 0x8000;                     // set [16:16]
-    write_BAR0(value, 0x2800000250C);
+    rsx_wr32(value, 0x2800000250C);
     
-    value = read_BAR0(0x28000002048);
+    value = rsx_rd32(0x28000002048);
     value &= 0xFEFFFFFF;                 // unset [07:07]
-    write_BAR0(value, 0x28000002048);
+    rsx_wr32(value, 0x28000002048);
     
-    write_BAR0(0, 0x28000003228);        // reset DMA instance register
-    write_BAR0(0, 0x280000032E8);
-    write_BAR0(0, 0x28000002410);
-    write_BAR0(0, 0x28000002420);
+    rsx_wr32(RSX_PFIFO_CACHE1_DMA_STATE, 0);
+    rsx_wr32(RSX_PFIFO_UNK32E8, 0);
+    rsx_wr32(RSX_PFIFO_UNK2410, 0);
+    rsx_wr32(RSX_PFIFO_UNK2420, 0);
     
-    value = read_BAR0(0x2800000221C);
+    value = rsx_rd32(0x2800000221C);
     value &= 0xFFFFFFFE;                 // unset [31:31]
-    write_BAR0(value, 0x2800000221C);
+    rsx_wr32(value, 0x2800000221C);
     
-    write_BAR0(1, 0x28000002058);        // set to 1
+    rsx_wr32(1, 0x28000002058);        // set to 1
     
-    value = read_BAR0(0x28000002500);
+    value = rsx_rd32(RSX_PFIFO_CACHES);
     value &= 0xFFFFFFFE;                 // unset [31:31]
-    write_BAR0(value, 0x28000002500);
+    rsx_wr32(value, RSX_PFIFO_CACHES);
     
-  value = read_BAR0(0x28000003250);
+    value = rsx_rd32(0x28000003250);
     value &= 0xFFFFFFFE;                 // unset [31:31]
-    write_BAR0(value, 0x28000003250);
+    rsx_wr32(value, 0x28000003250);
     
     return;
 }
@@ -464,7 +405,7 @@ void rsx_device_fifo_21B0B0(rsx_device_fifo_t* fifo) {
 /***********************************************************************
 * 
 ***********************************************************************/
-void rsx_device_fifo_21B5FC(rsx_device_fifo_t* fifo, S32 arg1, S32 arg2) {
+void rsx_device_fifo_t::21B5FC(S32 arg1, S32 arg2) {
     if ((arg1 - 1) > 2) {
         printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
         return;
@@ -479,17 +420,14 @@ void rsx_device_fifo_21B5FC(rsx_device_fifo_t* fifo, S32 arg1, S32 arg2) {
 /***********************************************************************
 * 
 ***********************************************************************/
-void rsx_device_fifo_21BA08(rsx_device_fifo_t* fifo) {
+void rsx_device_fifo_t::sub21BA08() {
     S32 value, fc1_offset, fc2_offset, run_out_offset, ctr = 0;
     rsx_core_device_t* core = NULL;
     
     
     // get device core object
     core = rsx_core_device_get_core_object_by_id(g_rsx_core_id);
-    if (core == NULL) {
-        printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-        return;
-    }
+    RSX_ASSERT(core);
     
     // get fc1 offset, if offset is valid(not out of address range)
     fc1_offset = rsx_core_memory_get_BAR2_offset_by_address((void*)core->core_mem, fifo->fc1_addr);
@@ -498,22 +436,22 @@ void rsx_device_fifo_21BA08(rsx_device_fifo_t* fifo) {
     fc2_offset = rsx_core_memory_get_BAR2_offset_by_address((void*)core->core_mem, fifo->fc2_addr);
     
     // update BAR0 registers
-    value = read_BAR0(0x28000002230);
+    value = rsx_rd32(0x28000002230);
     value &= 0xFFFFFFFC;                 // unset value[30:30] and [31:31]
     value |= 1;                          // set value[31:31]
-    write_BAR0(value, 0x28000002230);
+    rsx_wr32(value, 0x28000002230);
     
     // BAR0:0x28000002220 = NV40_PFIFO_RAMFC, RAM FIFO cash?
     // (the offsets for fc1 and fc2 are stored here, FIFO cash 1 and 2?)
-    value = read_BAR0(0x28000002220);
+    value = rsx_rd32(0x28000002220);
     value &= 0xFFFFE000;                           // unset value[19:31]
-    value |= (fc1_offset & 0x1FFF0000) >>16;
-    write_BAR0(value, 0x28000002220);
+    value |= (fc1_offset & 0x1FFF0000) >> 16;
+    rsx_wr32(value, 0x28000002220);
     
-    value = read_BAR0(0x28000002220);
+    value = rsx_rd32(0x28000002220);
     value &= 0xFF00FFFF;                           // unset value[08:15]
     value |= (fc2_offset & 0xFF0000);
-    write_BAR0(value, 0x28000002220);              // value now 0x????30002
+    rsx_wr32(value, 0x28000002220);              // value now 0x????30002
     
     // get run_out address, 0x28002018000 and size, 0x200(512 byte)
     fifo->run_out_addr = rsx_core_memory_get_mem_reg_addr_by_id((void*)core->core_mem, 3);
@@ -526,9 +464,9 @@ void rsx_device_fifo_21BA08(rsx_device_fifo_t* fifo) {
     
     //////////////////////////////////////////////////////////////////////
     // update BAR0 registers
-    value = read_BAR0(0x28000002218);
+    value = rsx_rd32(0x28000002218);
     value &= 0xFFFEFFFF;                           // unset value[15:15]
-    write_BAR0(value, 0x28000002218);
+    rsx_wr32(value, 0x28000002218);
     //////////////////////////////////////////////////////////////////////
     
     // get run_out offset, if offset is valid(not out of address range)
@@ -536,10 +474,10 @@ void rsx_device_fifo_21BA08(rsx_device_fifo_t* fifo) {
     
     //////////////////////////////////////////////////////////////////////
     // update BAR0 registers
-    value = read_BAR0(0x28000002218);
+    value = rsx_rd32(0x28000002218);
     value &= 0xFFFFFE01;                           // unset value[23:30]
     value |= (run_out_offset & 0x1FE00) >>9;
-    write_BAR0(value, 0x28000002218);
+    rsx_wr32(value, 0x28000002218);
     //////////////////////////////////////////////////////////////////////
     
     // get run_out offset, if offset is valid(not out of address range)
@@ -552,74 +490,37 @@ void rsx_device_fifo_21BA08(rsx_device_fifo_t* fifo) {
   }
     
     // ???
-    rsx_device_fifo_21B5FC(fifo, 1, 0x80);
-    rsx_device_fifo_21B5FC(fifo, 2, 0x80);
-    rsx_device_fifo_21B5FC(fifo, 3, 8);
+    fifo->sub21B5FC(1, 0x80);
+    fifo->sub21B5FC(2, 0x80);
+    fifo->sub21B5FC(3, 8);
     
     
     //////////////////////////////////////////////////////////////////////
     // update BAR0 registers
     value = 0;
-    write_BAR0(value, 0x28000002140);
+    rsx_wr32(RSX_PFIFO_INTR_EN_0, value);
     
-    value = read_BAR0(0x28000002140);
-    value |= 1;                          // set [31:31]
-    write_BAR0(value, 0x28000002140);
-    
-    value = read_BAR0(0x28000002140);
-    value |= 1;                          // set [31:31], again
-    write_BAR0(value, 0x28000002140);
-    
-    value = read_BAR0(0x28000002140);
-    value |= 0x10;                       // set [27:27]
-    write_BAR0(value, 0x28000002140);
-    
-    value = read_BAR0(0x28000002140);
-    value |= 0x100;                      // set [23:23]
-    write_BAR0(value, 0x28000002140);
-    
-    value = read_BAR0(0x28000002140);
-    value |= 0x1000;                     // set [19:19]
-    write_BAR0(value, 0x28000002140);
-    
-    value = read_BAR0(0x28000002140);
-    value |= 0x10000;                    // set [15:15]
-    write_BAR0(value, 0x28000002140);
-    
-    value = read_BAR0(0x28000002140);
-    value |= 0x40000;                    // set [13:13]
-    write_BAR0(value, 0x28000002140);
-    
-    value = read_BAR0(0x28000002140);
-    value |= 0x80000;                    // set [12:12]
-    write_BAR0(value, 0x28000002140);
-    
-    value = read_BAR0(0x28000002140);
-    value |= 0x100000;                   // set [11:11]
-    write_BAR0(value, 0x28000002140);
-    
-    value = read_BAR0(0x28000002140);
-    value |= 0x200000;                   // set [10:10]
-    write_BAR0(value, 0x28000002140);
-    
-    value = read_BAR0(0x28000002140);
-    value |= 0x400000;                   // set [09:09]
-    write_BAR0(value, 0x28000002140);
-    
-    value = read_BAR0(0x28000002140);
-    value |= 0x1000000;                  // set [07:07]
-    write_BAR0(value, 0x28000002140);
-    
-    rsx_device_fifo_21B0B0(fifo);     // init/update BAR0 registers
-  
-    return;
+    enable_interrupt(RSX_PFIFO_INTR_CACHE_ERROR);
+    enable_interrupt(RSX_PFIFO_INTR_CACHE_ERROR); // Again?
+    enable_interrupt(RSX_PFIFO_INTR_RUNOUT);
+    enable_interrupt(RSX_PFIFO_INTR_RUNOUT_OVERFLOW);
+    enable_interrupt(RSX_PFIFO_INTR_DMA_PUSHER);
+    enable_interrupt(RSX_PFIFO_INTR_DMA_PT);
+    enable_interrupt(RSX_PFIFO_INTR_BIT18);
+    enable_interrupt(RSX_PFIFO_INTR_BIT19);
+    enable_interrupt(RSX_PFIFO_INTR_SEMAPHORE);
+    enable_interrupt(RSX_PFIFO_INTR_BIT21);
+    enable_interrupt(RSX_PFIFO_INTR_BIT22);
+    enable_interrupt(RSX_PFIFO_INTR_ACQUIRE_TIMEOUT);
+
+    fifo->sub21B0B0();     // init/update BAR0 registers
 }
 
 
 /***********************************************************************
 * 
 ***********************************************************************/
-void rsx_device_fifo_init(rsx_device_fifo_t* fifo) {
+void rsx_device_fifo_t::init() {
     S32 ret = -1, fc1_offset, fc2_offset, ctr = 0;
     rsx_core_device_t* core = NULL;
     
@@ -630,10 +531,7 @@ void rsx_device_fifo_init(rsx_device_fifo_t* fifo) {
     
     // get device core object, we need IOIF0 next
     core = rsx_core_device_get_core_object_by_id(g_rsx_core_id);
-    if (core == NULL) {
-        printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-        return;
-    }
+    RSX_ASSERT(core);
     
     // get fc1 address, 0x28002020000
     fifo->fc1_addr = rsx_core_memory_get_mem_reg_addr_by_id((void*)core->core_mem, 4);
@@ -690,7 +588,7 @@ void rsx_device_fifo_init(rsx_device_fifo_t* fifo) {
     fifo->init = 1;
     
     // init/update BAR0 registers, e.g. offsets for fc1, fc2 and run_out
-    rsx_device_fifo_21BA08(fifo);
+    fifo->sub21BA08();
     
     return;
 }

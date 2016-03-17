@@ -6,6 +6,7 @@
 #include "ioif0.h"
 
 #include "lv1/driver/rsx/assert.h"
+#include "lv1/driver/rsx/mmio.h"
 
 const char* rsx_bus_ioif0_get_class_name_string() {
     return "rsx ioif0 bus";
@@ -41,10 +42,10 @@ S32 rsx_bus_ioif0_t::get_unk_38() {
 }
 
 // Access BAR0
-void rsx_bus_ioif0_t::write_bar0(S32 offset, S32 value) {
+void rsx_bus_ioif0_t::bar0_write(S32 offset, S32 value) {
     write_BAR0(value, bar0_addr + offset);
 }
-S32 rsx_bus_ioif0_t::read_bar0(S64 offset) {
+S32 rsx_bus_ioif0_t::bar0_read(S64 offset) {
     return read_BAR0(bar0_addr + offset);
 }
 
