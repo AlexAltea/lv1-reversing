@@ -42,6 +42,7 @@ struct rsx_device_clock_t {
     S32 unk_24;               // 0x24: ?
 
     // Methods
+    void sub21F0C0();
     S32 get_frequency();
 };
 

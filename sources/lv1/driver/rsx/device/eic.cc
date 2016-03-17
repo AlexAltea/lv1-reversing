@@ -76,36 +76,36 @@ void rsx_device_eic_init_flags(void) {
     S32 value = 0;
     
     
-    value = read_BAR0(0x28000088008);
+    value = rsx_rd32(0x28000088008);
     value |= 0x100000;                   // set flags[11:11]
-    write_BAR0(value, 0x28000088008);
+    rsx_wr32(value, 0x28000088008);
     
-    value = read_BAR0(0x28000088008);
+    value = rsx_rd32(0x28000088008);
     value |= 1;                          // set flags[31:31]
-    write_BAR0(value, 0x28000088008);
+    rsx_wr32(value, 0x28000088008);
     
-    value = read_BAR0(0x28000088008);
+    value = rsx_rd32(0x28000088008);
     value |= 0x10000;                    // set flags[15:15]
-    write_BAR0(value, 0x28000088008);
+    rsx_wr32(value, 0x28000088008);
     
-    value = read_BAR0(0x28000088008);
+    value = rsx_rd32(0x28000088008);
     value |= 0x1000;                     // set flags[19:19]
-    write_BAR0(value, 0x28000088008);
+    rsx_wr32(value, 0x28000088008);
     
-    value = read_BAR0(0x28000088008);
+    value = rsx_rd32(0x28000088008);
     value |= 0x100;                      // set flags[23:23]
-    write_BAR0(value, 0x28000088008);
+    rsx_wr32(value, 0x28000088008);
     
-    value = read_BAR0(0x28000088008);
+    value = rsx_rd32(0x28000088008);
     value |= 0x10;                       // set flags[27:27]
-    write_BAR0(value, 0x28000088008);
+    rsx_wr32(value, 0x28000088008);
     
-    value = read_BAR0(0x28000088004);
+    value = rsx_rd32(0x28000088004);
     value |= 1;                          // set flags[31:31]
-    write_BAR0(value, 0x28000088004);
+    rsx_wr32(value, 0x28000088004);
     
     value = 0x0000E000;
-    write_BAR0(value, 0x2800008800C);    // set flags[16:18]
+    rsx_wr32(value, 0x2800008800C);    // set flags[16:18]
     
     return;
 }

@@ -7,6 +7,7 @@
 
 #include "lv1/driver/rsx/assert.h"
 #include "lv1/driver/rsx/mmio.h"
+#include "lv1/driver/rsx/core/device.h"
 
 
 inline void rsx_device_fifo_t::enable_interrupt(U32 bits) {
@@ -111,7 +112,7 @@ S64 rsx_device_fifo_t::get_fc2_channel_address_by_id(S32 channel_id) {
     RSX_ASSERT(core);
     
     // get device core memory object channels bitmap
-    bm_channels = (void*)core->bm_obj_channels;
+    bm_channels = core->bm_obj_channels;
     if (bm_channels == NULL) {
       printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
     return 0;

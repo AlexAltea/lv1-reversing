@@ -9,7 +9,7 @@
 
 
 // LV1 RSX object video RSX object, size 0xC0
-struct rsx_obj_video_rsx_t {
+struct rsx_object_video_rsx_t {
     S08 unk_00;                  // 0x00: RSX LV1 debug level, 0(off) to 3(max debug output)
     S08 unk_01[3];               // 0x00: padding
     //--------------------------------------------------------------------

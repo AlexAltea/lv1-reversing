@@ -432,7 +432,7 @@ static void rsx_core_device_init(rsx_core_device_t* dev_core, S32 arg1, S32 dev_
     S64 *unk_0F0 = NULL;
     rsx_device_fb_t* fb = NULL;
     rsx_hash_tbl_obj_t* hash_tbl = NULL;
-    rsx_obj_video_rsx_t* video_rsx = NULL;
+    rsx_object_video_rsx_t* video_rsx = NULL;
     rsx_object_vfb_t* vfb_obj = NULL;
     
     
@@ -609,7 +609,7 @@ static void rsx_core_device_init(rsx_core_device_t* dev_core, S32 arg1, S32 dev_
     
     //////////////////////////////////////////////////////////////////////
     // allocate RSX object_video_RSX object
-    video_rsx = lv1_kmalloc(sizeof(rsx_obj_video_rsx_t));
+    video_rsx = lv1_kmalloc(sizeof(rsx_object_video_rsx_t));
     if (video_rsx == NULL) {
         printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
         return;
@@ -617,7 +617,7 @@ static void rsx_core_device_init(rsx_core_device_t* dev_core, S32 arg1, S32 dev_
     
     // init RSX video object and store object into core
     rsx_object_video_rsx_init(video_rsx);
-    dev_core->obj_video_rsx_obj = (void*)video_rsx;
+    dev_core->obj_video_rsx = (void*)video_rsx;
     
     
     //////////////////////////////////////////////////////////////////////
@@ -648,7 +648,7 @@ static void rsx_core_device_init(rsx_core_device_t* dev_core, S32 arg1, S32 dev_
     
     // init RSX object v frambuffer object and store object into core
     rsx_object_vfb_init(vfb_obj);
-    dev_core->obj_vfb_obj = (void*)vfb_obj;
+    dev_core->obj_vfb = (void*)vfb_obj;
     
     
     // object creation finished

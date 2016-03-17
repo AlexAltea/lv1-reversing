@@ -20,7 +20,9 @@
 #include "lv1/driver/rsx/device/master.h"
 
 // Objects
-
+#include "lv1/driver/rsx/object/hash_table.h"
+#include "lv1/driver/rsx/object/vfb.h"
+#include "lv1/driver/rsx/object/video_rsx.h"
 
 // Maximum RSX devices
 #define MAX_DEV  16
@@ -54,10 +56,12 @@ struct rsx_core_device_t {
     rsx_device_audio_t* dev_audio;    // 0x100: RSX device audio object
 
     // Objects
-    S64* obj_hash_tbl_obj;            // 0x108: RSX object hash table object
-    S64* obj_video_rsx_obj;           // 0x110: RSX object video_rsx object
-    S64* obj_vfb_obj;                 // 0x118: RSX object video framebuffer, vfb object ever zero, seams to be the 2D stuff for otherOS(no 3D)
-    S64* bm_obj_channels;             // 0x120: a RSX utils bitmap object, 4 items, the max(4) RSX channels
+    rsx_object_hash_table_t* obj_hash_table;    // 0x108: RSX object hash table object
+    rsx_object_video_rsx_t* obj_video_rsx;     // 0x110: RSX object video_rsx object
+    rsx_object_vfb_t* obj_vfb;                 // 0x118: RSX object video framebuffer, vfb object ever zero, seams to be the 2D stuff for otherOS(no 3D)
+
+    // Channels
+    rsx_utils_bitmap_t* bm_obj_channels;// 0x120: a RSX utils bitmap object, 4 items, the max(4) RSX channels
     //--------------------------------------------------------------------
     // ??? tb values, for mesure things like total time used for interrupts, and other things
     S64 unk_128;                 // 0x128: ?

@@ -6,6 +6,7 @@
 #include "hash_table.h"
 
 #include "lv1/driver/rsx/assert.h"
+#include "lv1/driver/rsx/mmio.h"
 #include "lv1/driver/rsx/core/device.h"
 
 /*
@@ -65,7 +66,7 @@ void rsx_object_hash_table_t::init() {
         return;
     }
     
-    // init hash table with 0
+    // Initialize hash table with 0
     if (size_0 != 0)
         while (size_0 > offset) {
             DDR_write32(0, io_addr + offset);
@@ -73,20 +74,22 @@ void rsx_object_hash_table_t::init() {
         }
     }
     
-    // set/update BAR0 registers
-    value = read_BAR0(0x28000002210);
-    value &= 0xFFFFFE0F;                        // unset value[23:27]
+    // Set hash table offset
+    value = rsx_rd32(RSX_PFIFO_RAMHT);
+    value &= 0xFFFFFE0F;
     value |= (bar0_offset >> 12);
-    write_BAR0(value, 0x28000002210);
+    rsx_wr32(RSX_PFIFO_RAMHT, value);
     
-    value = read_BAR0(0x28000002210);
-    value &= 0xFFFCFFFF;                        // unset value[14:15]
-    value |= 0x20000;                           // set value[14:14]
-    write_BAR0(value, 0x28000002210);
+    // Set hash table size
+    value = rsx_rd32(RSX_PFIFO_RAMHT);
+    value &= 0xFFFCFFFF;
+    value |= 0x20000;
+    rsx_wr32(RSX_PFIFO_RAMHT, value);
     
-    value = read_BAR0(0x28000002210);
-    value &= 0xF8FFFFFF;                        // unset value[05:07]
-    write_BAR0(value, 0x28000002210);
+    // Clear hash table bits [05:07]
+    value = rsx_rd32(RSX_PFIFO_RAMHT);
+    value &= 0xF8FFFFFF;
+    rsx_wr32(RSX_PFIFO_RAMHT, value);
     
     return;
 }
@@ -94,29 +97,29 @@ void rsx_object_hash_table_t::init() {
 
 void rsx_object_hash_table_t::finalize() {
     S32 value, offset = 0;
-    
-    
+
     // if table, clean table
     if (size_0 != 0)
         while (size_0 > offset) {
             DDR_write32(0, offset + io_addr);
             offset+=4;
         }
+    }
     
-    // set/update BAR0 registers
-    value = read_BAR0(0x28000002210);
+    // Clear hash table size
+    value = rsx_rd32(RSX_PFIFO_RAMHT);
     value &= 0xFFFFFE0F;                        // unset value[23:27]
-    write_BAR0(value, 0x28000002210);
+    rsx_wr32(RSX_PFIFO_RAMHT, value);
     
-    value = read_BAR0(0x28000002210);
+    // Clear hash table offset
+    value = rsx_rd32(RSX_PFIFO_RAMHT);
     value &= 0xFFFCFFFF;                        // unset value[14:15]
-    write_BAR0(value, 0x28000002210);
+    rsx_wr32(RSX_PFIFO_RAMHT, value);
     
-    value = read_BAR0(0x28000002210);
+    // Clear hash table bits [05:07]
+    value = rsx_rd32(RSX_PFIFO_RAMHT);
     value &= 0xF8FFFFFF;                        // unset value[05:07]
-    write_BAR0(value, 0x28000002210);
-    
-    return;
+    rsx_wr32(RSX_PFIFO_RAMHT, value);
 }
 
 

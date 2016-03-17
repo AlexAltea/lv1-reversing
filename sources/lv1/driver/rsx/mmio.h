@@ -7,6 +7,35 @@
 
 #include "common/types.h"
 
+// PMC
+#define RSX_PMC_BOOT_0                                    (0x00000000)
+#define RSX_PMC_BOOT_1                                    (0x00000004)
+#define RSX_PMC_INTR_0                                    (0x00000100)
+#define     RSX_PMC_INTR_0_PFIFO_PENDING                     (1 <<  8)
+#define     RSX_PMC_INTR_0_PGRAPH_PENDING                    (1 << 12)
+#define     RSX_PMC_INTR_0_CRTC0_PENDING                     (1 << 24)
+#define     RSX_PMC_INTR_0_CRTC1_PENDING                     (1 << 25)
+#define     RSX_PMC_INTR_0_CRTCn_PENDING                     (3 << 24)
+#define RSX_PMC_INTR_EN_0                                 (0x00000140)
+#define     RSX_PMC_INTR_EN_0_MASTER_ENABLE                  (1 <<  0)
+#define RSX_PMC_ENABLE                                    (0x00000200)
+#define     RSX_PMC_ENABLE_PFIFO                             (1 <<  8)
+#define     RSX_PMC_ENABLE_PGRAPH                            (1 << 12)
+#define     RSX_PMC_ENABLE_UNK13                             (1 << 13)
+#define RSX_PMC_1098                                      (0x00001098)
+#define RSX_PMC_1530                                      (0x00001530)
+#define RSX_PMC_GRAPH_UNITS                               (0x00001540)
+#define RSX_PMC_1580                                      (0x00001580)
+#define RSX_PMC_1588                                      (0x00001588)
+#define RSX_PMC_158C                                      (0x0000158C)
+#define RSX_PMC_1590                                      (0x00001590)
+#define RSX_PMC_BACKLIGHT                                 (0x000015f0)
+#define     RSX_PMC_BACKLIGHT_MASK                        (0x001f0000)
+#define RSX_PMC_1700                                      (0x00001700)
+#define RSX_PMC_1704                                      (0x00001704)
+#define RSX_PMC_1708                                      (0x00001708)
+#define RSX_PMC_170C                                      (0x0000170C)
+
 // PFIFO
 #define RSX_PFIFO_DELAY_0                                 0x00002040
 #define RSX_PFIFO_DMA_TIMESLICE                           0x00002044
@@ -206,8 +235,13 @@
 
 // PGRAPH
 #define RSX_PGRAPH_DEBUG_0             (0x00400080)
-#define RSX_PGRAPH_INTR                (0x00400100)
+#define RSX_PGRAPH_DEBUG_1             (0x00400084)
+#define RSX_PGRAPH_DEBUG_2             (0x00400088)
+#define RSX_PGRAPH_DEBUG_3             (0x0040008C)
+#define RSX_PGRAPH_DEBUG_4             (0x00400090)
 #define RSX_PGRAPH_UNK00A4             (0x004000A4)
+#define RSX_PGRAPH_INTR                (0x00400100)
+#define RSX_PGRAPH_NSTATUS             (0x00400104)
 #define RSX_PGRAPH_NSOURCE             (0x00400108)
 #define     RSX_PGRAPH_NSOURCE_NOTIFICATION            (1 <<  0)  // Notification pending
 #define     RSX_PGRAPH_NSOURCE_DATA_ERROR              (1 <<  1)  // Data error pending
@@ -250,7 +284,36 @@
 #define     RSX_PGRAPH_CTXCTL_NEXT_INSTANCE             0x000FFFFF
 #define RSX_PGRAPH_DEBUG_2             (0x00400620)
 #define RSX_PGRAPH_UNK0634             (0x00400634)
+#define RSX_PGRAPH_BOFFSET0            (0x00400640)
+#define RSX_PGRAPH_BOFFSET1            (0x00400644)
+#define RSX_PGRAPH_BOFFSET2            (0x00400648)
+#define RSX_PGRAPH_BOFFSET3            (0x0040064C)
+#define RSX_PGRAPH_BOFFSET4            (0x00400650)
+#define RSX_PGRAPH_BOFFSET5            (0x00400654)
+#define RSX_PGRAPH_BBASE0              (0x00400658)
+#define RSX_PGRAPH_BBASE1              (0x0040065C)
+#define RSX_PGRAPH_BBASE2              (0x00400660)
+#define RSX_PGRAPH_BBASE3              (0x00400664)
+#define RSX_PGRAPH_BBASE4              (0x00400668)
+#define RSX_PGRAPH_BBASE5              (0x0040066C)
+#define RSX_PGRAPH_BPITCH0             (0x00400670)
+#define RSX_PGRAPH_BPITCH1             (0x00400674)
+#define RSX_PGRAPH_BPITCH2             (0x00400678)
+#define RSX_PGRAPH_BPITCH3             (0x0040067C)
+#define RSX_PGRAPH_BPITCH4             (0x00400680)
+#define RSX_PGRAPH_BLIMIT0             (0x00400684)
+#define RSX_PGRAPH_BLIMIT1             (0x00400688)
+#define RSX_PGRAPH_BLIMIT2             (0x0040068C)
+#define RSX_PGRAPH_BLIMIT3             (0x00400690)
+#define RSX_PGRAPH_BLIMIT4             (0x00400694)
+#define RSX_PGRAPH_BLIMIT5             (0x00400698)
+#define RSX_PGRAPH_BSWIZZLE2           (0x0040069C)
+#define RSX_PGRAPH_BSWIZZLE5           (0x004006A0)
+#define RSX_PGRAPH_STATUS              (0x00400700)
 #define RSX_PGRAPH_TILE(i)             (0x00400D00 + 16*(i))
+#define RSX_PGRAPH_TLIMIT(i)           (0x00400D04 + 16*(i))
+#define RSX_PGRAPH_TSIZE(i)            (0x00400D08 + 16*(i))
+#define RSX_PGRAPH_TSTATUS(i)          (0x00400D0C + 16*(i))
 #define RSX_PGRAPH_DMA_A_XLATE_INST    (0x00401040)
 #define RSX_PGRAPH_DMA_A_CONTROL       (0x00401044)
 #define RSX_PGRAPH_DMA_A_LIMIT         (0x00401048)
@@ -260,6 +323,7 @@
 #define RSX_PGRAPH_DMA_B_LIMIT         (0x00401088)
 #define RSX_PGRAPH_DMA_B_TLB_PTE       (0x0040108C)
 #define RSX_PGRAPH_UNK5000             (0x00405000)
+#define RSX_PGRAPH_UNK7570(i)          (0x00407570 + 8*(i))
 
 inline U32 rsx_rd32(U32 offset);
 inline void rsx_wr32(U32 offset, U32 value);
