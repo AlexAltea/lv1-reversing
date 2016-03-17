@@ -4,15 +4,9 @@
  */
 
 #include "memory.h"
+
+#include "lv1/lv1.h"
 #include "lv1/driver/rsx/assert.h"
-
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
-
-
-
 
 static S32 rsx_mem_seg_set_max = 12;
 
@@ -36,29 +30,12 @@ static rsx_mem_reg_setting_t set[12] = {
 
 
 /***********************************************************************
-* 
-***********************************************************************/
-S32 rsx_core_memory_get_BAR1_offset_by_address(rsx_core_memory_t* core_mem, S64 addr) {
-    S32 offset = 0;
-    
-    
-    offset = addr - core_mem->bar_1_addr;
-    if (core_mem->bar_1_size <= offset) {
-        printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-        return 0;
-    }
-    
-    return offset;
-}
-
-
-/***********************************************************************
 * get RSX memory context by ID
 * 
 * rsx_core_memory_t* core_mem = RSX device core object
 * U32 mem_ctx_id          = RSX memory context ID
 ***********************************************************************/
-rsx_mem_ctx_obj_t* rsx_core_memory_get_memory_context_by_id(rsx_core_memory_t* core_mem, U32 mem_ctx_id) {
+rsx_mem_ctx_obj_t* rsx_core_memory_t::get_memory_context_by_id(U32 mem_ctx_id) {
     rsx_mem_ctx_obj_t* mem_ctx = NULL;
     
     
@@ -75,7 +52,7 @@ rsx_mem_ctx_obj_t* rsx_core_memory_get_memory_context_by_id(rsx_core_memory_t* c
 /***********************************************************************
 * 
 ***********************************************************************/
-rsx_core_memory_t* rsx_core_memory_allocate_memory_context(rsx_core_memory_t* core_mem, S32 local_size, S64 arg1, S64 arg2, S64 arg3, S64 arg4) {
+rsx_core_memory_t* rsx_core_memory_allocate_memory_context(S32 local_size, S64 arg1, S64 arg2, S64 arg3, S64 arg4) {
     S32 ctx_id, item_count;
     S32 ret1, ret2, ret3, ret4, ret5; 
     S64 out1, out2, out3, out4, out5;
@@ -151,7 +128,7 @@ rsx_core_memory_t* rsx_core_memory_allocate_memory_context(rsx_core_memory_t* co
             mem_ctx->ddr_lpar = core_mem->ddr_lpar_addr;         // memory context DDR base LPAR
             mem_ctx->lm_start_lpar = out1;                       // memory context DDR start LPAR
             
-            mem_ctx->core_mem_obj = (void*)core_mem;             // core memory object
+            mem_ctx->core_mem_obj = core_mem;                    // core memory object
             mem_ctx->id = ctx_id ^ 0x5A5A5A5A;                   // memory context ID
             
             mem_ctx->unk_30 = core_mem->unk_0B8 * out3;          // ?
@@ -174,22 +151,25 @@ rsx_core_memory_t* rsx_core_memory_allocate_memory_context(rsx_core_memory_t* co
 /***********************************************************************
 * 
 ***********************************************************************/
-S32 rsx_core_memory_value_div_by_16(rsx_core_memory_t* core_mem, S32 offset) {
+S32 rsx_core_memory_t::value_div_by_16(S32 offset) {
     return offset >>4;
 }
 
-/***********************************************************************
-* 
-***********************************************************************/
-S32 rsx_core_memory_get_BAR2_offset_by_address(rsx_core_memory_t* core_mem, S64 addr) {
+S32 rsx_core_memory_t::get_bar1_offset_by_address(S64 addr) {
+    S32 offset = addr - bar1_addr;
+    RSX_ASSERT(bar1_size <= offset);
+    return offset;
+}
+
+S32 rsx_core_memory_t::get_bar2_offset_by_address(S64 addr) {
     S64 size;
     
     
     // addr - start address(0x28002000000) = offset
-    addr -= rsx_core_memory_get_mem_reg_addr_by_id(core_mem, 1);
+    addr -= get_mem_reg_addr_by_id(1);
     
     // get BAR0 size, 0x100000
-    size = rsx_core_memory_get_mem_reg_size_by_id(core_mem, 1);
+    size = get_mem_reg_size_by_id(1);
     
     // offset out of range ?
     if (addr > size) {
@@ -204,42 +184,36 @@ S32 rsx_core_memory_get_BAR2_offset_by_address(rsx_core_memory_t* core_mem, S64 
 /***********************************************************************
 * 
 ***********************************************************************/
-static S32 rsx_core_memory_get_mem_reg_addr_and_size_by_id(rsx_core_memory_t* core_mem, S32 mem_region_id, S64 *addr, S32 *size) {
-    S32 i;
-    
-    
-    if (rsx_mem_seg_set_max == 0)
-      return LV1_ILLEGAL_PARAMETER_VALUE;
-    
-    for (i = 0; i < rsx_mem_seg_set_max; i++) {
+S32 rsx_core_memory_t::get_mem_reg_by_id(S32 mem_region_id, S64 *addr, S32 *size) {
+    if (rsx_mem_seg_set_max == 0) {
+        return LV1_ILLEGAL_PARAMETER_VALUE;
+    }
+    for (S32 i = 0; i < rsx_mem_seg_set_max; i++) {
         if (set[i].id == mem_region_id) {
             if (set[i].type == 0xD) {
-                *addr = core_mem->bar_1_addr + set[i].offset;
+                *addr = bar1_addr + set[i].offset;
                 *size = set[i].size;
                 return LV1_SUCCESS;
             }
-            
             if (set[i].type == 0xE) {
-                *addr = (core_mem->bar_1_addr + core_mem->bar_1_size) - set[i].offset;
+                *addr = (bar1_addr + bar1_size) - set[i].offset;
                 *size = set[i].size;
                 return LV1_SUCCESS;
             }
-            
             if (set[i].type == 0xF) {
-                *addr = core_mem->unk_080 + set[i].offset;
+                *addr = unk_080 + set[i].offset;
                 *size = set[i].size;
                 return LV1_SUCCESS;
             }
         }
     }
-    
     return LV1_ILLEGAL_PARAMETER_VALUE;
 }
 
 /***********************************************************************
 * 
 ***********************************************************************/
-S64 rsx_core_memory_get_mem_reg_addr_by_id(rsx_core_memory_t* core_mem, S32 mem_region_id) {
+S64 rsx_core_memory_t::get_mem_reg_addr_by_id(S32 mem_region_id) {
     S32 ret = -1;
     S64 addr;
     S32 size;
@@ -257,7 +231,7 @@ S64 rsx_core_memory_get_mem_reg_addr_by_id(rsx_core_memory_t* core_mem, S32 mem_
 /***********************************************************************
 * 
 ***********************************************************************/
-S32 rsx_core_memory_get_mem_reg_size_by_id(rsx_core_memory_t* core_mem, S32 mem_region_id) {
+S32 rsx_core_memory_t::get_mem_reg_size_by_id(S32 mem_region_id) {
     S32 ret = -1;
     S64 addr;
     S32 size;
@@ -275,7 +249,7 @@ S32 rsx_core_memory_get_mem_reg_size_by_id(rsx_core_memory_t* core_mem, S32 mem_
 /***********************************************************************
 * 
 ***********************************************************************/
-static void rsx_core_memory_build_core_mem_obj(rsx_core_memory_t* core_mem, S32 core_id, S64 BAR1_addr,
+static void rsx_core_memory_t::build_core_mem_obj(S32 core_id, S64 BAR1_addr,
                                                S32 BAR1_size, S64 BAR2_addr, S32 arg1, S32 arg2,
                                                S32 arg3, S32 arg4, S32 arg5, S32 DDR_MB_CTags, S64 *status) {
     S32 i, ret = -1, size;
@@ -298,8 +272,8 @@ static void rsx_core_memory_build_core_mem_obj(rsx_core_memory_t* core_mem, S32 
     core_mem->unk_038        = arg3;            // ?
     core_mem->core_id        = core_id;         // device core ID
     core_mem->unk_040        = arg5;            // ?
-    core_mem->bar_1_addr     = BAR1_addr;       // 0x28080000000
-    core_mem->bar_1_size     = BAR1_size;       // 0x10000000
+    core_mem->bar1_addr     = BAR1_addr;       // 0x28080000000
+    core_mem->bar1_size     = BAR1_size;       // 0x10000000
     core_mem->unk_080        = BAR2_addr;       // ? 0x28002000000
     core_mem->ddr_sys_reserv = 0x200000;        // 2 MB system reserved DDR memory
     core_mem->unk_03C        = arg4;            // ? 8
@@ -331,9 +305,9 @@ static void rsx_core_memory_build_core_mem_obj(rsx_core_memory_t* core_mem, S32 
     
     // map local memory
     ret = rsx_map_io_to_lpar(core_mem->core_id,                 // (IN)  memory core ID
-                             core_mem->bar_1_addr,              // (IN)  IO address to map
+                             core_mem->bar1_addr,              // (IN)  IO address to map
                              20,                                // (IN)  ?
-                             core_mem->bar_1_size - 0x200000,   // (IN)  IO size, - 2 MB system reserved
+                             core_mem->bar1_size - 0x200000,   // (IN)  IO size, - 2 MB system reserved
                              &core_mem->ddr_lpar_addr);         // (OUT) mapped LPAR address 
     if (ret != 0)
       return;
@@ -364,7 +338,7 @@ static void rsx_core_memory_build_core_mem_obj(rsx_core_memory_t* core_mem, S32 
     // allocate bitmap, to handle the 254 local memory pages
     bm_local_mem = lv1_kmalloc(sizeof(rsx_utils_bitmap_t));
     if (bm_local_mem != NULL) {
-        item_total = (core_mem->bar_1_size - core_mem->ddr_sys_reserv) / core_mem->ddr_page_size;
+        item_total = (core_mem->bar1_size - core_mem->ddr_sys_reserv) / core_mem->ddr_page_size;
         
         rsx_utils_bitmap_create(bm_local_mem,              // (IN) bitmap object
                                 core_mem->ddr_lpar_addr,   // (IN) user value 1, DDR base LPAR address

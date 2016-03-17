@@ -3,29 +3,17 @@
  * Released under MIT license. Read LICENSE for more details.
  */
 
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
-
-
-
-
-
-
-
-
-
+#include "sw_class.h"
 
 /***********************************************************************
 * 
 ***********************************************************************/
-void rsx_object_sw_class_create_object(rsx_object_sw_class_t* sw_obj, U32 class, S64 *opd) {
+void rsx_object_sw_class_create_object(rsx_object_sw_class_t* sw_obj, U32 handle, S64 *opd) {
     
     
     
     
-    sw_obj->class = class;              // 0xCAFEBABE
+    sw_obj->handle = handle;              // 0xCAFEBABE
     //sw_obj->opd = type;                 // OPD of rsx_object_sw_driver()
     
     // check OPD

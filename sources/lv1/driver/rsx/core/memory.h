@@ -44,9 +44,9 @@ struct rsx_mem_ctx_obj_t {
 // RSX core memory object, size 0x190
 struct rsx_core_memory_t {
     S64 core_id;                 // 0x000: RSX device core object ID
-    S64 bar_1_addr;              // 0x008: BAR1(VRAM) start address, 0x28080000000
+    S64 bar1_addr;               // 0x008: BAR1(VRAM) start address, 0x28080000000
     S64 ddr_lpar_addr;           // 0x010: LPAR start address of mapped DDR memory, 0x7000B0000000
-    S64 bar_1_size;              // 0x018: BAR1/BAR2 size, 0x10000000(256 MB)
+    S64 bar1_size;               // 0x018: BAR1/BAR2 size, 0x10000000(256 MB)
     S64 ddr_page_size;           // 0x020: DDR memory page size, 0x100000(1 MB)
     S64 ddr_sys_reserv;          // 0x028: size of system reserved DDR memory, 0x200000(2 MB)
     //-------------------------------------------------------------------------------------------------------------------------------
@@ -80,26 +80,30 @@ struct rsx_core_memory_t {
     S64 unk_0B0;                 // 0x0B0: ? 0x300000
     S64 unk_0B8;                 // 0x0B8: ? 0x1000
     //--- RSX bitmap objects --------------------------------------------------------------------------------------------------------
-    //                                      items  value_1          value_2    description
-    S64* bm_reports;              // 0x0C0: 4      0x480000340000   0x10000    4 report areas of 0x10000(64 KB) size
-    S64* bm_local_mem;            // 0x0C8: 254    0x7000B0000000   0x100000   254 local memory pages of 1MB size
-    S64* bm_driver_info;          // 0x0D0: 3      0x590000         0x4000     3 driver info areas of 0x4000(16 KB) size
-    S64* bm_class_nv_sw;          // 0x0D8: 128    0x28002050000    0x20       128 class(nv, sw) objects of 0x20 byte size
-    S64* bm_unk_00;               // 0x0E0: 512    0                1          ? DDR_MB_CTags related
-    S64* bm_unk_01;               // 0x0E8: 768    0                1          ?
-    S64* bm_unk_02;               // 0x0F0: 15     0                1          ?
-    S64* bm_unk_03;               // 0x0F8: 8      0                1          ?
-    S64* bm_ctx_dma;              // 0x100: 256    0x28002040000    0x10       256 context DMA objects of 0x10 byte size
+    //                                             items  value_1          value_2    description
+    rsx_utils_bitmap_t* bm_reports;      // 0x0C0: 4      0x480000340000   0x10000    4 report areas of 0x10000(64 KB) size
+    rsx_utils_bitmap_t* bm_local_mem;    // 0x0C8: 254    0x7000B0000000   0x100000   254 local memory pages of 1MB size
+    rsx_utils_bitmap_t* bm_driver_info;  // 0x0D0: 3      0x590000         0x4000     3 driver info areas of 0x4000(16 KB) size
+    rsx_utils_bitmap_t* bm_class_nv_sw;  // 0x0D8: 128    0x28002050000    0x20       128 class(nv, sw) objects of 0x20 byte size
+    rsx_utils_bitmap_t* bm_unk_00;       // 0x0E0: 512    0                1          ? DDR_MB_CTags related
+    rsx_utils_bitmap_t* bm_unk_01;       // 0x0E8: 768    0                1          ?
+    rsx_utils_bitmap_t* bm_unk_02;       // 0x0F0: 15     0                1          ?
+    rsx_utils_bitmap_t* bm_unk_03;       // 0x0F8: 8      0                1          ?
+    rsx_utils_bitmap_t* bm_ctx_dma;      // 0x100: 256    0x28002040000    0x10       256 context DMA objects of 0x10 byte size
     //-------------------------------------------------------------------------------------------------------------------------------
     S64* rsx_mem_ctx[16];         // 0x108: RSX memory context object array, 0 to 15
     S64* unk_188;                 // 0x188: ?
-} rsx_core_mem_obj;
 
-S32 rsx_core_memory_get_BAR1_offset_by_address(rsx_core_memory_t* core_mem, S64 addr);
-rsx_mem_ctx_obj_t* rsx_core_memory_get_memory_context_by_id(rsx_core_memory_t* core_mem, U32 mem_ctx_id);
-rsx_core_memory_t* rsx_core_memory_allocate_memory_context(rsx_core_memory_t* core_mem, S32 local_size, S64 arg1, S64 arg2, S64 arg3, S64 arg4);
-S32 rsx_core_memory_value_div_by_16(rsx_core_memory_t* core_mem, S32 offset);
-S32 rsx_core_memory_get_BAR2_offset_by_address(rsx_core_memory_t* core_mem, S64 addr);
-S64 rsx_core_memory_get_mem_reg_addr_by_id(rsx_core_memory_t* core_mem, S32 mem_region_id);
-S32 rsx_core_memory_get_mem_reg_size_by_id(rsx_core_memory_t* core_mem, S32 mem_region_id);
+    // Methods
+    rsx_mem_ctx_obj_t* get_memory_context_by_id(U32 mem_ctx_id);
+    rsx_core_memory_t* allocate_memory_context(S32 local_size, S64 arg1, S64 arg2, S64 arg3, S64 arg4);
+    S32 value_div_by_16(S32 offset);
+    S32 get_bar1_offset_by_address(S64 addr);
+    S32 get_bar2_offset_by_address(S64 addr);
+
+    S32 get_mem_reg_by_id(S32 mem_region_id, S64 *addr, S32 *size);
+    S64 get_mem_reg_addr_by_id(S32 mem_region_id);
+    S32 get_mem_reg_size_by_id(S32 mem_region_id);
+};
+
 rsx_core_memory_t* rsx_core_memory_ctor(S64 rsx_core_id);

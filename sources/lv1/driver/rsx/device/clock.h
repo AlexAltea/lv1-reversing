@@ -19,7 +19,7 @@ enum {
 };
 
 // LV1 RSX device clock object, size 0x30
-struct rsx_dev_clock_obj_t {
+struct rsx_device_clock_t {
     S64 vtab;                 // 0x00: pointer -> virtual table
     //--------------------------------------------------------------------
     S32 id;                   // 0x08: clock ID
@@ -36,4 +36,4 @@ struct rsx_dev_clock_obj_t {
     S32 get_frequency();
 };
 
-void rsx_device_clock_rsx_create(rsx_dev_clock_obj_t* clock_obj, S32 id, S32 arg1);
+void rsx_device_clock_rsx_create(rsx_device_clock_t* clock_obj, S32 id, S32 arg1);

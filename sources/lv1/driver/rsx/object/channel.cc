@@ -301,7 +301,7 @@ static void rsx_object_channel_220B00()
 	S64 addr;
 	rsx_core_device_t *core = NULL;
 	rsx_core_memory_t *core_mem = NULL;
-	rsx_graph_obj_t *graph = NULL;
+	rsx_device_graph_t *graph = NULL;
 	
 	
 	// get RSX device core
@@ -399,7 +399,7 @@ void rsx_object_channel_220D0C(S32 channel_id, rsx_object_context_dma_t *dma_obj
 	S32 offset;
 	rsx_core_device_t *core = NULL;
 	rsx_device_fifo_t *fifo = NULL;
-	rsx_graph_obj_t *graph = NULL;
+	rsx_device_graph_t *graph = NULL;
 	rsx_core_memory_t *core_mem = NULL;
 	
 	

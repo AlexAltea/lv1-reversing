@@ -15,7 +15,7 @@ S32 g_rsx_core_id = 0xFF;
 S32 rsx_core_device_map_device(rsx_core_device_t* core, S32 device_id, S64 *dev_lpar_addr, S64 *dev_lpar_size) {
     S64 io_addr = 0, lpar_size = 0;
     S32 ret = -1, io_size = 0;
-    rsx_dev_audio_obj_t* dev_audio = NULL;
+    rsx_device_audio_t* dev_audio = NULL;
     
     
     // device ID check
@@ -291,12 +291,12 @@ S32 rsx_core_device_map_device(rsx_core_device_t* core, S32 device_id, S64 *dev_
 ***********************************************************************/
 void rsx_core_device_finalize(rsx_core_device_t* core) {
     rsx_device_fifo_t* fifo = NULL;
-    rsx_graph_obj_t* graph = NULL;
+    rsx_device_graph_t* graph = NULL;
     
     
     
     // 1. pause FIFO
-    fifo = (void*)core->dev_fifo_obj;
+    fifo = (void*)core->fifo;
     rsx_device_fifo_pause(fifo);
     
     // 2. graph pause ?
@@ -420,16 +420,16 @@ static void rsx_core_device_init(rsx_core_device_t* dev_core, S32 arg1, S32 dev_
     S32 i;
     rsx_utils_bitmap_t* bm_obj_channels = NULL;
     rsx_bus_ioif0_obj_t* ioif0 = NULL;
-    rsx_dev_clock_obj_t* clock_1 = NULL;
-    rsx_dev_clock_obj_t* clock_5 = NULL;
+    rsx_device_clock_t* clock1 = NULL;
+    rsx_device_clock_t* clock5 = NULL;
     rsx_core_memory_t* core_mem = NULL;
     S64 *unk_0F0 = NULL;
     rsx_device_fb_t* fb = NULL;
     rsx_hash_tbl_obj_t* hash_tbl = NULL;
     rsx_device_fifo_t* fifo = NULL;
-    rsx_graph_obj_t* graph = NULL;
+    rsx_device_graph_t* graph = NULL;
     rsx_obj_video_rsx_t* video_rsx = NULL;
-    rsx_dev_audio_obj_t* dev_audio = NULL;
+    rsx_device_audio_t* dev_audio = NULL;
     rsx_obj_vfb_obj_t* vfb_obj = NULL;
     
     
@@ -476,8 +476,8 @@ static void rsx_core_device_init(rsx_core_device_t* dev_core, S32 arg1, S32 dev_
     
     // set some globals
     g_rsx_unk_00 =  0;        // ? 
-  g_rsx_unk_01 =  0;        // ? 
-  g_rsx_unk_02 = -1;        // ? 
+    g_rsx_unk_01 =  0;        // ? 
+    g_rsx_unk_02 = -1;        // ? 
     
     // get BAR2 address 0x28002000000 and store global
     g_rsx_bar2_addr = rsx_bus_ioif0_get_BAR2_addr(ioif0);
@@ -487,29 +487,29 @@ static void rsx_core_device_init(rsx_core_device_t* dev_core, S32 arg1, S32 dev_
     
     
     // allocate RSX device clock object 1, "nvclk"
-    clock_1 = lv1_kmalloc(sizeof(rsx_dev_clock_obj_t));
-    if (clock_1 == NULL) {
+    clock1 = lv1_kmalloc(sizeof(rsx_device_clock_t));
+    if (clock1 == NULL) {
         printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
         return;
     }
     
-    rsx_device_clock_rsx_create(clock_1, 1, 1);
+    rsx_device_clock_rsx_create(clock1, 1, 1);
     
     // store RSX device clock object 1 into core object
-    dev_core->dev_clock_1_obj = (void*)clock_1;
+    dev_core->dev_clock_1_obj = (void*)clock1;
     
     
     // allocate RSX device clock object 5, "display clk"
-    clock_5 = lv1_kmalloc(sizeof(rsx_dev_clock_obj_t));
-    if (clock_5 == NULL) {
+    clock5 = lv1_kmalloc(sizeof(rsx_device_clock_t));
+    if (clock5 == NULL) {
         printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
         return;
     }
     
-    rsx_device_clock_rsx_create(clock_5, 5, 6);
+    rsx_device_clock_rsx_create(clock5, 5, 6);
     
     // store RSX device clock object 5 into core object
-    dev_core->dev_clock_5_obj = (void*)clock_5;
+    dev_core->dev_clock5 = (void*)clock5;
     
     
     // TODO: not finished...
@@ -590,11 +590,11 @@ static void rsx_core_device_init(rsx_core_device_t* dev_core, S32 arg1, S32 dev_
     
     // init RSX FIFO and store object into core
     rsx_device_fifo_init(fifo);
-    dev_core->dev_fifo_obj = (void*)fifo;
+    dev_core->fifo = (void*)fifo;
     
     //////////////////////////////////////////////////////////////////////
     // allocate RSX device graph object
-    graph = lv1_kmalloc(sizeof(rsx_graph_obj_t));
+    graph = lv1_kmalloc(sizeof(rsx_device_graph_t));
     if (graph == NULL) {
         printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
         return;
@@ -625,7 +625,7 @@ static void rsx_core_device_init(rsx_core_device_t* dev_core, S32 arg1, S32 dev_
     
     //////////////////////////////////////////////////////////////////////
     // allocate RSX device audio object
-    dev_audio = lv1_kmalloc(sizeof(rsx_dev_audio_obj_t));
+    dev_audio = lv1_kmalloc(sizeof(rsx_device_audio_t));
     if (dev_audio == NULL) {
         printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
         return;
@@ -658,7 +658,7 @@ static void rsx_core_device_init(rsx_core_device_t* dev_core, S32 arg1, S32 dev_
     rsx_device_graph_21D2DC((void*)dev_core->dev_graph_obj);
     
     // continue, better, start RSX FIFO
-    rsx_device_fifo_continue((void*)dev_core->dev_fifo_obj);
+    dev_core->fifo->resume();
     
     // memset end of core object to 0
     memset(&dev_core->unk_128, 0, 0xA0);

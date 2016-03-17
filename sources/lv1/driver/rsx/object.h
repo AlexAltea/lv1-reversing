@@ -6,7 +6,6 @@
 #pragma once
 
 #define MAX_RSX_CORE_ID     16         // max rsx core object count
-#define MAX_DEV             16         // max RSX devices
 
 
 

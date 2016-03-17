@@ -8,7 +8,7 @@
 #include "common/types.h"
 
 // LV1 RSX device audio object, size 0x30
-struct rsx_dev_audio_obj_t {
+struct rsx_device_audio_t {
     S64 unk_00;                 // 0x00: ? eic_id_5
     S64 unk_08;                 // 0x08: ? eic_id_4
     S64 lpar_size;              // 0x10: RSX audio device LPAR size, 0x1000(4 KB), (memory region 9 size)

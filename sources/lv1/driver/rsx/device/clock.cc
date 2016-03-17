@@ -23,7 +23,7 @@ static rsx_dev_clock_setting_t set[3] = {
 /***********************************************************************
 * 
 ***********************************************************************/
-static void rsx_device_clock_rsx_21F0C0(rsx_dev_clock_obj_t* clock_obj) {
+static void rsx_device_clock_rsx_21F0C0(rsx_device_clock_t* clock_obj) {
     S32 value_1, value_2;
     S64 t1, t2, t3;
     
@@ -57,7 +57,7 @@ static void rsx_device_clock_rsx_21F0C0(rsx_dev_clock_obj_t* clock_obj) {
 /***********************************************************************
 * 
 ***********************************************************************/
-S32 rsx_device_clock_rsx_get_frequency(rsx_dev_clock_obj_t* clock_obj) {
+S32 rsx_device_clock_rsx_get_frequency(rsx_device_clock_t* clock_obj) {
     rsx_device_clock_rsx_21F0C0((void*)clock_obj);
     return clock_obj->freq;
 }
@@ -65,7 +65,7 @@ S32 rsx_device_clock_rsx_get_frequency(rsx_dev_clock_obj_t* clock_obj) {
 /***********************************************************************
 * 
 ***********************************************************************/
-void rsx_device_clock_rsx_create(rsx_dev_clock_obj_t* clock_obj, S32 id, S32 arg1) {
+void rsx_device_clock_rsx_create(rsx_device_clock_t* clock_obj, S32 id, S32 arg1) {
     S32 i;
     
     

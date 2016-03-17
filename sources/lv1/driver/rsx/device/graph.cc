@@ -513,7 +513,7 @@ static S32 data4[] = {
 /***********************************************************************
 * 
 ***********************************************************************/
-S64 rsx_device_graph_get_graph_channel_address_by_id(rsx_graph_obj_t* graph, S32 channel_id) {
+S64 rsx_device_graph_get_graph_channel_address_by_id(rsx_device_graph_t* graph, S32 channel_id) {
     if (graph->max_channels <= channel_id) {
       printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
     return 0;
@@ -528,7 +528,7 @@ S64 rsx_device_graph_get_graph_channel_address_by_id(rsx_graph_obj_t* graph, S32
 /***********************************************************************
 * 
 ***********************************************************************/
-S32 rsx_device_graph_21D224(rsx_graph_obj_t* graph, S32 arg1) {
+S32 rsx_device_graph_21D224(rsx_device_graph_t* graph, S32 arg1) {
     S32 i, value, tmp;
     S64 addr = 0x28000407570;
     
@@ -570,7 +570,7 @@ S32 rsx_device_graph_21D224(rsx_graph_obj_t* graph, S32 arg1) {
 /***********************************************************************
 * pause ?
 ***********************************************************************/
-void rsx_device_graph_21D054(rsx_graph_obj_t* graph) {
+void rsx_device_graph_21D054(rsx_device_graph_t* graph) {
     S32 i, value1, value2;
     
     
@@ -640,7 +640,7 @@ void rsx_device_graph_21D054(rsx_graph_obj_t* graph) {
 /***********************************************************************
 * 
 ***********************************************************************/
-void rsx_device_graph_21D038(rsx_graph_obj_t* graph) {
+void rsx_device_graph_21D038(rsx_device_graph_t* graph) {
     write_BAR0(0, 0x2800040013C);   // on ?
     return; 
 }
@@ -648,7 +648,7 @@ void rsx_device_graph_21D038(rsx_graph_obj_t* graph) {
 /***********************************************************************
 * 
 ***********************************************************************/
-void rsx_device_graph_21D01C(rsx_graph_obj_t* graph) {
+void rsx_device_graph_21D01C(rsx_device_graph_t* graph) {
     write_BAR0(-1, 0x2800040013C);  // off ?
     return;
 }
@@ -763,7 +763,7 @@ addi      r11, r11, 0xFFF
 /***********************************************************************
 * 
 ***********************************************************************/
-void rsx_device_graph_21D2DC(rsx_graph_obj_t* graph) {
+void rsx_device_graph_21D2DC(rsx_device_graph_t* graph) {
     rsx_device_graph_21E9CC(NULL);
     return;
 }
@@ -772,7 +772,7 @@ void rsx_device_graph_21D2DC(rsx_graph_obj_t* graph) {
 /***********************************************************************
 * 
 ***********************************************************************/
-void rsx_device_graph_21D350(rsx_graph_obj_t* graph) {
+void rsx_device_graph_21D350(rsx_device_graph_t* graph) {
     S32 i, value1 = 0, value2 = 0, offset = 0;
     
     
@@ -1003,7 +1003,7 @@ label0:
 /***********************************************************************
 * 
 ***********************************************************************/
-void rsx_device_graph_21DA04(rsx_graph_obj_t* graph, S32 idx) {
+void rsx_device_graph_21DA04(rsx_device_graph_t* graph, S32 idx) {
     S32 i, tmp, offset, value, unit_n = 0, unit_map = 0;
     rsx_core_device_t* core = NULL;
     
@@ -1086,7 +1086,7 @@ void rsx_device_graph_21E95C(S64 *vtab, S32 *arg1, S32 *arg2, S32 *arg3, S32 *ar
 /***********************************************************************
 * 
 ***********************************************************************/
-void rsx_device_graph_21DD9C(rsx_graph_obj_t* graph) {
+void rsx_device_graph_21DD9C(rsx_device_graph_t* graph) {
     S32 tmp = 0, idx = 0;
     rsx_core_device_t* core = NULL;
     
@@ -1156,7 +1156,7 @@ void rsx_device_graph_21E93C(S64 *vtab, S64 *arg1, S32 *arg2) {
 /***********************************************************************
 * feed RSX with data ? 
 ***********************************************************************/
-void rsx_device_graph_21D7A0(rsx_graph_obj_t* graph) {
+void rsx_device_graph_21D7A0(rsx_device_graph_t* graph) {
     S32 i;
     
   
@@ -1174,7 +1174,7 @@ void rsx_device_graph_21D7A0(rsx_graph_obj_t* graph) {
 /***********************************************************************
 * 
 ***********************************************************************/
-void rsx_device_graph_init(rsx_graph_obj_t* graph) {
+void rsx_device_graph_init(rsx_device_graph_t* graph) {
     //S64 *vtab = NULL;
     
     

@@ -15,7 +15,7 @@
 /***********************************************************************
 * 
 ***********************************************************************/
-S32 rsx_device_audio_map_dev_1(rsx_dev_audio_obj_t* dev_audio, S64 *dev_lpar_addr, S64* dev_lpar_size) {
+S32 rsx_device_audio_map_dev_1(rsx_device_audio_t* dev_audio, S64 *dev_lpar_addr, S64* dev_lpar_size) {
     
     
     
@@ -29,7 +29,7 @@ S32 rsx_device_audio_map_dev_1(rsx_dev_audio_obj_t* dev_audio, S64 *dev_lpar_add
 /***********************************************************************
 * 
 ***********************************************************************/
-void rsx_device_audio_init(rsx_dev_audio_obj_t* dev_audio) {
+void rsx_device_audio_init(rsx_device_audio_t* dev_audio) {
     S32 /*ret = -1,*/ driver_version = 0x211;              // RSX driver version
     S64 io_addr = 0;
     rsx_core_device_t* core = NULL;

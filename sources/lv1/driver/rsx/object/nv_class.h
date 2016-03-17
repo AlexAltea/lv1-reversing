@@ -9,13 +9,14 @@
 
 // LV1 RSX object nv object, size 0x10
 struct rsx_object_nv_class_t {
-    S32 unk_00;                 // 0x00: 
-    S32 obj_class;              // 0x04: 
+    S32 type;                   // 0x00: 
+    U32 handle;                 // 0x04: 
     S64 bar2_offset;            // 0x08: BAR2(PRAMIN) offset
 
     // Methods
-    S32 rsx_object_nv_class_get_object_size(void);
-    S64 rsx_object_nv_class_get_BAR2_address(rsx_object_nv_class_t* nv_obj);
-    U32 rsx_object_nv_class_get_object_class(rsx_object_nv_class_t* nv_obj);
-    void rsx_object_nv_class_create_object(rsx_object_nv_class_t* nv_obj, U32 arg1, U32 arg2);
+    S32 get_object_size();
+    U32 get_object_handle();
+    S64 get_bar2_address();
 };
+
+void rsx_object_nv_class_create_object(rsx_object_nv_class_t* nv_obj, U32 type, U32 handle);

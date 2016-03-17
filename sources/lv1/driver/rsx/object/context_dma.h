@@ -16,7 +16,7 @@ struct rsx_object_context_dma_t {
 
     // Methods
     S32 get_object_size();
-    U32 get_object_class();
+    U32 get_object_handle();
     S64 get_bar1_offset();
     S64 get_bar2_offset();
 
