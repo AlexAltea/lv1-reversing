@@ -231,7 +231,7 @@ S32 rsx_object_video_rsx_223510(rsx_obj_video_rsx_t* video_rsx, S32 id, S32 arg2
     video_rsx->unk_B0[0] = 0xE343;
     
     // 
-    for(i = 0; i < 2; i++) {
+    for (i = 0; i < 2; i++) {
       if ((video_rsx->unk_52 == 0) && (i != id))
         continue;
       
@@ -292,7 +292,7 @@ void rsx_object_video_rsx_init(rsx_obj_video_rsx_t* video_rsx) {
     
     
     // set BAR0 registers
-    for(i = 0; i < 6; i++) {
+    for (i = 0; i < 6; i++) {
         value = read_BAR0(offset + 0x2800008C004);
         value |= 0x80000000;                        // set value[00:00]
         write_BAR0(value, offset + 0x2800008C004);
@@ -334,7 +334,7 @@ void rsx_object_video_rsx_init(rsx_obj_video_rsx_t* video_rsx) {
   // 2 times, for the 2 things: setup BAR0 registers, init video rsx object unk_38 and unk_40 with 0
   offset = 0x40;
   
-  for(i = 0; i < 2; i++) {
+  for (i = 0; i < 2; i++) {
         if (i == 0) {
             value = read_BAR0(0x2800008C044);
         value &= 0xFFFFFFC0;                    // unset value[26:31]
@@ -436,11 +436,11 @@ void rsx_object_video_rsx_init(rsx_obj_video_rsx_t* video_rsx) {
   // mtocrf  cr0, r31(video_rsx_unk_0)
   
   // ? again, 2 things...
-  for(i = 0; i < 2; i++)
+  for (i = 0; i < 2; i++)
         rsx_object_video_rsx_223230(video_rsx, i, 0);
     
     // ? again, 2 things...
-    for(i = 0; i < 2; i++) {
+    for (i = 0; i < 2; i++) {
       offset = (rsx_object_video_rsx_2231BC(video_rsx, i)) <<13;
       
       value = read_BAR0(offset + 0x28000680404);

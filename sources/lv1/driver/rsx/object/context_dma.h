@@ -9,10 +9,10 @@
 
 // LV1 RSX object context DMA object, size 0x18
 struct rsx_object_context_dma_t {
-    U32 obj_class;              // 0x00: 
-    S32 unk_04;                 // 0x04: 
-    S64 bar2_offset;            // 0x08: BAR2(PRAMIN) offset
-    S64 bar1_offset;            // 0x10: BAR1(VRAM) offset
+    U32 handle;        // 0x00: 
+    S32 unk_04;        // 0x04: 
+    S64 bar2_offset;   // 0x08: PRAMIN offset
+    S64 bar1_offset;   // 0x10: VRAM offset
 
     // Methods
     S32 get_object_size();

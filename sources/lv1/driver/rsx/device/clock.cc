@@ -75,7 +75,7 @@ void rsx_device_clock_rsx_create(rsx_dev_clock_obj_t* clock_obj, S32 id, S32 arg
         clock_obj->unk_10 = arg1;      // 
         clock_obj->unk_0C = 0;         // 
         
-        for(i = 0; i < 3; i++)
+        for (i = 0; i < 3; i++)
             if (set[i].unk_00 == arg1) {
                 clock_obj->unk_0C   = set[i].unk_04;
                 clock_obj->offset_0 = set[i].offset_0;

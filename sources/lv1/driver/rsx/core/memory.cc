@@ -38,7 +38,7 @@ static rsx_mem_reg_setting_t set[12] = {
 /***********************************************************************
 * 
 ***********************************************************************/
-S32 rsx_core_memory_get_BAR1_offset_by_address(rsx_core_mem_obj_t* core_mem, S64 addr) {
+S32 rsx_core_memory_get_BAR1_offset_by_address(rsx_core_memory_t* core_mem, S64 addr) {
     S32 offset = 0;
     
     
@@ -55,10 +55,10 @@ S32 rsx_core_memory_get_BAR1_offset_by_address(rsx_core_mem_obj_t* core_mem, S64
 /***********************************************************************
 * get RSX memory context by ID
 * 
-* rsx_core_mem_obj_t* core_mem = RSX device core object
+* rsx_core_memory_t* core_mem = RSX device core object
 * U32 mem_ctx_id          = RSX memory context ID
 ***********************************************************************/
-rsx_mem_ctx_obj_t* rsx_core_memory_get_memory_context_by_id(rsx_core_mem_obj_t* core_mem, U32 mem_ctx_id) {
+rsx_mem_ctx_obj_t* rsx_core_memory_get_memory_context_by_id(rsx_core_memory_t* core_mem, U32 mem_ctx_id) {
     rsx_mem_ctx_obj_t* mem_ctx = NULL;
     
     
@@ -75,7 +75,7 @@ rsx_mem_ctx_obj_t* rsx_core_memory_get_memory_context_by_id(rsx_core_mem_obj_t* 
 /***********************************************************************
 * 
 ***********************************************************************/
-rsx_core_mem_obj_t* rsx_core_memory_allocate_memory_context(rsx_core_mem_obj_t* core_mem, S32 local_size, S64 arg1, S64 arg2, S64 arg3, S64 arg4) {
+rsx_core_memory_t* rsx_core_memory_allocate_memory_context(rsx_core_memory_t* core_mem, S32 local_size, S64 arg1, S64 arg2, S64 arg3, S64 arg4) {
     S32 ctx_id, item_count;
     S32 ret1, ret2, ret3, ret4, ret5; 
     S64 out1, out2, out3, out4, out5;
@@ -83,7 +83,7 @@ rsx_core_mem_obj_t* rsx_core_memory_allocate_memory_context(rsx_core_mem_obj_t* 
     
     
     // search a free RSX memory context into core memory object
-    for(ctx_id = 0; ctx_id < 16; ctx_id++) {
+    for (ctx_id = 0; ctx_id < 16; ctx_id++) {
         // if memory context free and local size have the right alignment (1 MB)
         if ((core_mem->rsx_mem_ctx[ctx_id] == NULL) && (((core_mem->ddr_page_size - 1) & local_size) == 0)) {
             // allocate pages
@@ -174,14 +174,14 @@ rsx_core_mem_obj_t* rsx_core_memory_allocate_memory_context(rsx_core_mem_obj_t* 
 /***********************************************************************
 * 
 ***********************************************************************/
-S32 rsx_core_memory_value_div_by_16(rsx_core_mem_obj_t* core_mem, S32 offset) {
+S32 rsx_core_memory_value_div_by_16(rsx_core_memory_t* core_mem, S32 offset) {
     return offset >>4;
 }
 
 /***********************************************************************
 * 
 ***********************************************************************/
-S32 rsx_core_memory_get_BAR2_offset_by_address(rsx_core_mem_obj_t* core_mem, S64 addr) {
+S32 rsx_core_memory_get_BAR2_offset_by_address(rsx_core_memory_t* core_mem, S64 addr) {
     S64 size;
     
     
@@ -204,14 +204,14 @@ S32 rsx_core_memory_get_BAR2_offset_by_address(rsx_core_mem_obj_t* core_mem, S64
 /***********************************************************************
 * 
 ***********************************************************************/
-static S32 rsx_core_memory_get_mem_reg_addr_and_size_by_id(rsx_core_mem_obj_t* core_mem, S32 mem_region_id, S64 *addr, S32 *size) {
+static S32 rsx_core_memory_get_mem_reg_addr_and_size_by_id(rsx_core_memory_t* core_mem, S32 mem_region_id, S64 *addr, S32 *size) {
     S32 i;
     
     
     if (rsx_mem_seg_set_max == 0)
       return LV1_ILLEGAL_PARAMETER_VALUE;
     
-    for(i = 0; i < rsx_mem_seg_set_max; i++) {
+    for (i = 0; i < rsx_mem_seg_set_max; i++) {
         if (set[i].id == mem_region_id) {
             if (set[i].type == 0xD) {
                 *addr = core_mem->bar_1_addr + set[i].offset;
@@ -239,7 +239,7 @@ static S32 rsx_core_memory_get_mem_reg_addr_and_size_by_id(rsx_core_mem_obj_t* c
 /***********************************************************************
 * 
 ***********************************************************************/
-S64 rsx_core_memory_get_mem_reg_addr_by_id(rsx_core_mem_obj_t* core_mem, S32 mem_region_id) {
+S64 rsx_core_memory_get_mem_reg_addr_by_id(rsx_core_memory_t* core_mem, S32 mem_region_id) {
     S32 ret = -1;
     S64 addr;
     S32 size;
@@ -257,7 +257,7 @@ S64 rsx_core_memory_get_mem_reg_addr_by_id(rsx_core_mem_obj_t* core_mem, S32 mem
 /***********************************************************************
 * 
 ***********************************************************************/
-S32 rsx_core_memory_get_mem_reg_size_by_id(rsx_core_mem_obj_t* core_mem, S32 mem_region_id) {
+S32 rsx_core_memory_get_mem_reg_size_by_id(rsx_core_memory_t* core_mem, S32 mem_region_id) {
     S32 ret = -1;
     S64 addr;
     S32 size;
@@ -275,21 +275,21 @@ S32 rsx_core_memory_get_mem_reg_size_by_id(rsx_core_mem_obj_t* core_mem, S32 mem
 /***********************************************************************
 * 
 ***********************************************************************/
-static void rsx_core_memory_build_core_mem_obj(rsx_core_mem_obj_t* core_mem, S32 core_id, S64 BAR1_addr,
+static void rsx_core_memory_build_core_mem_obj(rsx_core_memory_t* core_mem, S32 core_id, S64 BAR1_addr,
                                                S32 BAR1_size, S64 BAR2_addr, S32 arg1, S32 arg2,
                                                S32 arg3, S32 arg4, S32 arg5, S32 DDR_MB_CTags, S64 *status) {
     S32 i, ret = -1, size;
     S32 item_total;
     S64 addr;
-    rsx_utils_bm_obj_t* bm_local_mem = NULL;
-    rsx_utils_bm_obj_t* bm_reports = NULL;
-    rsx_utils_bm_obj_t* bm_unk_00 = NULL;
-    rsx_utils_bm_obj_t* bm_unk_01 = NULL;
-    rsx_utils_bm_obj_t* bm_unk_02 = NULL;
-    rsx_utils_bm_obj_t* bm_unk_03 = NULL;
-    rsx_utils_bm_obj_t* bm_ctx_dma = NULL;
-    rsx_utils_bm_obj_t* bm_class_nv_sw = NULL;
-    rsx_utils_bm_obj_t* bm_driver_info = NULL;
+    rsx_utils_bitmap_t* bm_local_mem = NULL;
+    rsx_utils_bitmap_t* bm_reports = NULL;
+    rsx_utils_bitmap_t* bm_unk_00 = NULL;
+    rsx_utils_bitmap_t* bm_unk_01 = NULL;
+    rsx_utils_bitmap_t* bm_unk_02 = NULL;
+    rsx_utils_bitmap_t* bm_unk_03 = NULL;
+    rsx_utils_bitmap_t* bm_ctx_dma = NULL;
+    rsx_utils_bitmap_t* bm_class_nv_sw = NULL;
+    rsx_utils_bitmap_t* bm_driver_info = NULL;
     
   
     // store values
@@ -362,7 +362,7 @@ static void rsx_core_memory_build_core_mem_obj(rsx_core_mem_obj_t* core_mem, S32
     
     // local memory
     // allocate bitmap, to handle the 254 local memory pages
-    bm_local_mem = lv1_kmalloc(sizeof(rsx_utils_bm_obj_t));
+    bm_local_mem = lv1_kmalloc(sizeof(rsx_utils_bitmap_t));
     if (bm_local_mem != NULL) {
         item_total = (core_mem->bar_1_size - core_mem->ddr_sys_reserv) / core_mem->ddr_page_size;
         
@@ -378,7 +378,7 @@ static void rsx_core_memory_build_core_mem_obj(rsx_core_mem_obj_t* core_mem, S32
     
     // reports
     // allocate bitmap, to handle the 4 report areas
-    bm_reports = lv1_kmalloc(sizeof(rsx_utils_bm_obj_t));
+    bm_reports = lv1_kmalloc(sizeof(rsx_utils_bitmap_t));
     if (bm_reports != NULL) {
         item_total = core_mem->reports_size_total / core_mem->reports_size;
         
@@ -395,7 +395,7 @@ static void rsx_core_memory_build_core_mem_obj(rsx_core_mem_obj_t* core_mem, S32
     // allocate bitmap, DDR_MB_CTags related ?, 512 items 
     core_mem->unk_048 = 0x400;
     
-    bm_unk_00 = lv1_kmalloc(sizeof(rsx_utils_bm_obj_t));
+    bm_unk_00 = lv1_kmalloc(sizeof(rsx_utils_bitmap_t));
     if (bm_unk_00 != NULL) {
         item_total = core_mem->DDR_MB_CTags / core_mem->unk_048;
         
@@ -414,7 +414,7 @@ static void rsx_core_memory_build_core_mem_obj(rsx_core_mem_obj_t* core_mem, S32
     core_mem->unk_0B0 = 0x300000;
     core_mem->unk_0B8 = 0x1000;
   
-    bm_unk_01 = lv1_kmalloc(sizeof(rsx_utils_bm_obj_t));
+    bm_unk_01 = lv1_kmalloc(sizeof(rsx_utils_bitmap_t));
     if (bm_unk_01 != NULL) {
         item_total = core_mem->unk_0B0 / core_mem->unk_0B8;
         
@@ -430,7 +430,7 @@ static void rsx_core_memory_build_core_mem_obj(rsx_core_mem_obj_t* core_mem, S32
     core_mem->bm_unk_01 = (void*)bm_unk_01;
     
     // allocate bitmap, ?, 15 items
-    bm_unk_02 = lv1_kmalloc(sizeof(rsx_utils_bm_obj_t));
+    bm_unk_02 = lv1_kmalloc(sizeof(rsx_utils_bitmap_t));
     if (bm_unk_02 != NULL) {
         rsx_utils_bitmap_create(bm_unk_02,                    // (IN) bitmap object
                                 core_mem->unk_030,            // (IN) user value 1
@@ -443,7 +443,7 @@ static void rsx_core_memory_build_core_mem_obj(rsx_core_mem_obj_t* core_mem, S32
     core_mem->bm_unk_02 = (void*)bm_unk_02;
     
     // allocate bitmap, ?, 8 items
-    bm_unk_03 = lv1_kmalloc(sizeof(rsx_utils_bm_obj_t));
+    bm_unk_03 = lv1_kmalloc(sizeof(rsx_utils_bitmap_t));
     if (bm_unk_03 != NULL) {
         rsx_utils_bitmap_create(bm_unk_03,                    // (IN) bitmap object
                                 core_mem->unk_038,            // (IN) user value 1
@@ -464,7 +464,7 @@ static void rsx_core_memory_build_core_mem_obj(rsx_core_mem_obj_t* core_mem, S32
 
     // context DMA
     // allocate bitmap, to handle the 256 context dma objects
-    bm_ctx_dma = lv1_kmalloc(sizeof(rsx_utils_bm_obj_t));
+    bm_ctx_dma = lv1_kmalloc(sizeof(rsx_utils_bitmap_t));
     if (bm_ctx_dma != NULL) {
         addr = rsx_core_memory_get_mem_reg_addr_by_id(core_mem, 7);
         size = rsx_object_context_dma_get_object_size();                          // 0x1000(4 KB)
@@ -484,7 +484,7 @@ static void rsx_core_memory_build_core_mem_obj(rsx_core_mem_obj_t* core_mem, S32
     
     // class nv sw
     // allocate bitmap, to handle the 128 nv/sw class objects
-    bm_class_nv_sw = lv1_kmalloc(sizeof(rsx_utils_bm_obj_t));
+    bm_class_nv_sw = lv1_kmalloc(sizeof(rsx_utils_bitmap_t));
     if (bm_class_nv_sw != NULL) {
         addr = rsx_core_memory_get_mem_reg_addr_by_id(core_mem, 8);
         size = rsx_object_nv_class_get_object_size();
@@ -505,7 +505,7 @@ static void rsx_core_memory_build_core_mem_obj(rsx_core_mem_obj_t* core_mem, S32
     size = rsx_core_context_get_size_of_reports();
     core_mem->driver_info_size = size;
     
-    bm_driver_info = lv1_kmalloc(sizeof(rsx_utils_bm_obj_t));
+    bm_driver_info = lv1_kmalloc(sizeof(rsx_utils_bitmap_t));
     if (bm_driver_info != NULL) {
         item_total = core_mem->driver_info_total_size / core_mem->driver_info_size;
     
@@ -520,7 +520,7 @@ static void rsx_core_memory_build_core_mem_obj(rsx_core_mem_obj_t* core_mem, S32
     core_mem->bm_driver_info = (void*)bm_driver_info;
     
     // init core memory rsx_mem_ctx array with 0
-    for(i = 0; i < 16; i++)
+    for (i = 0; i < 16; i++)
       core_mem->rsx_mem_ctx[i] = NULL;
     
   return;
@@ -530,14 +530,14 @@ static void rsx_core_memory_build_core_mem_obj(rsx_core_mem_obj_t* core_mem, S32
 /***********************************************************************
 * 
 ***********************************************************************/
-rsx_core_mem_obj_t* rsx_core_memory_ctor(S64 rsx_core_id) {
+rsx_core_memory_t* rsx_core_memory_ctor(S64 rsx_core_id) {
     S32 DDR_MB_CTags;
     S64 BAR1_addr;
     S32 BAR1_size;
     S64 BAR2_addr;
     
     // Get device core
-    rsx_dev_core_obj_t* core = rsx_core_device_get_core_object_by_id(rsx_core_id);
+    rsx_core_device_t* core = rsx_core_device_get_core_object_by_id(rsx_core_id);
     RSX_ASSERT(core);
     
     // Get IOIF0
@@ -557,7 +557,7 @@ rsx_core_mem_obj_t* rsx_core_memory_ctor(S64 rsx_core_id) {
     BAR2_addr    = rsx_bus_ioif0_get_BAR2_addr(ioif0);
     
     // allocate RSX core memory object
-    rsx_core_mem_obj_t* core_mem = lv1_kmalloc(sizeof(rsx_core_mem_obj_t));
+    rsx_core_memory_t* core_mem = lv1_kmalloc(sizeof(rsx_core_memory_t));
     if (core_mem == NULL) {
         printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
         return nullptr;

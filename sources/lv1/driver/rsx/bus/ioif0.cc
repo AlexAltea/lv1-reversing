@@ -103,7 +103,7 @@ void rsx_bus_ioif0_217814(rsx_bus_ioif0_obj_t* ioif0) {
     
     /* bulshit
     
-    for(i = 0; i < 3; i++) {
+    for (i = 0; i < 3; i++) {
         value1 >>= 1;
         value2 >>= 1;
         
@@ -294,7 +294,7 @@ void rsx_bus_ioif0_219018(rsx_bus_ioif0_obj_t* ioif0) {
     addr = 0x28000088280;
     write_BAR0(1, addr);                   // set value[31:31]
     
-    for(i = 1; i < 32; i++) {
+    for (i = 1; i < 32; i++) {
         if (i < 23) {
             if (((1 << i) & 0x80) != 0) {
         write_BAR0(0x301F001, addr + (i * 4));

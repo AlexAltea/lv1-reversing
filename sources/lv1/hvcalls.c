@@ -15,7 +15,7 @@
 ***********************************************************************/
 void lv1_gpu_context_allocate(U32 mem_ctx_id, U64 system_mode) {
     S32 idx;
-    rsx_dev_core_obj_t* core = NULL;
+    rsx_core_device_t* core = NULL;
     rsx_mem_ctx_obj_t* mem_ctx = NULL;
      = NULL;
     
@@ -53,7 +53,7 @@ void lv1_gpu_context_allocate(U32 mem_ctx_id, U64 system_mode) {
     }
     
     // get a free RSX context
-    for(idx = 0; idx < 3; idx++) {
+    for (idx = 0; idx < 3; idx++) {
         if (core->rsx_ctx[idx] == NULL) {
             // allocate and set new RSX context object
           rsx_ctx = rsx_core_context_allocate(core->core_id, mem_ctx, system_mode);
@@ -80,7 +80,7 @@ void lv1_gpu_context_allocate(U32 mem_ctx_id, U64 system_mode) {
 ***********************************************************************/
 void lv1_gpu_memory_allocate(S32 local_size, S64 arg1, S64 arg2, S64 arg3, S64 arg4) {
     S32 size = 0;
-    rsx_dev_core_obj_t* core = NULL;
+    rsx_core_device_t* core = NULL;
     rsx_mem_ctx_obj_t* mem_ctx = NULL;
     
     
@@ -135,7 +135,7 @@ void lv1_gpu_device_map(S32 device_id) {
     S32 ret = -1;
     S64 dev_lpar_addr = 0;
     S64 dev_lpar_size = 0;
-    rsx_dev_core_obj_t* core = NULL;
+    rsx_core_device_t* core = NULL;
     
     
     // check device ID based on global stats
@@ -232,9 +232,9 @@ void lv1_test() {
     /*
     S32 i;
     S64 *map = NULL;
-    rsx_utils_bm_obj_t* bm_obj = NULL;
-    rsx_dev_core_obj_t* core = NULL;
-    rsx_core_mem_obj_t* core_mem = NULL;
+    rsx_utils_bitmap_t* bm_obj = NULL;
+    rsx_core_device_t* core = NULL;
+    rsx_core_memory_t* core_mem = NULL;
     
     
     
@@ -257,7 +257,7 @@ void lv1_test() {
     
     /*
     S32 test = 62;
-    for(i = 0; i < test; i++)
+    for (i = 0; i < test; i++)
       rsx_utils_bitmap_set_bit(bm_obj, i, 1);
     
     
@@ -266,7 +266,7 @@ void lv1_test() {
     
     rsx_utils_bitmap_set_bit(bm_obj, 4, 0);
     
-    for(i = 0; i < bm_obj->seg_count; i++)
+    for (i = 0; i < bm_obj->seg_count; i++)
       printf("seg %i: 0x%016llX\n", i, map[i]);
     */
     return;

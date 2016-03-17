@@ -7,18 +7,30 @@
 
 #include "common/types.h"
 
+#include "lv1/driver/rsx/core/device.h"
+#include "lv1/driver/rsx/core/memory.h"
 #include "lv1/driver/rsx/object/channel.h"
 #include "lv1/driver/rsx/object/context_dma.h"
 #include "lv1/driver/rsx/object/nv_class.h"
 #include "lv1/driver/rsx/object/sw_class.h"
 
+enum {
+    L1GPU_SYSTEM_MODE_SMALL_IO_PAGES  = (1 <<  1),  // Use 64 KB pages for GART memory mapping (otherwise 1 MB)
+    L1GPU_SYSTEM_MODE_GSEMU           = (1 <<  2),  // Create DMA objects: 0xFEED0003, 0xFEED0004
+    L1GPU_SYSTEM_MODE_SYSTEM_SEMA     = (1 <<  3),  // System semaphore
+    L1GPU_SYSTEM_MODE_LOCAL_PB        = (1 <<  4),  // Local PB
+    L1GPU_SYSTEM_MODE_UNK20           = (1 <<  5),  // Create DMA objects: 0xBAD68000
+    L1GPU_SYSTEM_MODE_UNK400          = (1 << 10),  // Use 512 MB of VRAM IO address space (otherwise 256 MB)
+    L1GPU_SYSTEM_MODE_UNK800          = (1 << 11),  // Set IRQ mask to 0x00000000 (otherwise 0xFFFFFFFF)
+};
+
 // LV1 RSX context object, size 0x340
-struct rsx_core_context_t {
+class rsx_core_context_t {
     S64 core_id;                // 0x000: RSX core object ID
     U32 id;                     // 0x008: RSX context ID, (index XOR 0x55555555)
     S32* unk_00C;               // 0x00C: ? ptr
     S64* mem_ctx;               // 0x010: RSX memory context
-    U64 sys_mode;               // 0x018: system mode flags, [27:27]("flag local pb"), [28:28]("flag system sema"), [29:29]("flag gsemu ctx"), [30:30]("small io page size")
+    U64 system_mode;               // 0x018: system mode flags, [27:27]("flag local pb"), [28:28]("flag system sema"), [29:29]("flag gsemu ctx"), [30:30]("small io page size")
     S64 unk_020;                // 0x020: ? eic, ctx 0(0x38), ctx 1(0x39)
     S32 index;                  // 0x028: RSX context object index, 0, 1 or 2
     S32 unk_02C;                // 0x02C: ?
@@ -31,15 +43,15 @@ struct rsx_core_context_t {
     //--------------------------------------------------------------------
     rsx_object_sw_class_t* sw_obj;                // 0x090: sw class object, 0xCAFEBABE
     //--------------------------------------------------------------------
-    S64* dma_098;               // 0x098: dma class object, 0xFEED0000 or 0xFEED0001
+    rsx_object_context_dma_t* dma_098;               // 0x098: dma class object, 0xFEED0000 or 0xFEED0001
     //--------------------------------------------------------------------
-    S64* dma_0A0;               // 0x0A0: dma class object, 0xFEED0000
-    S64* dma_0A8;               // 0x0A8: dma class object, 0xFEED0001
+    rsx_object_context_dma_t* dma_0A0;               // 0x0A0: dma class object, 0xFEED0000
+    rsx_object_context_dma_t* dma_0A8;               // 0x0A8: dma class object, 0xFEED0001
     //--------------------------------------------------------------------
     S64 unk_0B0;                // 0x0B0: 
     //--- if "flag gsemu ctx" --------------------------------------------
-    S64* dma_0B8;               // 0x0B8: dma class object, 0xFEED0003
-    S64* dma_0C0;               // 0x0C0: dma class object, 0xFEED0004
+    rsx_object_context_dma_t* dma_0B8;               // 0x0B8: dma class object, 0xFEED0003
+    rsx_object_context_dma_t* dma_0C0;               // 0x0C0: dma class object, 0xFEED0004
     //--------------------------------------------------------------------
     S64 reports_lpar_addr;      // 0x0C8: 
     S64 reports_addr;           // 0x0D0: BAR1 reports address, ctx 0(0x2808FE00000), ctx 1(0x2808FE10000)
@@ -53,17 +65,17 @@ struct rsx_core_context_t {
     //--------------------------------------------------------------------
     rsx_object_context_dma_t* dma_array_1[8];        // 0x140: dma class objects, 0x66604208 to 0x6660420F
     //--------------------------------------------------------------------
-    S64* dma_180;               // 0x180: dma class object, 0x66606660
-    S64* dma_188;               // 0x188: dma class object, 0x66616661
+    rsx_object_context_dma_t* dma_180;               // 0x180: dma class object, 0x66606660
+    rsx_object_context_dma_t* dma_188;               // 0x188: dma class object, 0x66616661
     //-------------------------------------------------------------------- 
-    S64* dma_190;               // 0x190: dma class object, 0x66626660
-    S64* dma_198;               // 0x198: dma class object, 0xBAD68000
+    rsx_object_context_dma_t* dma_190;               // 0x190: dma class object, 0x66626660
+    rsx_object_context_dma_t* dma_198;               // 0x198: dma class object, 0xBAD68000
     //--------------------------------------------------------------------
-    S64* dma_1A0;               // 0x1A0: dma class object, 0x13378086
-    S64* dma_1A8;               // 0x1A8: dma class object, 0x13378080
+    rsx_object_context_dma_t* dma_1A0;               // 0x1A0: dma class object, 0x13378086
+    rsx_object_context_dma_t* dma_1A8;               // 0x1A8: dma class object, 0x13378080
     //-------------------------------------------------------------------- 
-    S64* dma_1B0;               // 0x1B0: dma class object, 0x56616660
-    S64* dma_1B8;               // 0x1B8: dma class object, 0x56616661
+    rsx_object_context_dma_t* dma_1B0;               // 0x1B0: dma class object, 0x56616660
+    rsx_object_context_dma_t* dma_1B8;               // 0x1B8: dma class object, 0x56616661
     //-------------------------------------------------------------------- 
     rsx_object_channel_t* ch_obj;  // 0x1C0: RSX channel object
     S64 unk_1C8;                // 0x1C8: BAR1 address: ctx 0(0x2808FE01000), ctx 1(0x2808FE11000)
@@ -78,15 +90,26 @@ struct rsx_core_context_t {
     S64 driver_info_addr_0;     // 0x338: driver info address too ?
 
     // Methods
+    rsx_object_context_dma_t* get_dma_object_by_index(S32 index)
+
+    // Related with initialization
+    void sub212F78();
+    void sub213614();
+    void sub2136CC();
+    void sub214040();
+    void sub2143E0();
+    void sub2146F4();
+    void sub214C58();
+
+public:
+
+    // Methods
     rsx_core_context_t(S64 core_id, rsx_mem_ctx_obj_t* mem_ctx, U64 system_mode);
 
     void init(U64 *out, S64 core_id, rsx_mem_ctx_obj_t* mem_ctx, U64 system_mode, S32 idx);
     S32 iomap(U64 ea, S64 lpar_addr, S32 size, U64 flags);
     S64 get_dma_control_lpar_address();
-    rsx_object_context_dma_t* get_dma_object_by_index(S32 index);
     S64 get_driver_info_lpar_addr();
     U32 get_rsx_context_id();
     S32 get_size_of_reports(void);
-    void sub213614();
-    void sub2136CC();
 };

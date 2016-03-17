@@ -5,6 +5,8 @@
 
 #include "context_dma.h"
 
+#include "lv1/lv1_misc.h"
+
 S32 rsx_object_context_dma_t::get_object_size() {
     return 0x10;
 }
@@ -14,7 +16,7 @@ S32 rsx_object_context_dma_t::get_object_size() {
 ***********************************************************************/
 void rsx_object_context_dma_t::sub220064(S32 arg1, S32 arg2, S64 addr, S32 size) {
     S32 value1 = 0, value2 = 0, offset = 0;
-    rsx_dev_core_obj_t* core = NULL;
+    rsx_core_device_t* core = NULL;
     
     
     // ? based on arg1
@@ -79,46 +81,29 @@ void rsx_object_context_dma_t::sub220064(S32 arg1, S32 arg2, S64 addr, S32 size)
 /***********************************************************************
 * 
 ***********************************************************************/
-rsx_object_context_dma_t::rsx_object_context_dma_t(U32 type) {
-    S32 ret = -1;
-    S64 idx;
-    rsx_dev_core_obj_t* core = NULL;
-    rsx_core_mem_obj_t* core_mem = NULL;
-    rsx_utils_bm_obj_t* bm_ctx_dma = NULL;
-     = NULL;
+rsx_object_context_dma_t::rsx_object_context_dma_t(U32 handle) : handle(handle), bar1_offset(~0ULL) {
+    rsx_core_device_t* core = NULL;
+    rsx_core_memory_t* core_mem = NULL;
+    rsx_utils_bitmap_t* bm_ctx_dma = NULL;
     
     
-    // get RSX device core object
+    // Get RSX device core object
     core = rsx_core_device_get_core_object_by_id(g_rsx_core_id);
-  if (core == NULL) {
-    printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-    return 0;
-  }
+    RSX_ASSERT(core);
   
-  // get core memory object
-  core_mem = (void*)core->core_mem_obj;
+    // Get core memory object
+    core_mem = (void*)core->core_mem_obj;
   
-  // get context DMA object bitmap
-  bm_ctx_dma = (void*)core_mem->bm_ctx_dma;
+    // Get context DMA object bitmap
+    bm_ctx_dma = (void*)core_mem->bm_ctx_dma;
   
-  // allocate 1 of the 256 context DMA objects
-    ret = rsx_utils_bitmap_allocate(bm_ctx_dma, 1, &idx);
-    if (ret == 0)  // allocation fails {
-    printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-    return 0;
-  }
-    
-    // allocate object
-    dma_obj = lv1_kmalloc(sizeof(rsx_object_context_dma_t));
-    if (dma_obj == NULL) {
-        printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-        return 0;
-    }
+    // allocate 1 of the 256 context DMA objects
+    S64 idx;
+    S32 ret = rsx_utils_bitmap_allocate(bm_ctx_dma, 1, &idx);
+    RSX_ASSERT(ret);
     
     // init dma object
-    dma_obj->type   = type;
-    dma_obj->unk_10 = -1;
-    dma_obj->unk_08 = idx;
-    
-    return dma_obj;
+	obj_class    = obj_class;         // store class
+	bar2_offset  = addr;              // store BAR2 dma object address
+	bar1_offset  = -1;                // init BAR1 offset with -1(invalid)
 }

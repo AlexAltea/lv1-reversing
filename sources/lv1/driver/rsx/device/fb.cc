@@ -17,7 +17,7 @@
 /***********************************************************************
 * 
 ***********************************************************************/
-void rsx_device_fb_21ADAC(rsx_dev_fb_obj_t* fb) {
+void rsx_device_fb_21ADAC(rsx_device_fb_t* fb) {
     S32 value = 0, size_MB;
     
     
@@ -78,9 +78,9 @@ void rsx_device_fb_21ADAC(rsx_dev_fb_obj_t* fb) {
 /***********************************************************************
 * 
 ***********************************************************************/
-void rsx_device_fb_init(rsx_dev_fb_obj_t* fb) {
+void rsx_device_fb_init(rsx_device_fb_t* fb) {
     S32 value = 0, size, DDR_MB_CTags;
-    rsx_dev_core_obj_t* core = NULL;
+    rsx_core_device_t* core = NULL;
     
     
     // get and store DDR size value from BAR0:0x2800010020C

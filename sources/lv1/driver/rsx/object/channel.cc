@@ -6,8 +6,8 @@
 #include "channel.h"
 
 S64 rsx_object_channel_t::get_dma_control_lpar_address() {
-	rsx_dev_core_obj_t *core = NULL;
-	rsx_fifo_obj_t *fifo = NULL;
+	rsx_core_device_t *core = NULL;
+	rsx_device_fifo_t *fifo = NULL;
 	
 	
 	// get RSX device core
@@ -39,8 +39,8 @@ void rsx_object_channel_t::create_sw_object_hash_table_entry(rsx_object_sw_class
 	U32 class;
 	S64 bar2_addr;
 	S32 bar2_offset;
-	rsx_dev_core_obj_t *core = NULL;
-	rsx_core_mem_obj_t *core_mem = NULL;
+	rsx_core_device_t *core = NULL;
+	rsx_core_memory_t *core_mem = NULL;
 	rsx_hash_tbl_obj_t *hash_tbl = NULL;
 	
 	
@@ -89,8 +89,8 @@ void rsx_object_channel_t::create_nv_object_hash_table_entry(rsx_object_nv_class
 	U32 class;
 	S64 bar2_addr;
 	S32 bar2_offset;
-	rsx_dev_core_obj_t *core = NULL;
-	rsx_core_mem_obj_t *core_mem = NULL;
+	rsx_core_device_t *core = NULL;
+	rsx_core_memory_t *core_mem = NULL;
 	rsx_hash_tbl_obj_t *hash_tbl = NULL;
 	
 	
@@ -139,8 +139,8 @@ void rsx_object_channel_create_dma_object_hash_table_entry(rsx_object_context_dm
 	U32 class;
 	S64 bar2_addr;
 	S32 bar2_offset;
-	rsx_dev_core_obj_t *core = NULL;
-	rsx_core_mem_obj_t *core_mem = NULL;
+	rsx_core_device_t *core = NULL;
+	rsx_core_memory_t *core_mem = NULL;
 	rsx_hash_tbl_obj_t *hash_tbl = NULL;
 	
 	
@@ -185,8 +185,8 @@ void rsx_object_channel_create_dma_object_hash_table_entry(rsx_object_context_dm
 * 
 ***********************************************************************/
 static S32 rsx_object_channel_t::sub2209B0() {
-	rsx_dev_core_obj_t *core = NULL;
-	rsx_fifo_obj_t *fifo = NULL;
+	rsx_core_device_t *core = NULL;
+	rsx_device_fifo_t *fifo = NULL;
 	
 	
 	// get RSX device core
@@ -299,8 +299,8 @@ static void rsx_object_channel_220B00()
 {
 	S32 i, fc1_offset, fc2_offset, value, tmp, offset;
 	S64 addr;
-	rsx_dev_core_obj_t *core = NULL;
-	rsx_core_mem_obj_t *core_mem = NULL;
+	rsx_core_device_t *core = NULL;
+	rsx_core_memory_t *core_mem = NULL;
 	rsx_graph_obj_t *graph = NULL;
 	
 	
@@ -320,14 +320,14 @@ static void rsx_object_channel_220B00()
 	fc2_offset = rsx_core_memory_get_BAR2_offset_by_address((void*)core_mem, fc2_addr);
 	
 	// init channel fc2 with 0, e.g. channel 0 (start: 0x28002030000 size: 0x1000(4 KB))
-	for(i = 0; i < 512; i++)
+	for (i = 0; i < 512; i++)
 	{
 		DDR_write32(0, g_rsx_bar2_addr + fc2_offset + (i * 8));
 		DDR_write32(0, g_rsx_bar2_addr + fc2_offset + (i * 8) + 4);
 	}
 	
 	// init channel fc1 with 0, e.g. channel 0 (start: 0x28002020000 size: 0x80(128 byte))
-	for(i = 0; i < 32; i++)
+	for (i = 0; i < 32; i++)
 		DDR_write32(0, g_rsx_bar2_addr + fc1_offset + (i * 4));
 	
 	
@@ -397,10 +397,10 @@ static void rsx_object_channel_220B00()
 void rsx_object_channel_220D0C(S32 channel_id, rsx_object_context_dma_t *dma_obj)
 {
 	S32 offset;
-	rsx_dev_core_obj_t *core = NULL;
-	rsx_fifo_obj_t *fifo = NULL;
+	rsx_core_device_t *core = NULL;
+	rsx_device_fifo_t *fifo = NULL;
 	rsx_graph_obj_t *graph = NULL;
-	rsx_core_mem_obj_t *core_mem = NULL;
+	rsx_core_memory_t *core_mem = NULL;
 	
 	
 	ch_obj->id = channel_id;               // set channel ID
@@ -461,8 +461,8 @@ rsx_object_channel_t *rsx_object_channel_create_object(rsx_object_context_dma_t 
 {
 	S32 ret = -1;
 	S64 channel_id;
-	rsx_dev_core_obj_t *core = NULL;
-	rsx_utils_bm_obj_t *bm_channels = NULL;
+	rsx_core_device_t* core = NULL;
+	rsx_utils_bitmap_t* bm_channels = NULL;
 	 = NULL;
 	
 	

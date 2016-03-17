@@ -7,6 +7,11 @@
 
 #include "common/types.h"
 
+#include "lv1/driver/rsx/utils/bitmap.h"
+
+// Forward declarations
+struct rsx_core_memory_t;
+
 // RSX memory regions settings
 struct rsx_mem_reg_setting_t {
     S32 id;                   // 0x00: region ID
@@ -16,8 +21,28 @@ struct rsx_mem_reg_setting_t {
     S64 size;                 // 0x18: size of region
 };
 
+// LV1 RSX memory context object, size 0x50
+struct rsx_mem_ctx_obj_t {
+    rsx_core_memory_t* core_mem_obj;          // 0x00: RSX device core memory object
+    S32 id;                     // 0x08: RSX memory context ID, (index XOR 0x5A5A5A5A)
+    S32 unk_0C;                 // 0x0C: 
+    //--------------------------------------------------------------------
+    S64 lm_start_lpar;          // 0x10: this memory context local memory(DDR) start LPAR address
+    S64 lm_end_lpar;            // 0x18: this memory context local memory(DDR) end LPAR address
+    S64 ddr_lpar;               // 0x20: base LPAR address of DDR memory
+    //--------------------------------------------------------------------
+    S32 unk_28;                 // 0x28: ?
+    S32 unk_2C;                 // 0x2C: ?
+    //--------------------------------------------------------------------
+    S64 unk_30;                 // 0x30: ?
+    S64 unk_38;                 // 0x38: ?
+    //--------------------------------------------------------------------
+    S64 unk_40;                 // 0x40: ?
+    S64 unk_48;                 // 0x48: ?
+} rsx_mem_ctx_obj;
+
 // RSX core memory object, size 0x190
-struct rsx_core_mem_obj_t {
+struct rsx_core_memory_t {
     S64 core_id;                 // 0x000: RSX device core object ID
     S64 bar_1_addr;              // 0x008: BAR1(VRAM) start address, 0x28080000000
     S64 ddr_lpar_addr;           // 0x010: LPAR start address of mapped DDR memory, 0x7000B0000000
@@ -70,11 +95,11 @@ struct rsx_core_mem_obj_t {
     S64* unk_188;                 // 0x188: ?
 } rsx_core_mem_obj;
 
-S32 rsx_core_memory_get_BAR1_offset_by_address(rsx_core_mem_obj_t* core_mem, S64 addr);
-rsx_mem_ctx_obj_t* rsx_core_memory_get_memory_context_by_id(rsx_core_mem_obj_t* core_mem, U32 mem_ctx_id);
-rsx_core_mem_obj_t* rsx_core_memory_allocate_memory_context(rsx_core_mem_obj_t* core_mem, S32 local_size, S64 arg1, S64 arg2, S64 arg3, S64 arg4);
-S32 rsx_core_memory_value_div_by_16(rsx_core_mem_obj_t* core_mem, S32 offset);
-S32 rsx_core_memory_get_BAR2_offset_by_address(rsx_core_mem_obj_t* core_mem, S64 addr);
-S64 rsx_core_memory_get_mem_reg_addr_by_id(rsx_core_mem_obj_t* core_mem, S32 mem_region_id);
-S32 rsx_core_memory_get_mem_reg_size_by_id(rsx_core_mem_obj_t* core_mem, S32 mem_region_id);
-rsx_core_mem_obj_t* rsx_core_memory_ctor(S64 rsx_core_id);
+S32 rsx_core_memory_get_BAR1_offset_by_address(rsx_core_memory_t* core_mem, S64 addr);
+rsx_mem_ctx_obj_t* rsx_core_memory_get_memory_context_by_id(rsx_core_memory_t* core_mem, U32 mem_ctx_id);
+rsx_core_memory_t* rsx_core_memory_allocate_memory_context(rsx_core_memory_t* core_mem, S32 local_size, S64 arg1, S64 arg2, S64 arg3, S64 arg4);
+S32 rsx_core_memory_value_div_by_16(rsx_core_memory_t* core_mem, S32 offset);
+S32 rsx_core_memory_get_BAR2_offset_by_address(rsx_core_memory_t* core_mem, S64 addr);
+S64 rsx_core_memory_get_mem_reg_addr_by_id(rsx_core_memory_t* core_mem, S32 mem_region_id);
+S32 rsx_core_memory_get_mem_reg_size_by_id(rsx_core_memory_t* core_mem, S32 mem_region_id);
+rsx_core_memory_t* rsx_core_memory_ctor(S64 rsx_core_id);

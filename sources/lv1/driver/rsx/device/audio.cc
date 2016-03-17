@@ -32,7 +32,7 @@ S32 rsx_device_audio_map_dev_1(rsx_dev_audio_obj_t* dev_audio, S64 *dev_lpar_add
 void rsx_device_audio_init(rsx_dev_audio_obj_t* dev_audio) {
     S32 /*ret = -1,*/ driver_version = 0x211;              // RSX driver version
     S64 io_addr = 0;
-    rsx_dev_core_obj_t* core = NULL;
+    rsx_core_device_t* core = NULL;
     
     
     // get device core object

@@ -555,7 +555,7 @@ S32 rsx_device_graph_21D224(rsx_graph_obj_t* graph, S32 arg1) {
     }
     
     // BAR0/GRAPH: 0x28000407570[04:04], 0x28000407578[04:04], 0x28000407580[04:04], 0x28000407588[04:04], set or unset
-    for(i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++) {
         value = read_BAR0(addr);
         value &= 0xF7FFFFFF;               // unset value[04:04]
         value |= (tmp <<27);               // if: 1(set value[04:04]) 0(unset value[04:04])
@@ -582,7 +582,7 @@ void rsx_device_graph_21D054(rsx_graph_obj_t* graph) {
   
   
   if (value1 != value2) {
-        for(i = 0; i < 100001; i++) {
+        for (i = 0; i < 100001; i++) {
             // db16cyc
       // db16cyc
       // db16cyc
@@ -602,7 +602,7 @@ void rsx_device_graph_21D054(rsx_graph_obj_t* graph) {
   value1 &= 0x8000000;                              // get value[04:04]
     
     if (value1 != 0) {
-        for(i = 0; i < 100001; i++) {
+        for (i = 0; i < 100001; i++) {
             // db16cyc
       // db16cyc
       // db16cyc
@@ -620,7 +620,7 @@ void rsx_device_graph_21D054(rsx_graph_obj_t* graph) {
   value2 = read_BAR0(0x28000400300);
     
     if (value1 != value2) {
-      for(i = 0; i < 100001; i++) {
+      for (i = 0; i < 100001; i++) {
             // db16cyc
       // db16cyc
       // db16cyc
@@ -658,7 +658,7 @@ void rsx_device_graph_21D01C(rsx_graph_obj_t* graph) {
 ***********************************************************************/
 void rsx_device_graph_21E9CC(S64 *vtab) {
     S32 i, value = 0, chip_revision;
-    rsx_dev_core_obj_t* core = NULL;
+    rsx_core_device_t* core = NULL;
     rsx_bus_ioif0_obj_t* ioif0 = NULL;
     
     
@@ -732,25 +732,25 @@ addi      r11, r11, 0xFFF
   value |= 0x38800;                         // set value[25:26], [28:29], [31:31]
   write_BAR0(value, 0x28000405020);
   
-  for(i = 0; i < 8; i++)
+  for (i = 0; i < 8; i++)
         write_BAR0(0, 0x28000407530 + i * 0x10);
   
-  for(i = 0; i < 8; i++)
+  for (i = 0; i < 8; i++)
     write_BAR0(0, 0x28000407534 + i * 0x10);
   
-  for(i = 0; i < 4; i++)
+  for (i = 0; i < 4; i++)
     write_BAR0(0x77AF818, 0x28000407570 + i * 8);
   
-  for(i = 0; i < 4; i++)
+  for (i = 0; i < 4; i++)
     write_BAR0(0, 0x28000407800 + i * 8);
   
-  for(i = 0; i < 8; i++)
+  for (i = 0; i < 8; i++)
     write_BAR0(0, 0x28000407C04 + i * 0x40);
   
-  for(i = 0; i < 8; i++)
+  for (i = 0; i < 8; i++)
     write_BAR0(1, 0x28000407C08 + i * 0x40);
   
-  for(i = 0; i < 8; i++)
+  for (i = 0; i < 8; i++)
     write_BAR0(0xE3000, 0x28000405C24 + i * 0x80);
   
   write_BAR0(0, 0x28000408000);
@@ -793,7 +793,7 @@ void rsx_device_graph_21D350(rsx_graph_obj_t* graph) {
     rsx_device_graph_21D2DC(graph);
     
     // 
-    for(i = 0; i < 15; i++) {
+    for (i = 0; i < 15; i++) {
         write_BAR0(0, offset + 0x28000100604);
         write_BAR0(0, offset + 0x28000400D04);
         write_BAR0(0, offset + 0x28000406904);
@@ -841,7 +841,7 @@ void rsx_device_graph_21D350(rsx_graph_obj_t* graph) {
     write_BAR0(value1, 0x28000400DF4);
     write_BAR0(value1, 0x280004069F4);
     
-    for(i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++) {
         offset = 0;
         
         value1 = read_BAR0(offset + 0x28000400620);
@@ -851,7 +851,7 @@ void rsx_device_graph_21D350(rsx_graph_obj_t* graph) {
         offset+=0x1C;
     }
     
-    for(i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++) {
         offset = 0;
         
         value1 = read_BAR0(offset + 0x28000400634);
@@ -864,7 +864,7 @@ void rsx_device_graph_21D350(rsx_graph_obj_t* graph) {
     value1 = read_BAR0(0x28000001540);
     value2 = value1 & 0xFFFFFF00;
     
-    for(i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++) {
         ////////////////////////////////////////////////////////////////////
     // HERE EXECUTION BREAKS !!! no diffs, if not taken, for run into error
     ////////////////////////////////////////////////////////////////////
@@ -918,7 +918,7 @@ S32 rsx_device_graph_21EF60(S64 *vtab) {
     //////////////////////////////////////////////////////////////////////
     
     // count graph units
-    for(i = 0; i < 9; i++)
+    for (i = 0; i < 9; i++)
         if (value & (1<<i))
           unit_n++;
     
@@ -949,20 +949,20 @@ void rsx_device_graph_21ED38(S64 *vtab, S32 offset, S32 unit_n, S32 unit_map) {
     size = (rsx_device_graph_21E950() >>2);
     
     // memset graph memory to 0
-    for(i = 0; i < size; i++)
+    for (i = 0; i < size; i++)
       DDR_write32(0, offset + (i * 4) + g_rsx_bar2_addr);
     
     // init graph memory, with hardcoded data
-    for(i = 0; i < 462; i+=2)
+    for (i = 0; i < 462; i+=2)
         DDR_write32(data1[i+1], offset + data1[i] + g_rsx_bar2_addr);
     
-    for(i = 0; i < 736; i+=2)
+    for (i = 0; i < 736; i+=2)
         DDR_write32(data2[i+1], offset + data2[i] + g_rsx_bar2_addr);
     
-    for(i = 0; i < 352; i+=2)
+    for (i = 0; i < 352; i+=2)
         DDR_write32(data3[i+1], offset + data3[i] + g_rsx_bar2_addr);
     
-    for(i = 0; i < 16; i++)
+    for (i = 0; i < 16; i++)
       DDR_write32(0x3F800000, offset + 0x3020 + (i * 8) + g_rsx_bar2_addr);
     
     // if no graph units, nothing to do
@@ -970,7 +970,7 @@ void rsx_device_graph_21ED38(S64 *vtab, S32 offset, S32 unit_n, S32 unit_map) {
       return;
     
     // if graph units, we have 8, init each unit with hardcoded data
-    while(unit_n != ctr1) {
+    while (unit_n != ctr1) {
         if (((1 <<ctr1) & unit_map) == 0)
           goto label0;
         
@@ -979,7 +979,7 @@ void rsx_device_graph_21ED38(S64 *vtab, S32 offset, S32 unit_n, S32 unit_map) {
       
         tmp2 = ((data4[((ctr2 - 1) * 2) + 1]) <<2) + offset;
         
-        for(i = 0; i < tmp1; i+=6)
+        for (i = 0; i < tmp1; i+=6)
             DDR_write32(1, tmp2 + (i / 6 * 0x18) + g_rsx_bar2_addr);
         
 label1:
@@ -988,7 +988,7 @@ label1:
         
         tmp2 = ((data4[ctr2 * 2 + 1]) <<2) + offset;
         
-        for(i = 0; i < tmp1; i+=4)
+        for (i = 0; i < tmp1; i+=4)
           DDR_write32(0x3F800000, tmp2 + (i / 4 * 0x10) + g_rsx_bar2_addr);
         
 label0:
@@ -1005,7 +1005,7 @@ label0:
 ***********************************************************************/
 void rsx_device_graph_21DA04(rsx_graph_obj_t* graph, S32 idx) {
     S32 i, tmp, offset, value, unit_n = 0, unit_map = 0;
-    rsx_dev_core_obj_t* core = NULL;
+    rsx_core_device_t* core = NULL;
     
     
     // get device core object, we need IOIF0 next
@@ -1025,7 +1025,7 @@ void rsx_device_graph_21DA04(rsx_graph_obj_t* graph, S32 idx) {
     //////////////////////////////////////////////////////////////////////
     
     // count graph units
-    for(i = 0; i < 9; i++)
+    for (i = 0; i < 9; i++)
         if (unit_map & (1<<i))
           unit_n++;
     
@@ -1088,7 +1088,7 @@ void rsx_device_graph_21E95C(S64 *vtab, S32 *arg1, S32 *arg2, S32 *arg3, S32 *ar
 ***********************************************************************/
 void rsx_device_graph_21DD9C(rsx_graph_obj_t* graph) {
     S32 tmp = 0, idx = 0;
-    rsx_dev_core_obj_t* core = NULL;
+    rsx_core_device_t* core = NULL;
     
     
     // get device core object, we need IOIF0 next
@@ -1121,7 +1121,7 @@ void rsx_device_graph_21DD9C(rsx_graph_obj_t* graph) {
     
     // for each channel
     if (graph->max_channels != 0) {
-        while(idx != graph->max_channels) {
+        while (idx != graph->max_channels) {
             graph->channel_addr[idx] = graph->graph_addr;
       
       if ((rsx_core_device_get_rsx_enable_flag()) == 0)
@@ -1164,7 +1164,7 @@ void rsx_device_graph_21D7A0(rsx_graph_obj_t* graph) {
     write_BAR0(0, 0x28000400324);             // set to 0
     
     // send to RSX over register BAR0:0x28000400328, a eieio instruction after each write, kk
-    for(i = 0; i < 162; i++)
+    for (i = 0; i < 162; i++)
         write_BAR0(data0[i], 0x28000400328);
   
     return;

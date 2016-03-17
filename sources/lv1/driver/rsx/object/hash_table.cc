@@ -42,8 +42,8 @@ entry in hash table:
 * S32 arg1                 = ?, 1 or 2
 ***********************************************************************/
 void rsx_object_hash_table_create_entry(rsx_hash_tbl_obj_t* hash_tbl, S32 channel_id, U32 class_type, S32 offset, S32 arg1) {
-    rsx_dev_core_obj_t* core = NULL;
-    rsx_utils_bm_obj_t* bm_channels = NULL;
+    rsx_core_device_t* core = NULL;
+    rsx_utils_bitmap_t* bm_channels = NULL;
     S32 value, max_channels, entry_offset = 0;
     
     
@@ -119,8 +119,8 @@ void rsx_object_hash_table_create_entry(rsx_hash_tbl_obj_t* hash_tbl, S32 channe
 *                                dma e.g. 0xFEED0001, 0xFEED0000, 0x66604200 to 0x6660420F, ...
 ***********************************************************************/
 void rsx_object_hash_table_invalidate_entry(rsx_hash_tbl_obj_t* hash_tbl, S32 channel_id, U32 class_type) {
-    rsx_dev_core_obj_t* core = NULL;
-    rsx_utils_bm_obj_t* bm_channels = NULL;
+    rsx_core_device_t* core = NULL;
+    rsx_utils_bitmap_t* bm_channels = NULL;
     S32 value, max_channels, entry_offset = 0;
     
     
@@ -175,7 +175,7 @@ void rsx_object_hash_table_invalidate_entry(rsx_hash_tbl_obj_t* hash_tbl, S32 ch
 ***********************************************************************/
 void rsx_object_hash_table_init(rsx_hash_tbl_obj_t* hash_tbl) {
     S32 offset = 0, value;
-    rsx_dev_core_obj_t* core = NULL;
+    rsx_core_device_t* core = NULL;
     
     
     hash_tbl->unk_00 = 0x1000;     // ?
@@ -212,7 +212,7 @@ void rsx_object_hash_table_init(rsx_hash_tbl_obj_t* hash_tbl) {
     
     // init hash table with 0
     if (hash_tbl->size_0 != 0)
-    while(hash_tbl->size_0 > offset) {
+    while (hash_tbl->size_0 > offset) {
       DDR_write32(0, hash_tbl->io_addr + offset);
       offset+=4;
       }
@@ -244,7 +244,7 @@ void rsx_object_hash_table_finalize(rsx_hash_tbl_obj_t* hash_tbl) {
     
     // if table, clean table
     if (hash_tbl->size_0 != 0)
-        while(hash_tbl->size_0 > offset) {
+        while (hash_tbl->size_0 > offset) {
             DDR_write32(0, offset + hash_tbl->io_addr);
             offset+=4;
         }

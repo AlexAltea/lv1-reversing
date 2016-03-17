@@ -3,26 +3,16 @@
  * Released under MIT license. Read LICENSE for more details.
  */
 
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
+#include "device.h"
 
-
-
-
-
-
-
-
-
-
+// RSX device core ID(0 to 15), init 0xFF(invalid)
+S32 g_rsx_core_id = 0xFF;
 
 
 /***********************************************************************
 * 
 ***********************************************************************/
-S32 rsx_core_device_map_device(rsx_dev_core_obj_t* core, S32 device_id, S64 *dev_lpar_addr, S64 *dev_lpar_size) {
+S32 rsx_core_device_map_device(rsx_core_device_t* core, S32 device_id, S64 *dev_lpar_addr, S64 *dev_lpar_size) {
     S64 io_addr = 0, lpar_size = 0;
     S32 ret = -1, io_size = 0;
     rsx_dev_audio_obj_t* dev_audio = NULL;
@@ -299,8 +289,8 @@ S32 rsx_core_device_map_device(rsx_dev_core_obj_t* core, S32 device_id, S64 *dev
 /***********************************************************************
 * 
 ***********************************************************************/
-void rsx_core_device_finalize(rsx_dev_core_obj_t* core) {
-    rsx_fifo_obj_t* fifo = NULL;
+void rsx_core_device_finalize(rsx_core_device_t* core) {
+    rsx_device_fifo_t* fifo = NULL;
     rsx_graph_obj_t* graph = NULL;
     
     
@@ -337,7 +327,7 @@ void rsx_core_device_finalize(rsx_dev_core_obj_t* core) {
 ***********************************************************************/
 S32 rsx_core_device_close_device(S32 dev_core_id) {
     U64 value = 0;
-    rsx_dev_core_obj_t* core = NULL;
+    rsx_core_device_t* core = NULL;
     
     
     get_param_value("sys.lv1.rsxenable", &value);
@@ -384,8 +374,8 @@ S32 rsx_core_device_close_device(S32 dev_core_id) {
 /***********************************************************************
 * 
 ***********************************************************************/
-rsx_dev_core_obj_t* rsx_core_device_get_core_object() {
-    rsx_dev_core_obj_t* core = NULL;
+rsx_core_device_t* rsx_core_device_get_core_object() {
+    rsx_core_device_t* core = NULL;
     
     
     if (g_rsx_core_id > 15) {
@@ -412,13 +402,13 @@ S32 rsx_core_device_get_rsx_enable_flag() {
 /***********************************************************************
 * 
 ***********************************************************************/
-rsx_dev_core_obj_t* rsx_core_device_get_core_object_by_id(S32 dev_core_id) {
+rsx_core_device_t* rsx_core_device_get_core_object_by_id(S32 dev_core_id) {
     // check device core ID range
     if (dev_core_id > MAX_RSX_CORE_ID)
       return NULL;
     
     // get RSX device core object
-    rsx_dev_core_obj_t* core_obj = (void*)g_rsx_core_obj_tbl[dev_core_id];
+    rsx_core_device_t* core_obj = (void*)g_rsx_core_obj_tbl[dev_core_id];
     
     return core_obj;
 }
@@ -426,17 +416,17 @@ rsx_dev_core_obj_t* rsx_core_device_get_core_object_by_id(S32 dev_core_id) {
 /***********************************************************************
 * 
 ***********************************************************************/
-static void rsx_core_device_init(rsx_dev_core_obj_t* dev_core, S32 arg1, S32 dev_core_id) {
+static void rsx_core_device_init(rsx_core_device_t* dev_core, S32 arg1, S32 dev_core_id) {
     S32 i;
-    rsx_utils_bm_obj_t* bm_obj_channels = NULL;
+    rsx_utils_bitmap_t* bm_obj_channels = NULL;
     rsx_bus_ioif0_obj_t* ioif0 = NULL;
     rsx_dev_clock_obj_t* clock_1 = NULL;
     rsx_dev_clock_obj_t* clock_5 = NULL;
-    rsx_core_mem_obj_t* core_mem = NULL;
+    rsx_core_memory_t* core_mem = NULL;
     S64 *unk_0F0 = NULL;
-    rsx_dev_fb_obj_t* fb = NULL;
+    rsx_device_fb_t* fb = NULL;
     rsx_hash_tbl_obj_t* hash_tbl = NULL;
-    rsx_fifo_obj_t* fifo = NULL;
+    rsx_device_fifo_t* fifo = NULL;
     rsx_graph_obj_t* graph = NULL;
     rsx_obj_video_rsx_t* video_rsx = NULL;
     rsx_dev_audio_obj_t* dev_audio = NULL;
@@ -455,7 +445,7 @@ static void rsx_core_device_init(rsx_dev_core_obj_t* dev_core, S32 arg1, S32 dev
     rsx_utils_debugger_ctor();
     
     // allocate a utils bitmap object, to handle 4 items, I think the 4(max) RSX channels
-    bm_obj_channels = lv1_kmalloc(sizeof(rsx_utils_bm_obj_t));
+    bm_obj_channels = lv1_kmalloc(sizeof(rsx_utils_bitmap_t));
     if (bm_obj_channels == NULL) {
         printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
         return;
@@ -468,7 +458,7 @@ static void rsx_core_device_init(rsx_dev_core_obj_t* dev_core, S32 arg1, S32 dev
     dev_core->bm_obj_channels = (void*)bm_obj_channels;
     
     // init the 3 RSX context objects with 0
-    for(i = 0; i < 3; i++)
+    for (i = 0; i < 3; i++)
       dev_core->rsx_ctx[i] = NULL;
     
     // init the 16 RSX device addresses with 0
@@ -568,7 +558,7 @@ static void rsx_core_device_init(rsx_dev_core_obj_t* dev_core, S32 arg1, S32 dev
     
     //////////////////////////////////////////////////////////////////////
     // allocate device frame buffer object
-    fb = lv1_kmalloc(sizeof(rsx_dev_fb_obj_t));
+    fb = lv1_kmalloc(sizeof(rsx_device_fb_t));
     if (fb == NULL) {
         printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
         return;
@@ -592,7 +582,7 @@ static void rsx_core_device_init(rsx_dev_core_obj_t* dev_core, S32 arg1, S32 dev
     
     //////////////////////////////////////////////////////////////////////
     // allocate RSX device FIFO object
-    fifo = lv1_kmalloc(sizeof(rsx_fifo_obj_t));
+    fifo = lv1_kmalloc(sizeof(rsx_device_fifo_t));
     if (fifo == NULL) {
         printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
         return;
@@ -681,7 +671,7 @@ static void rsx_core_device_init(rsx_dev_core_obj_t* dev_core, S32 arg1, S32 dev
 ***********************************************************************/
 S32 rsx_core_device_open(S32 arg1, S32 dev_core_id) {
     U64 value = 0;
-    rsx_dev_core_obj_t* dev_core = NULL;
+    rsx_core_device_t* dev_core = NULL;
     
   
     get_param_value("sys.lv1.rsxenable", &value);
@@ -708,7 +698,7 @@ S32 rsx_core_device_open(S32 arg1, S32 dev_core_id) {
       return LV1_ILLEGAL_PARAMETER_VALUE;
     
     // alloc RSX device core object
-    dev_core = lv1_kmalloc(sizeof(rsx_dev_core_obj_t));
+    dev_core = lv1_kmalloc(sizeof(rsx_core_device_t));
     
     // init device core
     rsx_core_device_init(dev_core, arg1, dev_core_id);  

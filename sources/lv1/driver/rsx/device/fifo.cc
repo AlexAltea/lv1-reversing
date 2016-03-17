@@ -14,14 +14,14 @@
 /***********************************************************************
 * 
 ***********************************************************************/
-S64 rsx_device_fifo_get_channel_dma_control_lpar_address(rsx_fifo_obj_t* fifo, S32 channel_id) {
+S64 rsx_device_fifo_get_channel_dma_control_lpar_address(rsx_device_fifo_t* fifo, S32 channel_id) {
     return (fifo->dma_control_lpar + (channel_id <<12));
 }
 
 /***********************************************************************
 * 
 ***********************************************************************/
-S64 rsx_device_fifo_21B7DC(rsx_fifo_obj_t* fifo, S32 idx) {
+S64 rsx_device_fifo_21B7DC(rsx_device_fifo_t* fifo, S32 idx) {
     if ((idx - 1) > 2) {
       printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
     return 0;
@@ -33,7 +33,7 @@ S64 rsx_device_fifo_21B7DC(rsx_fifo_obj_t* fifo, S32 idx) {
 /***********************************************************************
 * 
 ***********************************************************************/
-void rsx_device_fifo_21B668(rsx_fifo_obj_t* fifo, S32 channel_id, S32 arg1) {
+void rsx_device_fifo_21B668(rsx_device_fifo_t* fifo, S32 channel_id, S32 arg1) {
     //S32 value;
     
     // check channel ID, ??? 32 max channels ???
@@ -57,10 +57,10 @@ void rsx_device_fifo_21B668(rsx_fifo_obj_t* fifo, S32 channel_id, S32 arg1) {
 /***********************************************************************
 * 
 ***********************************************************************/
-void rsx_device_fifo_21C234(rsx_fifo_obj_t* fifo, S32 channel_id) {
+void rsx_device_fifo_21C234(rsx_device_fifo_t* fifo, S32 channel_id) {
     //S32 value;
-    rsx_dev_core_obj_t* core = NULL;
-    rsx_fifo_obj_t* _fifo = NULL;
+    rsx_core_device_t* core = NULL;
+    rsx_device_fifo_t* _fifo = NULL;
     
     
     
@@ -100,11 +100,11 @@ void rsx_device_fifo_21C234(rsx_fifo_obj_t* fifo, S32 channel_id) {
 /***********************************************************************
 * 
 ***********************************************************************/
-void rsx_device_fifo_21CCC0(rsx_fifo_obj_t* fifo, S32 channel_id, S32 offset) {
+void rsx_device_fifo_21CCC0(rsx_device_fifo_t* fifo, S32 channel_id, S32 offset) {
     S32 tmp, value, fc1_offset;
     S64 fc1_addr;
-    rsx_dev_core_obj_t* core = NULL;
-    rsx_core_mem_obj_t* core_mem = NULL;
+    rsx_core_device_t* core = NULL;
+    rsx_core_memory_t* core_mem = NULL;
     
     
     
@@ -145,9 +145,9 @@ void rsx_device_fifo_21CCC0(rsx_fifo_obj_t* fifo, S32 channel_id, S32 offset) {
 /***********************************************************************
 * 
 ***********************************************************************/
-S64 rsx_device_fifo_get_fc2_channel_address_by_id(rsx_fifo_obj_t* fifo, S32 channel_id) {
-    rsx_dev_core_obj_t* core = NULL;
-    rsx_utils_bm_obj_t* bm_channels = NULL;
+S64 rsx_device_fifo_get_fc2_channel_address_by_id(rsx_device_fifo_t* fifo, S32 channel_id) {
+    rsx_core_device_t* core = NULL;
+    rsx_utils_bitmap_t* bm_channels = NULL;
     
     
     // get RSX device core
@@ -177,9 +177,9 @@ S64 rsx_device_fifo_get_fc2_channel_address_by_id(rsx_fifo_obj_t* fifo, S32 chan
 /***********************************************************************
 * 
 ***********************************************************************/
-S64 rsx_device_fifo_get_fc1_channel_address_by_id(rsx_fifo_obj_t* fifo, S32 channel_id) {
-    rsx_dev_core_obj_t* core = NULL;
-    rsx_utils_bm_obj_t* bm_channels = NULL;
+S64 rsx_device_fifo_get_fc1_channel_address_by_id(rsx_device_fifo_t* fifo, S32 channel_id) {
+    rsx_core_device_t* core = NULL;
+    rsx_utils_bitmap_t* bm_channels = NULL;
     
     
     // get RSX device core
@@ -212,7 +212,7 @@ S64 rsx_device_fifo_get_fc1_channel_address_by_id(rsx_fifo_obj_t* fifo, S32 chan
 /***********************************************************************
 * 
 ***********************************************************************/
-S32 rsx_device_fifo_pause(rsx_fifo_obj_t* fifo) {
+S32 rsx_device_fifo_pause(rsx_device_fifo_t* fifo) {
     S32 i, value;
     
     
@@ -226,7 +226,7 @@ S32 rsx_device_fifo_pause(rsx_fifo_obj_t* fifo) {
     
     // if value[28:28] set, wait and try again
     if ((value &= 0xFFFFFFEF) != 0) {
-    for(i = 0; i < 1000000; i++) {
+    for (i = 0; i < 1000000; i++) {
             // db16cyc
       // db16cyc
       // db16cyc
@@ -256,7 +256,7 @@ S32 rsx_device_fifo_pause(rsx_fifo_obj_t* fifo) {
     
     
     /**/
-    for(i = 0; i < 1000001; i++) {
+    for (i = 0; i < 1000001; i++) {
         value = read_BAR0(0x28000003250);
         if ((value & 0xFFFFEFFF) == 0)         // if value[19:19] unset... {
             // db16cyc                          // wait and try again
@@ -301,7 +301,7 @@ S32 rsx_device_fifo_pause(rsx_fifo_obj_t* fifo) {
 /***********************************************************************
 * 
 ***********************************************************************/
-void rsx_device_fifo_continue(rsx_fifo_obj_t* fifo) {
+void rsx_device_fifo_continue(rsx_device_fifo_t* fifo) {
     S32 value;
     
     
@@ -335,7 +335,7 @@ void rsx_device_fifo_continue(rsx_fifo_obj_t* fifo) {
 /***********************************************************************
 * 
 ***********************************************************************/
-void rsx_device_fifo_21B0B0(rsx_fifo_obj_t* fifo) {
+void rsx_device_fifo_21B0B0(rsx_device_fifo_t* fifo) {
     S32 value;
     
     
@@ -464,7 +464,7 @@ void rsx_device_fifo_21B0B0(rsx_fifo_obj_t* fifo) {
 /***********************************************************************
 * 
 ***********************************************************************/
-void rsx_device_fifo_21B5FC(rsx_fifo_obj_t* fifo, S32 arg1, S32 arg2) {
+void rsx_device_fifo_21B5FC(rsx_device_fifo_t* fifo, S32 arg1, S32 arg2) {
     if ((arg1 - 1) > 2) {
         printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
         return;
@@ -479,9 +479,9 @@ void rsx_device_fifo_21B5FC(rsx_fifo_obj_t* fifo, S32 arg1, S32 arg2) {
 /***********************************************************************
 * 
 ***********************************************************************/
-void rsx_device_fifo_21BA08(rsx_fifo_obj_t* fifo) {
+void rsx_device_fifo_21BA08(rsx_device_fifo_t* fifo) {
     S32 value, fc1_offset, fc2_offset, run_out_offset, ctr = 0;
-    rsx_dev_core_obj_t* core = NULL;
+    rsx_core_device_t* core = NULL;
     
     
     // get device core object
@@ -546,7 +546,7 @@ void rsx_device_fifo_21BA08(rsx_fifo_obj_t* fifo) {
     run_out_offset = rsx_core_memory_get_BAR2_offset_by_address((void*)core->core_mem_obj, fifo->run_out_addr);
     
     // init FIFO run_out memory, with 0xFADEFADE
-    while(fifo->run_out_size > ctr) {
+    while (fifo->run_out_size > ctr) {
       DDR_write32(0xFADEFADE, (ctr + run_out_offset + g_rsx_bar2_addr));
       ctr+=4;
   }
@@ -619,9 +619,9 @@ void rsx_device_fifo_21BA08(rsx_fifo_obj_t* fifo) {
 /***********************************************************************
 * 
 ***********************************************************************/
-void rsx_device_fifo_init(rsx_fifo_obj_t* fifo) {
+void rsx_device_fifo_init(rsx_device_fifo_t* fifo) {
     S32 ret = -1, fc1_offset, fc2_offset, ctr = 0;
-    rsx_dev_core_obj_t* core = NULL;
+    rsx_core_device_t* core = NULL;
     
     
     // ?
@@ -655,7 +655,7 @@ void rsx_device_fifo_init(rsx_fifo_obj_t* fifo) {
     
     // init fc1 memory, with 0xDEADBEEF
     if (fifo->fc1_size != 0) {
-      while(fifo->fc1_size > ctr) {
+      while (fifo->fc1_size > ctr) {
           DDR_write32(0xDEADBEEF, (ctr + fc1_offset + g_rsx_bar2_addr));
           ctr+=4;
       }
@@ -664,7 +664,7 @@ void rsx_device_fifo_init(rsx_fifo_obj_t* fifo) {
     // init fc2 memory, with 0x12345678
     if (fifo->fc2_size != 0) {
         ctr = 0;
-      while(fifo->fc2_size > ctr) {
+      while (fifo->fc2_size > ctr) {
           DDR_write32(0x12345678, (ctr + fc2_offset + g_rsx_bar2_addr));
           ctr+=4;
       }

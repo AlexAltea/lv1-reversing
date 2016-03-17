@@ -28,9 +28,9 @@ S32 rsx_object_nv_class_get_object_size() {
 ***********************************************************************/
 void rsx_object_nv_class_create_object(rsx_object_nv_class_t* nv_obj, U32 arg1, U32 arg2) {
     S32 ret = -1, offset, value1, value2;
-    rsx_dev_core_obj_t* core = NULL;
-    rsx_core_mem_obj_t* core_mem = NULL;
-    rsx_utils_bm_obj_t* bm = NULL;
+    rsx_core_device_t* core = NULL;
+    rsx_core_memory_t* core_mem = NULL;
+    rsx_utils_bitmap_t* bm = NULL;
     
     
     nv_obj->unk_00 = arg1;          // ?

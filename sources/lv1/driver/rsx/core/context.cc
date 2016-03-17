@@ -63,10 +63,10 @@ S32 rsx_core_context_t::get_size_of_reports() {
 
 rsx_object_context_dma_t* rsx_core_context_t::get_dma_object_by_index(S32 index) {
     RSX_ASSERT(index < 16);
-    if (idx < 8) {
-        return dma_array_0[idx];
+    if (index < 8) {
+        return dma_array_0[index];
     } else {
-        return dma_array_1[idx - 8];
+        return dma_array_1[index - 8];
     }
 }
 
@@ -94,12 +94,12 @@ void rsx_core_context_t::sub213614() {
 /***********************************************************************
 * 
 ***********************************************************************/
-static S32 rsx_core_context_2146F4() {
+static S32 rsx_core_context_t::sub2146F4() {
     S32 i, ret = -1, value;
     U32 class;
-    rsx_dev_core_obj_t* core = NULL;
-    rsx_core_mem_obj_t* core_mem = NULL;
-    rsx_utils_bm_obj_t* bm_driver_info = NULL;
+    rsx_core_device_t* core = NULL;
+    rsx_core_memory_t* core_mem = NULL;
+    rsx_utils_bitmap_t* bm_driver_info = NULL;
     rsx_bus_ioif0_obj_t* ioif0 = NULL;
     rsx_mem_ctx_obj_t* mem_ctx = NULL;
     rsx_object_channel_t* ch_obj = NULL;
@@ -111,10 +111,7 @@ static S32 rsx_core_context_2146F4() {
     
     // get RSX device core object
     core = rsx_core_device_get_core_object_by_id(g_rsx_core_id);
-  if (core == NULL) {
-        printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-        return 0;
-    }
+    RSX_ASSERT(core);
     
     // get RSX core memory object
     core_mem = (void*)core->core_mem_obj;
@@ -132,7 +129,7 @@ static S32 rsx_core_context_2146F4() {
     rsx_ctx->driver_info_addr_0 = rsx_ctx->driver_info_addr;
     
     // memset usable space to 0 
-    for(i = 0; i < 2792; i++)
+    for (i = 0; i < 2792; i++)
       DRVI_write32(rsx_ctx->idx, 0, i * 4);
     
     // store driver version(0x211) into driver info 0x0000:
@@ -167,10 +164,10 @@ static S32 rsx_core_context_2146F4() {
     
     
     // ? memory related, TODO: something wrong with stored values!
-    DRVI_write32(rsx_ctx->idx, (S32)count_set_bits(mem_ctx->unk_40), 0x18);
-    DRVI_write32(rsx_ctx->idx, (S32)count_set_bits(mem_ctx->unk_48), 0x1C);
-    DRVI_write32(rsx_ctx->idx, (S32)(mem_ctx->unk_2C - mem_ctx->unk_28), 0x20);
-    DRVI_write32(rsx_ctx->idx, (S32)(mem_ctx->unk_38 - mem_ctx->unk_30), 0x24);
+    DRVI_write32(index, (S32)count_set_bits(mem_ctx->unk_40), 0x18);
+    DRVI_write32(index, (S32)count_set_bits(mem_ctx->unk_48), 0x1C);
+    DRVI_write32(index, (S32)(mem_ctx->unk_2C - mem_ctx->unk_28), 0x20);
+    DRVI_write32(index, (S32)(mem_ctx->unk_38 - mem_ctx->unk_30), 0x24);
     
     
     // store count of GRAPH units(8) into driver info 0x0028:
@@ -189,17 +186,17 @@ static S32 rsx_core_context_2146F4() {
     DRVI_write32(rsx_ctx->idx, (S32)(rsx_ctx->unk_0F8 - rsx_ctx->reports_addr), 0x34);  // ctx 0: offset 0x1400
     
     // store system mode flags into driver info 0x0054:
-    DRVI_write32(rsx_ctx->idx, (S32)(rsx_ctx->sys_mode), 0x54);
+    DRVI_write32(rsx_ctx->idx, (S32)(rsx_ctx->system_mode), 0x54);
     
     
     // dma objects:
     // 0x66604200 to 0x6660420F
-    for(i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++) {
         dma_obj = (void*)rsx_ctx->dma_array_0[i];
         class = rsx_object_context_dma_get_object_class((void*)dma_obj);
         DRVI_write32(rsx_ctx->idx, class, 0x858 + (i * 4));
     }
-    for(i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++) {
         dma_obj = (void*)rsx_ctx->dma_array_1[i];
         class = rsx_object_context_dma_get_object_class((void*)dma_obj);
         DRVI_write32(rsx_ctx->idx, class, 0x858 + 0x20 + (i * 4));
@@ -241,7 +238,7 @@ static S32 rsx_core_context_2146F4() {
     }
     
     // nv objects:
-    for(i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++) {
       nv_obj = (void*)rsx_ctx->nv_obj[i];
       class = rsx_object_nv_class_get_object_class((void*)nv_obj);
       DRVI_write32(rsx_ctx->idx, class, 0x458 + (i * 4));
@@ -278,25 +275,17 @@ static S32 rsx_core_context_2146F4() {
 * 
 ***********************************************************************/
 void rsx_core_context_t::sub2136CC() {
-    S32 i;
     rsx_object_channel_t* ch_obj = NULL;
-    rsx_object_context_dma_t* dma_obj = NULL;
-    rsx_object_nv_class_t* nv_obj = NULL;
     rsx_object_sw_class_t* sw_obj = NULL;
     
-    
-    // if system mode flag [27:27]("flag local pb") is set, get...
-    if (rsx_ctx->sys_mode & 0x10)
-      dma_obj = (void*)rsx_ctx->dma_0A0;      // dma class object, 0xFEED0000, else get...
-    dma_obj = (void*)rsx_ctx->dma_0A8;        // dma class object, 0xFEED0001
-    
-    if (dma_obj == NULL) {
-    printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-    return;
-  }
-    
-    // store dma class object
-    rsx_ctx->dma_098 = (void*)dma_obj;
+    rsx_object_context_dma_t* dma_obj = nullptr;
+    if (system_mode & L1GPU_SYSTEM_MODE_LOCAL_PB) {
+        dma_obj = dma_0A0;  // DMA class object: 0xFEED0000
+    } else {
+        dma_obj = dma_0A8;  // DMA class object: 0xFEED0001
+    }
+    RSX_ASSERT(dma_obj);
+    dma_098 = dma_obj;
     
     
     
@@ -315,91 +304,61 @@ void rsx_core_context_t::sub2136CC() {
     
     //////////////////////////////////////////////////////////////////////
     // create the hash table entries for the class objects: dma, hv and sw
-    dma_obj = (void*)rsx_ctx->dma_0A0;  // 0xFEED0000
-    rsx_object_channel_create_dma_object_hash_table_entry((void*)ch_obj, (void*)dma_obj);
+    ch_obj->create_dma_object_hash_table_entry(dma_0A0);  // 0xFEED0000
+    ch_obj->create_dma_object_hash_table_entry(dma_0A8);  // 0xFEED0001
     
-    dma_obj = (void*)rsx_ctx->dma_0A8;  // 0xFEED0001
-    rsx_object_channel_create_dma_object_hash_table_entry((void*)ch_obj, (void*)dma_obj);
-    
-    // if system mode[29:29]("flag gsemu ctx") is set
-    if (rsx_ctx->sys_mode & 4) {
-        dma_obj = (void*)rsx_ctx->dma_0B8;  // 0xFEED0003
-      rsx_object_channel_create_dma_object_hash_table_entry((void*)ch_obj, (void*)dma_obj);
-      
-      dma_obj = (void*)rsx_ctx->dma_0C0;  // 0xFEED0004
-      rsx_object_channel_create_dma_object_hash_table_entry((void*)ch_obj, (void*)dma_obj);
+    if (system_mode & L1GPU_SYSTEM_MODE_GSEMU) {
+        ch_obj->create_dma_object_hash_table_entry(dma_0B8);  // 0xFEED0003
+        ch_obj->create_dma_object_hash_table_entry(dma_0C0);  // 0xFEED0004
+    }
+    if (system_mode & L1GPU_SYSTEM_MODE_SYSTEM_SEMA) {
+        ch_obj->create_dma_object_hash_table_entry(dma_1A8);  // 0x13378080
+        ch_obj->create_dma_object_hash_table_entry(dma_1A0);  // 0x13378086
     }
     
-    // if system mode flag [28:28]("flag system semaphore") is set
-    if (rsx_ctx->sys_mode & 8) {
-        dma_obj = (void*)rsx_ctx->dma_1A8;  // 0x13378080
-      rsx_object_channel_create_dma_object_hash_table_entry((void*)ch_obj, (void*)dma_obj);
-      
-      dma_obj = (void*)rsx_ctx->dma_1A0;  // 0x13378086
-      rsx_object_channel_create_dma_object_hash_table_entry((void*)ch_obj, (void*)dma_obj);
+    // If system mode flag [25:25](?) is set
+    if (rsx_ctx->system_mode & 0x40) {
+        ch_obj->create_dma_object_hash_table_entry(dma_1A0);  // 0x13378086
+    }
+    // If system mode flag [26:26](?) is set
+    if (rsx_ctx->system_mode & 0x20) {
+        ch_obj->create_dma_object_hash_table_entry(dma_198);  // 0xBAD68000
     }
     
-    // if system mode flag [25:25](?) is set
-    if (rsx_ctx->sys_mode & 0x40) {
-        dma_obj = (void*)rsx_ctx->dma_1A0;  // 0x13378086
-      rsx_object_channel_create_dma_object_hash_table_entry((void*)ch_obj, (void*)dma_obj);
+    ch_obj->create_dma_object_hash_table_entry(dma_180);   // 0x66606660
+    ch_obj->create_dma_object_hash_table_entry(dma_188);   // 0x66616661
+    ch_obj->create_dma_object_hash_table_entry(dma_1B8);   // 0x56616661
+    ch_obj->create_dma_object_hash_table_entry(dma_1B0);   // 0x56616660
+    ch_obj->create_dma_object_hash_table_entry(dma_190);   // 0x66626660
+
+    ch_obj->create_nv_object_hash_table_entry(nv_obj[0]);  // 0x00000000
+    ch_obj->create_nv_object_hash_table_entry(nv_obj[1]);  // 0x31337000
+    ch_obj->create_nv_object_hash_table_entry(nv_obj[2]);  // 0x31337303
+    ch_obj->create_nv_object_hash_table_entry(nv_obj[3]);  // 0x3137C0DE
+    ch_obj->create_nv_object_hash_table_entry(nv_obj[4]);  // 0x31337A73
+    ch_obj->create_nv_object_hash_table_entry(nv_obj[5]);  // 0x313371C3
+    ch_obj->create_nv_object_hash_table_entry(nv_obj[6]);  // 0x3137AF00
+    ch_obj->create_nv_object_hash_table_entry(nv_obj[7]);  // 0x31337808
+  
+    // TODO: sw object not complete yet
+    ch_obj->create_sw_object_hash_table_entry(sw_obj);     // 0xCAFEBABE
+  
+    // The 16 remaining DMA objects: 0x66604200 to 0x6660420F
+    for (S32 i = 0; i < 16; i++) {
+        dma_obj = get_dma_object_by_index(i);
+        ch_obj->create_dma_object_hash_table_entry(dma_obj);    
     }
-    
-    // if system mode flag [26:26](?) is set
-    if (rsx_ctx->sys_mode & 0x20) {
-        dma_obj = (void*)rsx_ctx->dma_198;  // 0xBAD68000
-      rsx_object_channel_create_dma_object_hash_table_entry((void*)ch_obj, (void*)dma_obj);
-    }
-    
-    dma_obj = (void*)rsx_ctx->dma_180;  // 0x66606660
-    rsx_object_channel_create_dma_object_hash_table_entry((void*)ch_obj, (void*)dma_obj);
-    
-    dma_obj = (void*)rsx_ctx->dma_188;  // 0x66616661
-    rsx_object_channel_create_dma_object_hash_table_entry((void*)ch_obj, (void*)dma_obj);
-    
-    dma_obj = (void*)rsx_ctx->dma_1B8;  // 0x56616661
-    rsx_object_channel_create_dma_object_hash_table_entry((void*)ch_obj, (void*)dma_obj);
-  
-  dma_obj = (void*)rsx_ctx->dma_1B0;  // 0x56616660
-    rsx_object_channel_create_dma_object_hash_table_entry((void*)ch_obj, (void*)dma_obj);
-  
-  dma_obj = (void*)rsx_ctx->dma_190;  // 0x66626660
-    rsx_object_channel_create_dma_object_hash_table_entry((void*)ch_obj, (void*)dma_obj);
-  
-  
-    ch_obj->create_nv_object_hash_table_entry(nv_obj[0]); // 0x00000000
-    ch_obj->create_nv_object_hash_table_entry(nv_obj[1]); // 0x31337000
-    ch_obj->create_nv_object_hash_table_entry(nv_obj[2]); // 0x31337303
-    ch_obj->create_nv_object_hash_table_entry(nv_obj[3]); // 0x3137C0DE
-    ch_obj->create_nv_object_hash_table_entry(nv_obj[4]); // 0x31337A73
-    ch_obj->create_nv_object_hash_table_entry(nv_obj[5]); // 0x313371C3
-    ch_obj->create_nv_object_hash_table_entry(nv_obj[6]); // 0x3137AF00
-    ch_obj->create_nv_object_hash_table_entry(nv_obj[7]); // 0x31337808
-  
-  
-  // TODO: sw object not complete yet
-  sw_obj = (void*)rsx_ctx->sw_obj;  // 0xCAFEBABE
-  rsx_object_channel_create_sw_object_hash_table_entry((void*)ch_obj, (void*)sw_obj);
-  
-  
-  // the remaining 16 dma objects, 0x66604200 to 0x6660420F
-  for(i = 0; i < 16; i++) {
-        dma_obj = (void*)rsx_core_context_get_dma_object_by_index((void*)rsx_ctx, i);
-        rsx_object_channel_create_dma_object_hash_table_entry((void*)ch_obj, (void*)dma_obj);    
-    }
-  
-    return;
 }
 
 /***********************************************************************
 * 
 ***********************************************************************/
-static void rsx_core_context_212F78() {
+void rsx_core_context_t::sub212F78() {
     S64 addr;
     S32 i, size;
     rsx_object_context_dma_t* dma_obj = NULL;
     rsx_mem_ctx_obj_t* mem_ctx = NULL;
-    rsx_core_mem_obj_t* core_mem = NULL;
+    rsx_core_memory_t* core_mem = NULL;
     
   
     //////////////////////////////////////////////////////////////////////
@@ -449,7 +408,7 @@ static void rsx_core_context_212F78() {
     //////////////////////////////////////////////////////////////////////
     // if system mode flag [29:29]("flag gsemu ctx") is set, create dma objects 0xFEED0003 and 0xFEED0004 too
     // ? GS PS2 GPU ?
-    if (rsx_ctx->sys_mode & 4) {
+    if (rsx_ctx->system_mode & 4) {
         // create and store dma object, 0xFEED0003
         dma_obj = rsx_object_context_dma_create_obj(0xFEED0003);
         if (dma_obj == NULL) {
@@ -487,7 +446,7 @@ static void rsx_core_context_212F78() {
     
     //////////////////////////////////////////////////////////////////////
     // if system mode flag [28:28]("flag system semaphore") is set, ...
-    if (rsx_ctx->sys_mode & 8) {
+    if (rsx_ctx->system_mode & 8) {
         // create and store dma object, 0x13378086
         dma_obj = rsx_object_context_dma_create_obj(0x13378086);
         if (dma_obj == NULL) {
@@ -515,7 +474,7 @@ static void rsx_core_context_212F78() {
     
     //////////////////////////////////////////////////////////////////////
     // if system mode flag [25:25](?) is set, ...
-    if (rsx_ctx->sys_mode & 0x40) {
+    if (rsx_ctx->system_mode & 0x40) {
       // create and store dma object, 0x13378086
       dma_obj = rsx_object_context_dma_create_obj(0x13378086);
       rsx_ctx->dma_1A0 = (void*)dma_obj;
@@ -533,7 +492,7 @@ static void rsx_core_context_212F78() {
     
     //////////////////////////////////////////////////////////////////////
     // if system mode flag [26:26](?) is set, ...
-    if (rsx_ctx->sys_mode & 0x20) {
+    if (rsx_ctx->system_mode & 0x20) {
         // create and store dma object, 0xBAD68000
       dma_obj = rsx_object_context_dma_create_obj(0xBAD68000);
       rsx_ctx->dma_198 = (void*)dma_obj;
@@ -550,7 +509,7 @@ static void rsx_core_context_212F78() {
     
     
     // 8 more dma objects...
-    for(i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++) {
         dma_obj = rsx_object_context_dma_create_obj(0x6660420F - i);
         rsx_object_context_dma_220064(dma_obj, 2, 8, rsx_ctx->io_offset + 0xF100000 + (i * 0x40), 0x40);
         rsx_ctx->dma_array_1[7 - i] = (void*)dma_obj;
@@ -562,11 +521,11 @@ static void rsx_core_context_212F78() {
 /***********************************************************************
 * 
 ***********************************************************************/
-static S32 rsx_core_context_214C58() {
+S32 rsx_core_context_t::sub214C58() {
     S32 ret = -1, sh = 0;
     S64 channel_id;
-    rsx_dev_core_obj_t* core = NULL;
-    rsx_utils_bm_obj_t* bm_channels = NULL;
+    rsx_core_device_t* core = NULL;
+    rsx_utils_bitmap_t* bm_channels = NULL;
     
     
     rsx_ctx->io_size = 0x10000000;              // set IO memory size (256 MB)
@@ -596,12 +555,12 @@ static S32 rsx_core_context_214C58() {
     // ld        r31, 0x50(r9)
     
     
-    for(sh = 63; sh > -1; sh--)
+    for (sh = 63; sh > -1; sh--)
         if (rsx_ctx->page_size & ((U64)1<<sh))
           break;
     
     // if system_mode[21:21](?) not set
-    if (!(rsx_ctx->sys_mode & 0x400)) {
+    if (!(rsx_ctx->system_mode & 0x400)) {
         ret = allocate_io_segment(0,                                // (IN)  HSPRG0...
                                   (channel_id <<28) + 0x80000000,   // (IN)  
                                   rsx_ctx->io_size,                 // (IN)  
@@ -667,7 +626,7 @@ static S32 rsx_core_context_214C58() {
 /***********************************************************************
 * 
 ***********************************************************************/
-static void rsx_core_context_214040() {
+void rsx_core_context_t::sub214040() {
     rsx_object_nv_class_t* nv_obj = NULL;
     rsx_object_sw_class_t* sw_obj = NULL;
     
@@ -790,12 +749,12 @@ static void rsx_core_context_214040() {
 /***********************************************************************
 * 
 ***********************************************************************/
-static S32 rsx_core_context_2143E0() {
+S32 rsx_core_context_t::sub2143E0() {
     S32 i, k, ret = -1;
-    rsx_dev_core_obj_t* core = NULL;
-    rsx_utils_bm_obj_t* bm_reports = NULL;
+    rsx_core_device_t* core = NULL;
+    rsx_utils_bitmap_t* bm_reports = NULL;
     rsx_mem_ctx_obj_t* mem_ctx = NULL;
-    rsx_core_mem_obj_t* core_mem = NULL;
+    rsx_core_memory_t* core_mem = NULL;
     rsx_object_context_dma_t* dma_obj = NULL;
     
     
@@ -841,8 +800,8 @@ static S32 rsx_core_context_2143E0() {
     // ?
     rsx_ctx->unk_1C8 = rsx_ctx->unk_0E0;
     
-    for(i = 0; i < 8; i++) {
-        for(k = 0; k < 4; k++) {
+    for (i = 0; i < 8; i++) {
+        for (k = 0; k < 4; k++) {
             DDR_write64(-1, rsx_ctx->unk_1C8 + ((k + (i * 4)) * 0x10));
             DDR_write32( 0, rsx_ctx->unk_1C8 + ((k + (i * 4)) * 0x10) + 8);
             DDR_write16( 0, rsx_ctx->unk_1C8 + ((k + (i * 4)) * 0x10) + 0xC);
@@ -869,7 +828,7 @@ static S32 rsx_core_context_2143E0() {
     // ? 
   rsx_ctx->unk_1D0 = rsx_ctx->unk_0E8;
     
-    for(i = 0; i < 256; i++) {
+    for (i = 0; i < 256; i++) {
         DDR_write32(0x1337C0D3, (i * 0x10) + rsx_ctx->unk_1D0);
         DDR_write32(0x1337BABE, (i * 0x10) + rsx_ctx->unk_1D0 + 4);
         DDR_write32(0x1337BEEF, (i * 0x10) + rsx_ctx->unk_1D0 + 8);
@@ -900,7 +859,7 @@ static S32 rsx_core_context_2143E0() {
     // ?
     rsx_ctx->unk_1D8 = rsx_ctx->unk_0F8;
     
-    for(i = 0; i < 2048; i++) {
+    for (i = 0; i < 2048; i++) {
         DDR_write64(-1, (i * 0x10) + rsx_ctx->unk_1D8);
         DDR_write32( 0, (i * 0x10) + rsx_ctx->unk_1D8 + 8);
         DDR_write32( 0, (i * 0x10) + rsx_ctx->unk_1D8 + 0xC);
@@ -922,8 +881,8 @@ static S32 rsx_core_context_2143E0() {
 * 
 ***********************************************************************/
 void rsx_core_context_t::init(U64 *out, S64 core_id, rsx_mem_ctx_obj_t* mem_ctx, U64 system_mode, S32 idx) {
-    S32 i, value;
-    rsx_dev_core_obj_t* core = NULL;
+    S32 value;
+    rsx_core_device_t* core = NULL;
     
     
     rsx_ctx->id = idx ^ 0x55555555;    // set RSX context ID
@@ -931,7 +890,7 @@ void rsx_core_context_t::init(U64 *out, S64 core_id, rsx_mem_ctx_obj_t* mem_ctx,
     rsx_ctx->idx = idx;                // set RSX context index, 0, 1 or 2
     rsx_ctx->mem_ctx = (void*)mem_ctx; // set RSX memory context
     rsx_ctx->page_size = 0x100000;     // set default page size, 1 MB
-    rsx_ctx->sys_mode = system_mode;   // system mode flags
+    rsx_ctx->system_mode = system_mode;   // system mode flags
     rsx_ctx->db_flag[0] = 0;           // display buffer[0] flag
     rsx_ctx->dma_0B8 = 0;              // (0xFEED0003) init 0
     rsx_ctx->dma_0C0 = 0;              // (0xFEED0004) init 0
@@ -946,7 +905,7 @@ void rsx_core_context_t::init(U64 *out, S64 core_id, rsx_mem_ctx_obj_t* mem_ctx,
     // if system_mode[28:28]("flag system semaphore") set
     if (system_mode & 8) {
       system_mode &= 0xFFFFFFFFFFFFFFBF;    // unset system_mode[25:25](?)
-      rsx_ctx->sys_mode = system_mode;
+      rsx_ctx->system_mode = system_mode;
     }  
     
     // if system_mode[24:24](?) set
@@ -1018,32 +977,30 @@ void rsx_core_context_t::init(U64 *out, S64 core_id, rsx_mem_ctx_obj_t* mem_ctx,
     
     
     //  reports, labels, dma
-    rsx_core_context_2143E0((void*)rsx_ctx);
+    sub2143E0();
     
     //  nv/sw class 
-    rsx_core_context_214040((void*)rsx_ctx);
+    sub214040();
     
     // allocate IO segment
-    rsx_core_context_214C58((void*)rsx_ctx);
+    sub214C58();
     
     // dma
-    rsx_core_context_212F78((void*)rsx_ctx);
+    sub212F78();
     
     // channel, hash table(sw/hv/dma)
     // TODO: channel init not finished yet
-    rsx_core_context_2136CC((void*)rsx_ctx);
+    sub2136CC();
     
     // create/init driver info
-    rsx_core_context_2146F4((void*)rsx_ctx);
+    sub2146F4();
     
     // eic, driver info, display buffers
     // TODO: eic stuff
-    rsx_core_context_213614((void*)rsx_ctx);
+    sub213614();
     
-    
-    
-    // init RSX context displaybuffer objects
-    for(i = 0; i < 8; i++) {
+    // Init RSX context displaybuffer objects
+    for (S32 i = 0; i < 8; i++) {
         rsx_ctx->d_buf[i].unk_00 = 0;
         rsx_ctx->d_buf[i].dma_obj = 0;
     }
@@ -1063,7 +1020,7 @@ rsx_core_context_t* rsx_core_context_allocate(S64 core_id, rsx_mem_ctx_obj_t* me
     rsx_mem_ctx_obj_t* rsx_ctx = NULL;
     
     
-    for(idx = 0; idx < 16; idx++) {
+    for (idx = 0; idx < 16; idx++) {
         if (g_rsx_ctx_tbl[idx] == NULL) {
             rsx_ctx = lv1_kmalloc(sizeof(rsx_core_context_t));
             if (rsx_ctx == NULL) {

@@ -14,14 +14,14 @@
 /***********************************************************************
 * get total item count of a bitmap
 ***********************************************************************/
-S32 rsx_utils_bitmap_get_item_total(rsx_utils_bm_obj_t* bm_obj) {
+S32 rsx_utils_bitmap_get_item_total() {
     return bm_obj->item_total;
 }
 
 /***********************************************************************
 * free the bitmap of a bitmap object
 ***********************************************************************/
-void rsx_utils_bitmap_free_map(rsx_utils_bm_obj_t* bm_obj) {
+void rsx_utils_bitmap_free_map() {
     lv1_kfree((void *)bm_obj->bitmap);
     bm_obj->bitmap = NULL;
     
@@ -31,11 +31,11 @@ void rsx_utils_bitmap_free_map(rsx_utils_bm_obj_t* bm_obj) {
 /***********************************************************************
 * free a item into a bitmap
 * 
-* rsx_utils_bm_obj_t* bm_obj = bitmap object
+* rsx_utils_bitmap_t* bm_obj = bitmap object
 * S64 start              = start of continuously items to free
 * S32 count              = count of continuously items to free
 ***********************************************************************/
-S32 rsx_utils_bitmap_dealloc(rsx_utils_bm_obj_t* bm_obj, S64 start, S32 count) {
+S32 rsx_utils_bitmap_dealloc(S64 start, S32 count) {
     S32 i, bm_idx;
     S64 *bm = NULL;
     U64 seg;
@@ -50,7 +50,7 @@ S32 rsx_utils_bitmap_dealloc(rsx_utils_bm_obj_t* bm_obj, S64 start, S32 count) {
     bm = bm_obj->bitmap;
     
     // free item, if set
-    for(i = bm_idx; i < count; i++) {
+    for (i = bm_idx; i < count; i++) {
         seg = bm[i / bm_obj->seg_base];
         if (((seg >>(i - ((i / bm_obj->seg_base) * bm_obj->seg_base))) & (U64)1) == 1)
           rsx_utils_bitmap_set_bit(bm_obj, i, 0);
@@ -62,11 +62,11 @@ S32 rsx_utils_bitmap_dealloc(rsx_utils_bm_obj_t* bm_obj, S64 start, S32 count) {
 /***********************************************************************
 * allocate a item into a bitmap
 * 
-* rsx_utils_bm_obj_t* bm_obj = bitmap object
+* rsx_utils_bitmap_t* bm_obj = bitmap object
 * S32 count              = count of continuously items to allocate
 * S64 *out               = start of the allocated continuously items
 ***********************************************************************/
-S32 rsx_utils_bitmap_allocate(rsx_utils_bm_obj_t* bm_obj, S32 count, S64 *out) {
+S32 rsx_utils_bitmap_allocate(S32 count, S64 *out) {
     S32 i, free = 0, start = 0;
     S64 *bm = NULL;
     U64 seg;
@@ -85,7 +85,7 @@ S32 rsx_utils_bitmap_allocate(rsx_utils_bm_obj_t* bm_obj, S32 count, S64 *out) {
     bm = bm_obj->bitmap;
     
     // get start and count of free items into bitmap
-    for(i = 0; i < bm_obj->item_total; i++) {
+    for (i = 0; i < bm_obj->item_total; i++) {
         seg = bm[i / bm_obj->seg_base];
         
         // item free
@@ -100,7 +100,7 @@ S32 rsx_utils_bitmap_allocate(rsx_utils_bm_obj_t* bm_obj, S32 count, S64 *out) {
       return 0;  // FAIL
     
     // allocate items into bitmap
-    for(i = start; i < (count + start); i++)
+    for (i = start; i < (count + start); i++)
       rsx_utils_bitmap_set_bit(bm_obj, i, 1);
     
     // e.g. in case of memory, new address
@@ -112,11 +112,11 @@ S32 rsx_utils_bitmap_allocate(rsx_utils_bm_obj_t* bm_obj, S32 count, S64 *out) {
 /***********************************************************************
 * set a item into a bitmap
 * 
-* rsx_utils_bm_obj_t* bm_obj = bitmap object
+* rsx_utils_bitmap_t* bm_obj = bitmap object
 * S32 idx                = bit position into bitmap
 * S32 value              = bit value to set, 0(free) or 1(allocated)
 ***********************************************************************/
-void rsx_utils_bitmap_set_bit(rsx_utils_bm_obj_t* bm_obj, S32 idx, S32 value) {
+void rsx_utils_bitmap_set_bit(S32 idx, S32 value) {
     S64 *bm = NULL;
     U64 segment, tmp;
     S32 sh;
@@ -141,12 +141,12 @@ void rsx_utils_bitmap_set_bit(rsx_utils_bm_obj_t* bm_obj, S32 idx, S32 value) {
 /***********************************************************************
 * set a bitmap object
 * 
-* rsx_utils_bm_obj_t* bm_obj = bitmap object to set
+* rsx_utils_bitmap_t* bm_obj = bitmap object to set
 * S64 val_1              = user value 1, base, e.g. a start address
 * S32 item_total         = total count of items into bitmap
 * S64 val_2              = user value 2, item size, e.g. a page size
 ***********************************************************************/
-void rsx_utils_bitmap_create(rsx_utils_bm_obj_t* bm_obj, S64 val_1, S32 item_total, S64 val_2) {
+void rsx_utils_bitmap_create(S64 val_1, S32 item_total, S64 val_2) {
     S32 i, seg_count;
     S64 *bitmap = NULL;
     
@@ -180,7 +180,7 @@ void rsx_utils_bitmap_create(rsx_utils_bm_obj_t* bm_obj, S64 val_1, S32 item_tot
     memset(bitmap, 0xFF, seg_count * sizeof(U64));
     
     // init usable part of bitmap with 0(unset)
-    for(i = 0; i < item_total; i++)
+    for (i = 0; i < item_total; i++)
         rsx_utils_bitmap_set_bit(bm_obj, i, 0);
         
     return;
