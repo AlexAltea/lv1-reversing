@@ -101,7 +101,7 @@ S32 rsx_core_context_t::sub2146F4() {
     rsx_core_memory_t* core_mem = NULL;
     rsx_utils_bitmap_t* bm_driver_info = NULL;
     rsx_bus_ioif0_t* ioif0 = NULL;
-    rsx_mem_ctx_obj_t* mem_ctx = NULL;
+    rsx_memory_context_t* mem_ctx = NULL;
     rsx_object_channel_t* ch_obj = NULL;
     rsx_device_clock_t* clock = NULL;
     
@@ -320,7 +320,7 @@ void rsx_core_context_t::sub212F78() {
     S64 addr;
     S32 i, size;
     rsx_object_context_dma_t* dma_obj = NULL;
-    rsx_mem_ctx_obj_t* mem_ctx = NULL;
+    rsx_memory_context_t* mem_ctx = NULL;
     rsx_core_memory_t* core_mem = NULL;
     
   
@@ -716,7 +716,7 @@ S32 rsx_core_context_t::sub2143E0() {
     S32 i, k, ret = -1;
     rsx_core_device_t* core = NULL;
     rsx_utils_bitmap_t* bm_reports = NULL;
-    rsx_mem_ctx_obj_t* mem_ctx = NULL;
+    rsx_memory_context_t* mem_ctx = NULL;
     rsx_core_memory_t* core_mem = NULL;
     rsx_object_context_dma_t* dma_obj = NULL;
     
@@ -843,7 +843,7 @@ S32 rsx_core_context_t::sub2143E0() {
 /***********************************************************************
 * 
 ***********************************************************************/
-void rsx_core_context_t::init(U64 *out, S64 core_id, rsx_mem_ctx_obj_t* mem_ctx, U64 system_mode, S32 idx) {
+void rsx_core_context_t::init(U64 *out, S64 core_id, rsx_memory_context_t* mem_ctx, U64 system_mode, S32 idx) {
     S32 value;
     rsx_core_device_t* core = NULL;
     
@@ -977,10 +977,10 @@ void rsx_core_context_t::init(U64 *out, S64 core_id, rsx_mem_ctx_obj_t* mem_ctx,
 /***********************************************************************
 * 
 ***********************************************************************/
-rsx_core_context_t* rsx_core_context_allocate(S64 core_id, rsx_mem_ctx_obj_t* mem_ctx, U64 system_mode) {
+rsx_core_context_t* rsx_core_context_allocate(S64 core_id, rsx_memory_context_t* mem_ctx, U64 system_mode) {
     S32 idx;
   U64 out = 0;
-    rsx_mem_ctx_obj_t* rsx_ctx = NULL;
+    rsx_memory_context_t* rsx_ctx = NULL;
     
     
     for (idx = 0; idx < 16; idx++) {

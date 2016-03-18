@@ -5,6 +5,8 @@
 
 #include "device.h"
 
+#include "lv1/lv1.h"
+
 // Maximum RSX core object count
 #define MAX_RSX_CORE_ID  16
 
@@ -15,21 +17,22 @@ S32 g_rsx_core_id = 0xFF;
 /***********************************************************************
 * 
 ***********************************************************************/
-S32 rsx_core_device_map_device(rsx_core_device_t* core, S32 device_id, S64 *dev_lpar_addr, S64 *dev_lpar_size) {
+S32 rsx_core_device_t::map_device(S32 device_id, S64 *dev_addr, S64 *dev_size) {
     S64 io_addr = 0, lpar_size = 0;
     S32 ret = -1, io_size = 0;
     rsx_device_audio_t* dev_audio = NULL;
-    
-    
+
+    if (device_id >= MAX_DEV)
+        return LV1_ILLEGAL_PARAMETER_VALUE;
+
     // device ID check
-    if ((device_id < 15) && (core->dev_lpar_addr[device_id] != 0))
+    if (core->dev_lpar_addr[device_id] != 0)
         return LV1_DUPLICATE_ENTRY;
     
     if (((device_id - 9) > 6) && (g_rsx_unk_01 == 0) /*&& (*(HSPRG0(-0x67E8)) + 0x99... a flag)*/)
-    return LV1_DENIED_BY_POLICY;
+        return LV1_DENIED_BY_POLICY;
   
-  if (device_id > 15)
-        return LV1_ILLEGAL_PARAMETER_VALUE;
+
     
     switch(device_id) {
         ////////////////////////////////////////////////////////////////////
@@ -44,7 +47,7 @@ S32 rsx_core_device_map_device(rsx_core_device_t* core, S32 device_id, S64 *dev_
         io_size = rsx_bus_ioif0_get_BAR0_size((void*)core->ioif0);
           *dev_lpar_size = io_size;
           
-          io_addr = rsx_bus_ioif0_get_BAR0_addr((void*)core->ioif0);
+          io_addr = ioif0->get_bar0_addr();
           
           // map device
         ret = rsx_map_io_to_lpar(core->core_id,                     // (IN)  memory core ID
@@ -73,7 +76,7 @@ S32 rsx_core_device_map_device(rsx_core_device_t* core, S32 device_id, S64 *dev_
       // RSX device 2, ?
       case  2: {
           *dev_lpar_size = io_size = 0x8000;
-          io_addr = rsx_bus_ioif0_get_BAR0_addr((void*)core->ioif0);
+          io_addr = ioif0->get_bar0_addr();
           io_addr += 0x80100;
           
           // map device
@@ -88,7 +91,7 @@ S32 rsx_core_device_map_device(rsx_core_device_t* core, S32 device_id, S64 *dev_
       // RSX device 3, ?
       case  3: {
       *dev_lpar_size = io_size = 0x1000;
-          io_addr = rsx_bus_ioif0_get_BAR0_addr((void*)core->ioif0);
+          io_addr = ioif0->get_bar0_addr();
           io_addr += 0x1000000;
           
           // map device
@@ -106,7 +109,7 @@ S32 rsx_core_device_map_device(rsx_core_device_t* core, S32 device_id, S64 *dev_
         //  return LV1_ILLEGAL_PARAMETER_VALUE;
           
           *dev_lpar_size = io_size = 0x200000;
-          io_addr = rsx_bus_ioif0_get_BAR0_addr((void*)core->ioif0);
+          io_addr = ioif0->get_bar0_addr();
           io_addr += 0x1800000;
           
           // map device
@@ -121,7 +124,7 @@ S32 rsx_core_device_map_device(rsx_core_device_t* core, S32 device_id, S64 *dev_
       // RSX device 5, ?
       case  5: {
           *dev_lpar_size = io_size = 0x1000;
-          io_addr = rsx_bus_ioif0_get_BAR0_addr((void*)core->ioif0);
+          io_addr = ioif0->get_bar0_addr();
           io_addr += 0x8A000;
           
           // map device
@@ -136,7 +139,7 @@ S32 rsx_core_device_map_device(rsx_core_device_t* core, S32 device_id, S64 *dev_
       // RSX device 6, ?
       case  6: {
           *dev_lpar_size = io_size = 0x1000;
-          io_addr = rsx_bus_ioif0_get_BAR0_addr((void*)core->ioif0);
+          io_addr = ioif0->get_bar0_addr();
           io_addr += 0x200000;
           
           // map device
@@ -151,7 +154,7 @@ S32 rsx_core_device_map_device(rsx_core_device_t* core, S32 device_id, S64 *dev_
       // RSX device 7, ?
       case  7: {
           *dev_lpar_size = io_size = 0x10000;
-          io_addr = rsx_bus_ioif0_get_BAR0_addr((void*)core->ioif0);
+          io_addr = ioif0->get_bar0_addr();
           io_addr += 0x600000;
           
           // map device
@@ -181,7 +184,7 @@ S32 rsx_core_device_map_device(rsx_core_device_t* core, S32 device_id, S64 *dev_
       // RSX device 9, ?
       case  9: {
           *dev_lpar_size = io_size = 0x8000;
-          io_addr = rsx_bus_ioif0_get_BAR0_addr((void*)core->ioif0);
+          io_addr = ioif0->get_bar0_addr();
           io_addr += 0x400000;
           
           // map device
@@ -196,7 +199,7 @@ S32 rsx_core_device_map_device(rsx_core_device_t* core, S32 device_id, S64 *dev_
       // RSX device 10, ?
       case 10: {
           *dev_lpar_size = io_size = 0x1000;
-          io_addr = rsx_bus_ioif0_get_BAR0_addr((void*)core->ioif0);
+          io_addr = ioif0->get_bar0_addr();
           io_addr += 0x100000;
           
           // map device
@@ -211,7 +214,7 @@ S32 rsx_core_device_map_device(rsx_core_device_t* core, S32 device_id, S64 *dev_
       // RSX device 11, ?
       case 11: {
           *dev_lpar_size = io_size = 0x1000;
-          io_addr = rsx_bus_ioif0_get_BAR0_addr((void*)core->ioif0);
+          io_addr = ioif0->get_bar0_addr();
           io_addr += 0xA000;
           
           // map device
@@ -226,7 +229,7 @@ S32 rsx_core_device_map_device(rsx_core_device_t* core, S32 device_id, S64 *dev_
       // RSX device 12, ?
       case 12: {
           *dev_lpar_size = io_size = 0x3000;
-          io_addr = rsx_bus_ioif0_get_BAR0_addr((void*)core->ioif0);
+          io_addr = ioif0->get_bar0_addr();
           io_addr += 0x680000;
           
           // map device
@@ -241,7 +244,7 @@ S32 rsx_core_device_map_device(rsx_core_device_t* core, S32 device_id, S64 *dev_
       // RSX device 13, ?
       case 13: {
           *dev_lpar_size = io_size = 0x1000;
-          io_addr = rsx_bus_ioif0_get_BAR0_addr((void*)core->ioif0);
+          io_addr = ioif0->get_bar0_addr();
           io_addr += 0x90000;
           
           // map device
@@ -256,7 +259,7 @@ S32 rsx_core_device_map_device(rsx_core_device_t* core, S32 device_id, S64 *dev_
       // RSX device 14, ?
       case 14: {
           *dev_lpar_size = io_size = 0x2000;
-          io_addr = rsx_bus_ioif0_get_BAR0_addr((void*)core->ioif0);
+          io_addr = ioif0->get_bar0_addr();
           io_addr += 0x2000;
           
           // map device
@@ -271,7 +274,7 @@ S32 rsx_core_device_map_device(rsx_core_device_t* core, S32 device_id, S64 *dev_
       // RSX device 15, ?
       case 15: {
           *dev_lpar_size = io_size = 0x1000;
-          io_addr = rsx_bus_ioif0_get_BAR0_addr((void*)core->ioif0);
+          io_addr = ioif0->get_bar0_addr();
           io_addr += 0x88000;
           
           // map device
@@ -284,42 +287,25 @@ S32 rsx_core_device_map_device(rsx_core_device_t* core, S32 device_id, S64 *dev_
       }
     }
     
-    *dev_lpar_addr = core->dev_lpar_addr[device_id];
-        
-  return ret;
+    *dev_lpar_addr = core->dev_lpar_addr[device_id];    
+    return ret;
 }
 
 /***********************************************************************
 * 
 ***********************************************************************/
-void rsx_core_device_finalize(rsx_core_device_t* core) {
-    rsx_device_fifo_t* fifo = NULL;
-    rsx_device_graph_t* graph = NULL;
+void rsx_core_device_t::finalize() {
+    // 1. Pause PFIFO
+    dev_fifo->pause();
     
-    
-    
-    // 1. pause FIFO
-    fifo = (void*)core->fifo;
-    rsx_device_fifo_pause(fifo);
-    
-    // 2. graph pause ?
-    graph = (void*)core->dev_graph_obj;
-    rsx_device_graph_21D038(graph);
+    // 2. Disable PGRAPH interrupts
+    dev_graph->disable_all_interrupts();
     
     // 3. RSX context ?
     //rsx_core_context_215CD8();
     
     
     // TODO: later, here are non existing stuff, like context
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     return;
 }

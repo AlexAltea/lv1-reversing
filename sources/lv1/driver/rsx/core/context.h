@@ -112,9 +112,9 @@ class rsx_core_context_t {
 public:
 
     // Methods
-    rsx_core_context_t(S64 core_id, rsx_mem_ctx_obj_t* mem_ctx, U64 system_mode);
+    rsx_core_context_t(S64 core_id, rsx_memory_context_t* mem_ctx, U64 system_mode);
 
-    void init(U64 *out, S64 core_id, rsx_mem_ctx_obj_t* mem_ctx, U64 system_mode, S32 idx);
+    void init(U64 *out, S64 core_id, rsx_memory_context_t* mem_ctx, U64 system_mode, S32 idx);
     S32 iomap(U64 ea, S64 lpar_addr, S32 size, U64 flags);
     S64 get_dma_control_lpar_address();
     S64 get_driver_info_lpar_addr();

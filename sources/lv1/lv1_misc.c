@@ -4,20 +4,33 @@
  */
 
 #include "lv1_misc.h"
+
 #include "lv1/lv1.h"
 
 #include <cstdlib>
 #include <cstring>
 
-
-
 // misc LV1 fake functions, no time or interest to RE this shit too
 // and e.g. fixed LPAR addresses are ok for this RSX RE work...
 
 
-
-
-
+// --- begin: allocate_io_segment ---------------------------------------
+S64 sub_2DABBC() {
+    return 0; // Value at HSPRG0(-0x6FF0)
+}
+S64 sub_2DBCF8(S64 arg1, S64 arg2) {
+    return 0;
+}
+S64 sub_2DBDBC() {
+    S64 unk1 = sub_2DABBC();
+    S64 unk2 = 0; // Pointer to HSPRG0(-0x6FF0)
+    sub_2DBCF8(unk1, unk2);
+}
+void sub2DBE04(S64 ioas_id, S64 segment_size, S64 io_page_size) {
+    //sub_27A0(1); // HSPRG0(-0x6F80) // Generic
+    sub_2DBDBC();
+}
+// --- end: allocate_io_segment -----------------------------------------
 
 /***********************************************************************
 * setup a unk LV1 struct with given values, maybe interrupt related?

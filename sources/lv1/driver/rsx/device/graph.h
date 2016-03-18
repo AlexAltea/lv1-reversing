@@ -62,9 +62,10 @@ struct rsx_device_graph_t {
     S64  get_graph_channel_address_by_id(S32 channel_id);
     S32  sub21D224(S32 arg1);
     void sub21D054();
-    void sub21D038();
-    void sub21D01C();
-} rsx_graph_obj;
+
+    void enable_all_interrupts();
+    void disable_all_interrupts();
+};
 
 //--- init -------------------------------------------------------------
 void rsx_device_graph_21E9CC(S64 *vtab);

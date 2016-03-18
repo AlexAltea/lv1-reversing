@@ -35,28 +35,24 @@ static rsx_mem_reg_setting_t set[12] = {
 * rsx_core_memory_t* core_mem = RSX device core object
 * U32 mem_ctx_id          = RSX memory context ID
 ***********************************************************************/
-rsx_mem_ctx_obj_t* rsx_core_memory_t::get_memory_context_by_id(U32 mem_ctx_id) {
-    rsx_mem_ctx_obj_t* mem_ctx = NULL;
-    
-    
-    // if id out of range
-    if ((mem_ctx_id ^ 0x5A5A5A5A) > 15)
-      return nullptr;
-    
-    mem_ctx = (void*)core_mem->rsx_mem_ctx[mem_ctx_id ^ 0x5A5A5A5A];
-    
-    return mem_ctx;
+rsx_memory_context_t* rsx_core_memory_t::get_memory_context_by_id(U32 mem_ctx_id) {
+    S32 index = mem_ctx_id ^ 0x5A5A5A5A;
+    if (index < 16) {
+        return rsx_mem_ctx[index];
+    } else {
+        return nullptr;
+    }
 }
 
 
 /***********************************************************************
 * 
 ***********************************************************************/
-rsx_core_memory_t* rsx_core_memory_allocate_memory_context(S32 local_size, S64 arg1, S64 arg2, S64 arg3, S64 arg4) {
+rsx_core_memory_t* rsx_core_memory_t::allocate_memory_context(S32 local_size, S64 arg1, S64 arg2, S64 arg3, S64 arg4) {
     S32 ctx_id, item_count;
     S32 ret1, ret2, ret3, ret4, ret5; 
     S64 out1, out2, out3, out4, out5;
-    rsx_mem_ctx_obj_t* mem_ctx = NULL;
+    rsx_memory_context_t* mem_ctx = NULL;
     
     
     // search a free RSX memory context into core memory object
@@ -114,7 +110,7 @@ rsx_core_memory_t* rsx_core_memory_allocate_memory_context(S32 local_size, S64 a
             }
             
             // allocate RSX memory context object
-            mem_ctx = lv1_kmalloc(sizeof(rsx_mem_ctx_obj_t));
+            mem_ctx = lv1_kmalloc(sizeof(rsx_memory_context_t));
             if (mem_ctx == NULL) {
             printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
             return 0;

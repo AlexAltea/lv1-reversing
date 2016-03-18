@@ -147,6 +147,7 @@
     <ClInclude Include="lv1\driver\rsx\device\fifo.h" />
     <ClInclude Include="lv1\driver\rsx\device\graph.h" />
     <ClInclude Include="lv1\driver\rsx\device\master.h" />
+    <ClInclude Include="lv1\driver\rsx\mmio.h" />
     <ClInclude Include="lv1\driver\rsx\object\channel.h" />
     <ClInclude Include="lv1\driver\rsx\object\context_dma.h" />
     <ClInclude Include="lv1\driver\rsx\object\hash_table.h" />
@@ -159,6 +160,7 @@
     <ClInclude Include="lv1\hvcalls.h" />
     <ClInclude Include="lv1\lv1.h" />
     <ClInclude Include="lv1\lv1_misc.h" />
+    <ClInclude Include="lv1\memory.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="lv1\driver\rsx\bus\ioif0.cc" />
@@ -172,6 +174,7 @@
     <ClCompile Include="lv1\driver\rsx\device\fifo.cc" />
     <ClCompile Include="lv1\driver\rsx\device\graph.cc" />
     <ClCompile Include="lv1\driver\rsx\device\master.cc" />
+    <ClCompile Include="lv1\driver\rsx\mmio.cc" />
     <ClCompile Include="lv1\driver\rsx\object\channel.cc" />
     <ClCompile Include="lv1\driver\rsx\object\context_dma.cc" />
     <ClCompile Include="lv1\driver\rsx\object\hash_table.cc" />
@@ -183,6 +186,7 @@
     <ClCompile Include="lv1\driver\rsx\utils\debugger.cc" />
     <ClCompile Include="lv1\hvcalls.c" />
     <ClCompile Include="lv1\lv1_misc.c" />
+    <ClCompile Include="lv1\memory.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

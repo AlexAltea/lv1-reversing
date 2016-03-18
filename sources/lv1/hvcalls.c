@@ -6,16 +6,33 @@
 #include "hvcalls.h"
 
 #include "lv1/lv1.h"
+#include "lv1/lv1_misc.h"
+#include "lv1/driver/rsx/assert.h"
+#include "lv1/driver/rsx/core/device.h"
+
+// HyperCall 115
+S32 lv1_undocumented_function_115(S64 ioas_id, S64 segment_size, S64 io_page_size) {
+    sub2DBE04(ioas_id, segment_size, io_page_size);
+}
+
+// HyperCall 116
+S32 lv1_allocate_io_segment(S64 ioas_id, S64 segment_size, S64 io_page_size, S64& ioif_addr) {
+    sub2DBE04(ioas_id, segment_size, io_page_size);
+    if (ioas_id < 4) {
+        return sub2DAE94(-0x11ULL, 1, 0, 0, 0, 0);
+    } else {
+        S64 unk = sub_2DAD24();
+        return sub_2DC630(0, unk, ioas_id);
+    }
+}
 
 /***********************************************************************
 * hypercall 217
 ***********************************************************************/
 void lv1_gpu_context_allocate(U32 mem_ctx_id, U64 system_mode) {
-    S32 idx;
     rsx_core_device_t* core = NULL;
-    rsx_mem_ctx_obj_t* mem_ctx = NULL;
-    rsx_ctx_obj_t *rsx_ctx = NULL;
-    
+    rsx_memory_context_t* mem_ctx = NULL;
+    rsx_core_context_t* context = NULL;
     
     if (g_rsx_open_status != 0)    {
         // extldi    r0, r4, 63,59 # system_mode, unset [58:58]
@@ -30,14 +47,11 @@ void lv1_gpu_context_allocate(U32 mem_ctx_id, U64 system_mode) {
     // TODO: tb and eic stuff...
     
     // get RSX device core object
-  core = (void*)g_rsx_core_obj_tbl[2];
-    if (core == NULL) {
-        printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-        return;
-    }
+    core = g_rsx_core_obj_tbl[2];
+    RSX_ASSERT(core);
     
     // pause FIFO
-    rsx_device_fifo_pause((void*)core->fifo);
+    core->dev_fifo->pause();
     
     // ? pause GRAPH ?
     rsx_device_graph_21D054((void*)core->dev_graph_obj);
@@ -50,19 +64,17 @@ void lv1_gpu_context_allocate(U32 mem_ctx_id, U64 system_mode) {
     }
     
     // get a free RSX context
-    for (idx = 0; idx < 3; idx++) {
-        if (core->rsx_ctx[idx] == NULL) {
+    for (S32 i = 0; i < 3; i++) {
+        if (core->context[i] == NULL) {
             // allocate and set new RSX context object
-          rsx_ctx = rsx_core_context_allocate(core->core_id, mem_ctx, system_mode);
-          
-          
-          // ...
-          
-          
-          printf("current... [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-          
-          g_r3 = LV1_SUCCESS;
-          return;
+            context = rsx_core_context_allocate(core->core_id, mem_ctx, system_mode);
+
+            // ...
+
+            printf("current... [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
+
+            g_r3 = LV1_SUCCESS;
+            return;
         }
     }
     
@@ -78,7 +90,7 @@ void lv1_gpu_context_allocate(U32 mem_ctx_id, U64 system_mode) {
 void lv1_gpu_memory_allocate(S32 local_size, S64 arg1, S64 arg2, S64 arg3, S64 arg4) {
     S32 size = 0;
     rsx_core_device_t* core = NULL;
-    rsx_mem_ctx_obj_t* mem_ctx = NULL;
+    rsx_memory_context_t* mem_ctx = NULL;
     
     
     if (g_rsx_open_status > 1) {

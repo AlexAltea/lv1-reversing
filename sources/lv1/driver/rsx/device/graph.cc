@@ -537,23 +537,23 @@ S32 rsx_device_graph_t::sub21D224(S32 arg1) {
 * pause ?
 ***********************************************************************/
 void rsx_device_graph_21D054(rsx_device_graph_t* graph) {
-    S32 i, value1, value2;
+    S32 value1, value2;
 
-    value1 = rsx_rd32(0x28000400760);
+    value1 = rsx_rd32(RSX_PGRAPH_FFINTFC_FIFO_PTR);
     value1 = (value1 & 0xFFFFFF0F) >>4;              // get value[24:27]
-    value2 = rsx_rd32(0x28000400760);
+    value2 = rsx_rd32(RSX_PGRAPH_FFINTFC_FIFO_PTR);
     value2 &= 0xF;                                   // get value[28:31]
   
     if (value1 != value2) {
-        for (i = 0; i < 100001; i++) {
+        for (S32 i = 0; i < 100001; i++) {
             // db16cyc
             // db16cyc
             // db16cyc
             // db16cyc
             // eieio
-            value1 = rsx_rd32(0x28000400760);
+            value1 = rsx_rd32(RSX_PGRAPH_FFINTFC_FIFO_PTR);
             value1 = (value1 & 0xFFFFFF0F) >>4;           // get value[24:27]
-            value2 = rsx_rd32(0x28000400760);
+            value2 = rsx_rd32(RSX_PGRAPH_FFINTFC_FIFO_PTR);
             value2 &= 0xF;                                // get value[28:31]
       
             if (value1 == value2) {
@@ -562,17 +562,17 @@ void rsx_device_graph_21D054(rsx_device_graph_t* graph) {
         }
     }
   
-    value1 = rsx_rd32(0x28000400764);
+    value1 = rsx_rd32(RSX_PGRAPH_FFINTFC_ST2);
     value1 &= 0x8000000;                              // get value[04:04]
     
     if (value1 != 0) {
-        for (i = 0; i < 100001; i++) {
+        for (S32 i = 0; i < 100001; i++) {
             // db16cyc
             // db16cyc
             // db16cyc
             // db16cyc
             // eieio
-            value1 = rsx_rd32(0x28000400764);
+            value1 = rsx_rd32(RSX_PGRAPH_FFINTFC_ST2);
             value1 &= 0x8000000;                          // get value[04:04]
             
             if (value1 == 0) {
@@ -582,46 +582,34 @@ void rsx_device_graph_21D054(rsx_device_graph_t* graph) {
     }
     
     value1 = rsx_rd32(RSX_PGRAPH_STATUS);
-    value2 = rsx_rd32(0x28000400300);
+    value2 = rsx_rd32(RSX_PGRAPH_CTXCTL_UNK0300);
     
     if (value1 != value2) {
-        for (i = 0; i < 100001; i++) {
+        for (S32 i = 0; i < 100001; i++) {
             // db16cyc
             // db16cyc
             // db16cyc
             // db16cyc
             // eieio
             value1 = rsx_rd32(RSX_PGRAPH_STATUS);
-            value2 = rsx_rd32(0x28000400300);
+            value2 = rsx_rd32(RSX_PGRAPH_CTXCTL_UNK0300);
       
             if (value1 != value2) {
                 break;
             }
         }
     }
-    
-    return;
 }
 
-/***********************************************************************
-* 
-***********************************************************************/
-void rsx_device_graph_21D038(rsx_device_graph_t* graph) {
-    rsx_wr32(0, 0x2800040013C);   // on ?
-    return; 
+
+void rsx_device_graph_t::enable_all_interrupts() {
+    rsx_wr32(RSX_PGRAPH_INTR_EN, 0xFFFFFFFF);
+}
+void rsx_device_graph_t::disable_all_interrupts() {
+    rsx_wr32(RSX_PGRAPH_INTR_EN, 0);
 }
 
-/***********************************************************************
-* 
-***********************************************************************/
-void rsx_device_graph_21D01C(rsx_device_graph_t* graph) {
-    rsx_wr32(-1, 0x2800040013C);  // off ?
-    return;
-}
 
-/***********************************************************************
-* 
-***********************************************************************/
 void rsx_device_graph_21E9CC(S64 *vtab) {
     S32 i, value = 0, chip_revision;
     rsx_core_device_t* core = NULL;

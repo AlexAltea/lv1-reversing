@@ -8,6 +8,7 @@
 #include "common/types.h"
 
 #include "lv1/driver/rsx/bus/ioif0.h"
+#include "lv1/driver/rsx/core/context.h"
 #include "lv1/driver/rsx/core/memory.h"
 
 // Devices
@@ -37,7 +38,7 @@ struct rsx_core_device_t {
     //S32 unk_01C;               // 0x01C: sometime RSX device core object ID as 32bit
     rsx_core_memory_t* core_mem;           // 0x020: RSX core memory object
     //--------------------------------------------------------------------
-    S64 *rsx_ctx[3];             // 0x028: RSX context 0(ID: 0x55555555), 1(ID: 0x55555554) and 3(ID: 0x55555553)
+    rsx_core_context_t* context[3];             // 0x028: RSX context 0(ID: 0x55555555), 1(ID: 0x55555554) and 3(ID: 0x55555553)
     //--------------------------------------------------------------------
     S64 *unk_040;                // 0x040: ? removed object
     //--------------------------------------------------------------------
@@ -89,11 +90,11 @@ struct rsx_core_device_t {
     S32 unk_1B8;                 // 0x1B8: ?
     S32 unk_1BC;                 // 0x1BC: ?
     S64 unk_1C0;                 // 0x1C0: ?
+
+    S32 map_device(S32 device_id, S64 *dev_lpar_addr, S64 *dev_lpar_size);
+    void finalize();
 };
 
-
-S32 rsx_core_device_map_device(rsx_core_device_t* core, S32 device_id, S64 *dev_lpar_addr, S64 *dev_lpar_size);
-void rsx_core_device_finalize(rsx_core_device_t* core);
 S32 rsx_core_device_close_device(S32 dev_core_id);
 
 rsx_core_device_t* rsx_core_device_get_core_object(void);

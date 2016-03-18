@@ -266,9 +266,16 @@
 #define     RSX_PGRAPH_NSOURCE_BIT23                   (1 << 23)  // Texture V protection error pending
 #define     RSX_PGRAPH_NSOURCE_BIT24                   (1 << 24)  // DMA Z-Cull protection error pending
 #define     RSX_PGRAPH_NSOURCE_BIT25                   (1 << 25)  // SIP error pending
+#define RSX_PGRAPH_INTR_EN             (0x0040013C)
+#define     RSX_PGRAPH_INTR_NOTIFY                     (1 <<  0)
+#define     RSX_PGRAPH_INTR_MISSING_HW                 (1 <<  4)
+#define     RSX_PGRAPH_INTR_CONTEXT_SWITCH             (1 << 12)
+#define     RSX_PGRAPH_INTR_BUFFER_NOTIFY              (1 << 16)
+#define     RSX_PGRAPH_INTR_ERROR                      (1 << 20)
 #define RSX_PGRAPH_CTX_CONTROL         (0x00400144)
 #define RSX_PGRAPH_CTX_USER            (0x00400148)
 #define RSX_PGRAPH_CTX_SWITCH(i)       (0x0040014C + 4*(i))
+#define RSX_PGRAPH_CTXCTL_UNK0300      (0x00400300)
 #define RSX_PGRAPH_CTXCTL_UNK0304      (0x00400304)
 #define RSX_PGRAPH_CTXCTL_UCODE_STAT                    0x00400308
 #define     RSX_PGRAPH_CTXCTL_UCODE_STAT_IP_MASK        0xFF000000
@@ -310,6 +317,8 @@
 #define RSX_PGRAPH_BSWIZZLE2           (0x0040069C)
 #define RSX_PGRAPH_BSWIZZLE5           (0x004006A0)
 #define RSX_PGRAPH_STATUS              (0x00400700)
+#define RSX_PGRAPH_FFINTFC_FIFO_PTR    (0x00400760)
+#define RSX_PGRAPH_FFINTFC_ST2         (0x00400764)
 #define RSX_PGRAPH_TILE(i)             (0x00400D00 + 16*(i))
 #define RSX_PGRAPH_TLIMIT(i)           (0x00400D04 + 16*(i))
 #define RSX_PGRAPH_TSIZE(i)            (0x00400D08 + 16*(i))

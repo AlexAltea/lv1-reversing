@@ -90,6 +90,10 @@
       <Filter>driver\rsx</Filter>
     </ClInclude>
     <ClInclude Include="lv1\hvcalls.h" />
+    <ClInclude Include="lv1\memory.h" />
+    <ClInclude Include="lv1\driver\rsx\mmio.h">
+      <Filter>driver\rsx</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="lv1\driver\rsx\utils\debugger.cc">
@@ -154,5 +158,9 @@
     </ClCompile>
     <ClCompile Include="lv1\hvcalls.c" />
     <ClCompile Include="lv1\lv1_misc.c" />
+    <ClCompile Include="lv1\memory.c" />
+    <ClCompile Include="lv1\driver\rsx\mmio.cc">
+      <Filter>driver\rsx</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

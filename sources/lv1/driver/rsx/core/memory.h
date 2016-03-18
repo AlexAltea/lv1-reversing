@@ -22,8 +22,8 @@ struct rsx_mem_reg_setting_t {
 };
 
 // LV1 RSX memory context object, size 0x50
-struct rsx_mem_ctx_obj_t {
-    rsx_core_memory_t* core_mem;          // 0x00: RSX device core memory object
+struct rsx_memory_context_t {
+    rsx_core_memory_t* core_mem;// 0x00: RSX device core memory object
     S32 id;                     // 0x08: RSX memory context ID, (index XOR 0x5A5A5A5A)
     S32 unk_0C;                 // 0x0C: 
     //--------------------------------------------------------------------
@@ -91,11 +91,11 @@ struct rsx_core_memory_t {
     rsx_utils_bitmap_t* bm_unk_03;       // 0x0F8: 8      0                1          ?
     rsx_utils_bitmap_t* bm_ctx_dma;      // 0x100: 256    0x28002040000    0x10       256 context DMA objects of 0x10 byte size
     //-------------------------------------------------------------------------------------------------------------------------------
-    S64* rsx_mem_ctx[16];         // 0x108: RSX memory context object array, 0 to 15
+    rsx_memory_context_t* rsx_mem_ctx[16];         // 0x108: RSX memory context object array, 0 to 15
     S64* unk_188;                 // 0x188: ?
 
     // Methods
-    rsx_mem_ctx_obj_t* get_memory_context_by_id(U32 mem_ctx_id);
+    rsx_memory_context_t* get_memory_context_by_id(U32 mem_ctx_id);
     rsx_core_memory_t* allocate_memory_context(S32 local_size, S64 arg1, S64 arg2, S64 arg3, S64 arg4);
     S32 value_div_by_16(S32 offset);
     S32 get_bar1_offset_by_address(S64 addr);
