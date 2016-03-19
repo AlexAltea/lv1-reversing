@@ -6,6 +6,9 @@
 #include "context_dma.h"
 
 #include "lv1/lv1_misc.h"
+#include "lv1/driver/rsx/assert.h"
+#include "lv1/driver/rsx/vram.h"
+#include "lv1/driver/rsx/core/device.h"
 
 S32 rsx_object_context_dma_t::get_object_size() {
     return 0x10;
@@ -14,68 +17,48 @@ S32 rsx_object_context_dma_t::get_object_size() {
 /***********************************************************************
 * 
 ***********************************************************************/
-void rsx_object_context_dma_t::sub220064(S32 arg1, S32 arg2, S64 addr, S32 size) {
-    S32 value1 = 0, value2 = 0, offset = 0;
-    rsx_core_device_t* core = NULL;
-    
-    
-    // ? based on arg1
-    if (arg1 == 1)
-      value1 = 0x3002;
-    else if (arg1 == 2)
-      value1 = 0x3003;
-    else if (arg1 == 3)
-      value1 = 0x303D;
-    else {
-    printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-      return;
-  }
+void rsx_object_context_dma_t::sub220064(S32 type, S32 arg2, S64 addr, S32 size) {
+    U32 dma_object;
+    U32 dma_offset;
+    U32 dma_size = size ? size - 1 : 0;
+
+    switch (type) {
+    case L1GPU_CONTEXT_DMA_TYPE1:  dma_object = 0x3002; break;
+    case L1GPU_CONTEXT_DMA_TYPE2:  dma_object = 0x3003; break;
+    case L1GPU_CONTEXT_DMA_TYPE3:  dma_object = 0x303D; break;
+    default:
+        RSX_ASSERT(false);
+    }
   
-  // get RSX device core object
-  core = rsx_core_device_get_core_object_by_id(g_rsx_core_id);
-  if (core == NULL) {
-    printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-    return;
-  }
+    // Get RSX device core object
+    rsx_core_device_t* core = rsx_core_device_get_core_object_by_id(g_rsx_core_id);
+    RSX_ASSERT(core);
   
-    // ? based on arg2
+    rsx_core_memory_t* mem = core->core_mem;
     if (arg2 == 4) {
-        addr = rsx_core_memory_get_BAR1_offset_by_address((void*)core->core_mem, addr);
-        value2 = (addr <<20) | value1;
+        addr = mem->get_bar1_offset_by_address(addr);
+        dma_object = (addr << 20) | dma_object;
     }
     else if (arg2 == 8)
-        value2 = (value1 | 0x20000) | (addr <<20);
+        dma_object = (type | 0x20000) | (addr << 20);
     else {
-    printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-      return;
-  }
+        RSX_ASSERT(false);
+    }
     
     // ? alignment check
-    if ((addr &= 0xF) != 0) {
-    printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-      return;
-  }
-    
-    // ?
-    if (size != 0)
-      size--;
-    else
-      size = 0;
+    RSX_ASSERT(addr & 0xF == 0);
     
     // store address into dma object
-    dma_obj->unk_10 = (S32)addr;
+    bar1_offset = (S32)addr;
     
     // get entry offset
-    offset = rsx_core_memory_2120EC((void*)core->core_mem, dma_obj->unk_08);
+    U32 ramin_offset = mem->sub2120EC(dma_obj->bar2_offset);
     
-    // write entry
-    DDR_write32(  value2, offset + g_rsx_bar2_addr);
-    DDR_write32(    size, offset + g_rsx_bar2_addr + 4);
-    DDR_write32(addr | 3, offset + g_rsx_bar2_addr + 8);
-    DDR_write32(addr | 3, offset + g_rsx_bar2_addr + 0xC);
-    
-    //printf("addr: 0x%016llX\n", offset + g_rsx_bar2_addr);
-    return;
+    // Write DMA object
+    vram_wr32(dma_object,     ramin_offset + 0x0);
+    vram_wr32(dma_size,       ramin_offset + 0x4);
+    vram_wr32(dma_offset | 3, ramin_offset + 0x8);
+    vram_wr32(dma_offset | 3, ramin_offset + 0xC);
 }
 
 /***********************************************************************
@@ -85,21 +68,20 @@ rsx_object_context_dma_t::rsx_object_context_dma_t(U32 handle) : handle(handle),
     rsx_core_device_t* core = NULL;
     rsx_core_memory_t* core_mem = NULL;
     rsx_utils_bitmap_t* bm_ctx_dma = NULL;
-    
-    
+
     // Get RSX device core object
     core = rsx_core_device_get_core_object_by_id(g_rsx_core_id);
     RSX_ASSERT(core);
   
     // Get core memory object
-    core_mem = (void*)core->core_mem;
+    core_mem = core->core_mem;
   
     // Get context DMA object bitmap
-    bm_ctx_dma = (void*)core_mem->bm_ctx_dma;
+    bm_ctx_dma = core_mem->bm_ctx_dma;
   
     // allocate 1 of the 256 context DMA objects
     S64 idx;
-    S32 ret = rsx_utils_bitmap_allocate(bm_ctx_dma, 1, &idx);
+    S32 ret = bm_ctx_dma->allocate(1, &idx);
     RSX_ASSERT(ret);
     
     // init dma object

@@ -7,6 +7,12 @@
 
 #include "common/types.h"
 
+enum {
+    L1GPU_CONTEXT_DMA_TYPE1 = 1,
+    L1GPU_CONTEXT_DMA_TYPE2 = 2,
+    L1GPU_CONTEXT_DMA_TYPE3 = 3,
+};
+
 // LV1 RSX object context DMA object, size 0x18
 struct rsx_object_context_dma_t {
     U32 handle;        // 0x00: 
@@ -21,5 +27,5 @@ struct rsx_object_context_dma_t {
     S64 get_bar2_offset();
 
     rsx_object_context_dma_t(U32 type);
-    void sub220064(rsx_object_context_dma_t* dma_obj, S32 arg1, S32 arg2, S64 addr, S32 size);
+    void sub220064(S32 type, S32 arg2, S64 addr, S32 size);
 };
