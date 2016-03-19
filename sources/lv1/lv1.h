@@ -3,6 +3,8 @@
  * Released under MIT license. Read LICENSE for more details.
  */
 
+#pragma once
+
 #include "common/types.h"
 
 // LV1 Configuration

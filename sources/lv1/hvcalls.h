@@ -18,7 +18,18 @@ S32 lv1_destruct_virtual_address_space(U64 vas_id);
 S32 lv1_configure_irq_state_bitmap(U64 ppe_id, U64 cpu_id, U64 bitmap_addr);
 S32 lv1_connect_irq_plug_ext(U64 ppe_id, U64 cpu_id, U64 virq, U64 outlet, U64 zero);
 S32 lv1_release_memory(U64 base_addr);
+
+/**
+ * LV1 SysCall 15 (0xF): lv1_put_iopte
+ * @param[in]   ioas_id       R3  IO address space ID
+ * @param[in]   ioif_addr     R4  IO interface address
+ * @param[in]   lpar_addr     R5  LPAR address
+ * @param[in]   io_id         R6  IO ID
+ * @param[in]   flags         R7  Flags
+ * @return                    R3  Status code
+ */
 S32 lv1_put_iopte(U64 ioas_id, U64 ioif_addr, U64 lpar_addr, U64 io_id, U64 flags);
+
 S32 lv1_disconnect_irq_plug_ext(U64 ppe_id, U64 cpu_id, U64 virq);
 S32 lv1_construct_event_receive_port(U64* outlet);
 S32 lv1_destruct_event_receive_port(U64 outlet);

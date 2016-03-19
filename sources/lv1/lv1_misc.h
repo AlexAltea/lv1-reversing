@@ -21,7 +21,6 @@ struct lv1_unk_obj_00_t {
 ////////////////////////////////////////////////////////////////////////
 // Misc LV1 functions
 
-void sub2DBE04(S64 ioas_id, S64 segment_size, S64 io_page_size);
 S32 lv1_sub_2D7A14(S32 arg1, S64 ea, S32 lm_offset, S32 arg2, U64 flags, S32 arg3);
 S32 count_set_bits(S64 value);
 S32 allocate_io_segment(S64 arg1, S32 arg2, S32 arg3, S32 arg4, S32 arg5, S32 arg6, S32 arg7, S64 *out);

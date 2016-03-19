@@ -9,6 +9,12 @@
 #include "lv1/lv1_misc.h"
 #include "lv1/driver/rsx/assert.h"
 #include "lv1/driver/rsx/core/device.h"
+#include "lv1/iommu.h"
+
+// HyperCall 15
+S32 lv1_put_iopte(S64 ioas_id, S64 ioif_addr, S64 lpar_addr, S64 io_id, S64 flags) {
+    return put_iopte(ioas_id, ioif_addr, lpar_addr, io_id, flags, 1);
+}
 
 // HyperCall 115
 S32 lv1_undocumented_function_115(S64 ioas_id, S64 segment_size, S64 io_page_size) {

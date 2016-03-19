@@ -23,10 +23,10 @@ void rsx_object_sw_class_create_object(rsx_object_sw_class_t* sw_obj, U32 handle
   }*/
     
     // check class
-    if (class == 0) {
-    printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
-    return;
-  }
+    if (handle == 0) {
+        printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
+        return;
+    }
     
     sw_obj->id = -1; 
     
