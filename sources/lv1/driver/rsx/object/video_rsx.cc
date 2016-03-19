@@ -97,51 +97,51 @@ void rsx_object_video_rsx_222F2C(rsx_object_video_rsx_t* video_rsx, S32 arg1) {
     
     
     if (arg1 == 0) {
-        value = rsx_rd32(0x2800008C004);
+        value = rsx_rd32(0x0008C004);
         value &= 0xFFFFFFE0;                        // unset value[27:31]
         value |= 0x9;                               // set value[28:28] and value[31:31]
-        rsx_wr32(value, 0x2800008C004);
+        rsx_wr32(value, 0x0008C004);
         
-        value = rsx_rd32(0x2800008C004);
+        value = rsx_rd32(0x0008C004);
         value &= 0xFFF0FFFF;                        // unset value[12:15]
         value |= 0x50000;                           // set value[13:13] and value[15:15]
-        rsx_wr32(value, 0x2800008C004);
+        rsx_wr32(value, 0x0008C004);
     }
     
     if (arg1 == 1) {
-        value = rsx_rd32(0x2800008C014);
+        value = rsx_rd32(0x0008C014);
         value &= 0xFFFFFFE0;                        // unset value[27:31]
         value |= 0xD;                               // set value[28:29] and value[31:31]
-        rsx_wr32(value, 0x2800008C014);
+        rsx_wr32(value, 0x0008C014);
         
-        value = rsx_rd32(0x2800008C014);
+        value = rsx_rd32(0x0008C014);
         value &= 0xFFF0FFFF;                        // unset value[12:15]
         value |= 0x70000;                           // set value[13:15]
-        rsx_wr32(value, 0x2800008C014);
+        rsx_wr32(value, 0x0008C014);
     }
     
     if (arg1 == 2) {
-        value = rsx_rd32(0x2800008C024);
+        value = rsx_rd32(0x0008C024);
         value &= 0xFFFFFFE0;                        // unset value[27:31]
         value |= 9;                                 // set value[28:28] and value[31:31]
-        rsx_wr32(value, 0x2800008C024);
+        rsx_wr32(value, 0x0008C024);
         
-        value = rsx_rd32(0x2800008C024);
+        value = rsx_rd32(0x0008C024);
         value &= 0xFFF0FFFF;                        // unset value[12:15]
         value |= 0x50000;                           // set value[13:13] and value[15:15]
-        rsx_wr32(value, 0x2800008C024);
+        rsx_wr32(value, 0x0008C024);
     }
     
     if (arg1 == 3) {
-        value = rsx_rd32(0x2800008C024);
+        value = rsx_rd32(0x0008C024);
         value &= 0xFFFFFFE0;                        // unset value[27:31]
         value |= 0xD;                               // set value[28:28] and value[31:31]
-        rsx_wr32(value, 0x2800008C024);
+        rsx_wr32(value, 0x0008C024);
         
-        value = rsx_rd32(0x2800008C024);
+        value = rsx_rd32(0x0008C024);
         value &= 0xFFF0FFFF;                        // unset value[12:15]
         value |= 0x50000;                           // set value[28:29] and value[31:31]
-        rsx_wr32(value, 0x2800008C024);
+        rsx_wr32(value, 0x0008C024);
     }
     
     offset = arg1 * 0x10;
@@ -336,17 +336,17 @@ void rsx_object_video_rsx_init(rsx_object_video_rsx_t* video_rsx) {
   
   for (i = 0; i < 2; i++) {
         if (i == 0) {
-            value = rsx_rd32(0x2800008C044);
+            value = rsx_rd32(0x0008C044);
         value &= 0xFFFFFFC0;                    // unset value[26:31]
         value |= 0xA;                           // set value[28:28] and value[30:30]
-        rsx_wr32(value, 0x2800008C044);
+        rsx_wr32(value, 0x0008C044);
         }
         
         if (i == 1) {
-            value = rsx_rd32(0x2800008C044);
+            value = rsx_rd32(0x0008C044);
         value &= 0xFFFFFFC0;                    // unset value[26:31]
         value |= 0xE;                           // set value[28:30]
-        rsx_wr32(value, 0x2800008C044);
+        rsx_wr32(value, 0x0008C044);
         }
         
         value = rsx_rd32(offset + 0x2800008C008);
@@ -369,33 +369,33 @@ void rsx_object_video_rsx_init(rsx_object_video_rsx_t* video_rsx) {
   video_rsx->unk_4C = 0x20200;
   
   // set some BAR0 register flags
-  value = rsx_rd32(0x2800008C140);
+  value = rsx_rd32(0x0008C140);
   value |= 1;                          // set value[31:31]
-  rsx_wr32(value, 0x2800008C140);
+  rsx_wr32(value, 0x0008C140);
   
-  value = rsx_rd32(0x2800008C140);
+  value = rsx_rd32(0x0008C140);
   value |= 0x10;                       // set value[27:27]
-  rsx_wr32(value, 0x2800008C140);
+  rsx_wr32(value, 0x0008C140);
   
-  value = rsx_rd32(0x2800008C140);
+  value = rsx_rd32(0x0008C140);
   value |= 0x100;                      // set value[23:23]
-  rsx_wr32(value, 0x2800008C140);
+  rsx_wr32(value, 0x0008C140);
   
-  value = rsx_rd32(0x2800008C140);
+  value = rsx_rd32(0x0008C140);
   value |= 0x1000;                     // set value[19:19]
-  rsx_wr32(value, 0x2800008C140);
+  rsx_wr32(value, 0x0008C140);
   
-  value = rsx_rd32(0x2800008C140);
+  value = rsx_rd32(0x0008C140);
   value &= 0xFFFEFFFF;                 // unset value[15:15]
-  rsx_wr32(value, 0x2800008C140);
+  rsx_wr32(value, 0x0008C140);
   
-  value = rsx_rd32(0x2800008C140);
+  value = rsx_rd32(0x0008C140);
   value &= 0xFFF7FFFF;                 // unset value[12:12]
-  rsx_wr32(value, 0x2800008C140);
+  rsx_wr32(value, 0x0008C140);
   
-  value = rsx_rd32(0x280004000A4);
+  value = rsx_rd32(0x004000A4);
   value &= 0x7FFFFFFF;                 // unset value[00:00]
-  rsx_wr32(value, 0x280004000A4);
+  rsx_wr32(value, 0x004000A4);
   
   // set some rsx object values
   video_rsx->unk_53 = 0;

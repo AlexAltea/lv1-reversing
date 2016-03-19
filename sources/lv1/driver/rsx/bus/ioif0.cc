@@ -12,6 +12,12 @@ const char* rsx_bus_ioif0_get_class_name_string() {
     return "rsx ioif0 bus";
 }
 
+inline void rsx_bus_ioif0_t::enable_interrupt(U32 bits) {
+    U32 reg = rsx_rd32(RSX_PFIFO_INTR_EN_0) | bits;
+    rsx_wr32(RSX_PFIFO_INTR_EN_0, reg);
+}
+
+
 // Get members
 S32 rsx_bus_ioif0_t::get_init_flag() {
     return init;
@@ -42,13 +48,12 @@ S32 rsx_bus_ioif0_t::get_unk_38() {
 }
 
 // Access BAR0
+S32 rsx_bus_ioif0_t::bar0_read(S64 offset) {
+    return rsx_rd32(bar0_addr + offset);
+}
 void rsx_bus_ioif0_t::bar0_write(S32 offset, S32 value) {
     rsx_wr32(value, bar0_addr + offset);
 }
-S32 rsx_bus_ioif0_t::bar0_read(S64 offset) {
-    return read_BAR0(bar0_addr + offset);
-}
-
 
 /***********************************************************************
 * 
@@ -103,128 +108,37 @@ void rsx_bus_ioif0_t::sub217814() {
     rsx_wr32(value1, 0x28000009200);
     rsx_wr32(value2, 0x28000009210);
   
-  
-    value = rsx_rd32(0x28000088140);
-    value |= 0x80000000;                  // set value[00:00]
-    rsx_wr32(value, 0x28000088140);
-    
-    value = rsx_rd32(0x28000088140);
-    value |= 0x40000000;                  // set value[01:01]
-    rsx_wr32(value, 0x28000088140);
-    
-    value = rsx_rd32(0x28000088140);
-    value |= 0x20000000;                  // set value[02:02]
-    rsx_wr32(value, 0x28000088140);
-    
-    value = rsx_rd32(0x28000088140);
-    value |= 0x10000000;                  // set value[03:03]
-    rsx_wr32(value, 0x28000088140);
-    
-    value = rsx_rd32(0x28000088140);
-    value |= 0x8000000;                   // set value[04:04]
-    rsx_wr32(value, 0x28000088140);
-    
-    value = rsx_rd32(0x28000088140);
-    value |= 0x4000000;                   // set value[05:05]
-    rsx_wr32(value, 0x28000088140);
-    
-    value = rsx_rd32(0x28000088140);
-    value |= 0x2000000;                   // set value[06:06]
-    rsx_wr32(value, 0x28000088140);
-    
-    value = rsx_rd32(0x28000088140);
-    value |= 0x1000000;                   // set value[07:07]
-    rsx_wr32(value, 0x28000088140);
-    
-    value = rsx_rd32(0x28000088140);
-    value |= 0x800000;                    // set value[08:08]
-    rsx_wr32(value, 0x28000088140);
-    
-    value = rsx_rd32(0x28000088140);
-    value |= 0x400000;                    // set value[09:09]
-    rsx_wr32(value, 0x28000088140);
-    
-    value = rsx_rd32(0x28000088140);
-    value |= 0x200000;                    // set value[10:10]
-    rsx_wr32(value, 0x28000088140);
-    
-    value = rsx_rd32(0x28000088140);
-    value |= 0x100000;                    // set value[11:11]
-    rsx_wr32(value, 0x28000088140);
-    
-    value = rsx_rd32(0x28000088140);
-    value |= 0x80000;                     // set value[12:12]
-    rsx_wr32(value, 0x28000088140);
-    
-    value = rsx_rd32(0x28000088140);
-    value |= 0x20000;                     // set value[14:14]
-    rsx_wr32(value, 0x28000088140);
-    
-    value = rsx_rd32(0x28000088140);
-    value |= 0x10000;                     // set value[15:15]
-    rsx_wr32(value, 0x28000088140);
-  
-    value = rsx_rd32(0x28000088140);
-    value |= 0x8000;                      // set value[16:16]
-    rsx_wr32(value, 0x28000088140);
-    
-    value = rsx_rd32(0x28000088140);
-    value |= 0x4000;                      // set value[17:17]
-    rsx_wr32(value, 0x28000088140);
-    
-    value = rsx_rd32(0x28000088140);
-    value |= 0x2000;                      // set value[18:18]
-    rsx_wr32(value, 0x28000088140);
-    
-    value = rsx_rd32(0x28000088140);
-    value |= 0x1000;                      // set value[19:19]
-    rsx_wr32(value, 0x28000088140);
-    
-    value = rsx_rd32(0x28000088140);
-    value |= 0x800;                       // set value[20:20]
-    rsx_wr32(value, 0x28000088140);
-    
-    value = rsx_rd32(0x28000088140);
-    value |= 0x400;                       // set value[21:21]
-    rsx_wr32(value, 0x28000088140);
-    
-    value = rsx_rd32(0x28000088140);
-    value |= 0x200;                       // set value[22:22]
-    rsx_wr32(value, 0x28000088140);
-    
-    value = rsx_rd32(0x28000088140);
-    value |= 0x100;                       // set value[23:23]
-    rsx_wr32(value, 0x28000088140);
-    
-    value = rsx_rd32(0x28000088140);
-    value |= 0x80;                        // set value[24:24]
-    rsx_wr32(value, 0x28000088140);
-    
-    value = rsx_rd32(0x28000088140);
-    value |= 0x40;                        // set value[25:25]
-    rsx_wr32(value, 0x28000088140);
-    
-    value = rsx_rd32(0x28000088140);
-    value |= 0x20;                        // set value[26:26]
-    rsx_wr32(value, 0x28000088140);
-    
-    value = rsx_rd32(0x28000088140);
-    value |= 8;                           // set value[28:28]
-    rsx_wr32(value, 0x28000088140);
-    
-    value = rsx_rd32(0x28000088140);
-    value |= 4;                           // set value[29:29]
-    rsx_wr32(value, 0x28000088140);
-    
-    value = rsx_rd32(0x28000088140);
-    value |= 2;                           // set value[30:30]
-    rsx_wr32(value, 0x28000088140);
-    
-    value = rsx_rd32(0x28000088140);
-    value |= 1;                           // set value[31:31]
-    rsx_wr32(value, 0x28000088140);
-  
-    return;
+    // Set interrupts
+    enable_interrupt(RSX_IOIF_INTR_EMDRWER);
+    enable_interrupt(RSX_IOIF_INTR_EMWDSER);
+    enable_interrupt(RSX_IOIF_INTR_EMWSER);
+    enable_interrupt(RSX_IOIF_INTR_EMWDTE);
+    enable_interrupt(RSX_IOIF_INTR_UC_ATE);
+    enable_interrupt(RSX_IOIF_INTR_UC_ERII);
+    enable_interrupt(RSX_IOIF_INTR_UC_ERIT);
+    enable_interrupt(RSX_IOIF_INTR_UC_IOCPLTO);
+    enable_interrupt(RSX_IOIF_INTR_UC_IOODTO);
+    enable_interrupt(RSX_IOIF_INTR_UC_IOCTO);
+    enable_interrupt(RSX_IOIF_INTR_UC_RMRDSER);
+    enable_interrupt(RSX_IOIF_INTR_UC_RMRSER);
+    enable_interrupt(RSX_IOIF_INTR_UC_RMRDTE);
+    enable_interrupt(RSX_IOIF_INTR_DEBUG_ERROR);
+    enable_interrupt(RSX_IOIF_INTR_SPI_ERROR);
+    enable_interrupt(RSX_IOIF_INTR_BE_READ_ERROR);
+    enable_interrupt(RSX_IOIF_INTR_BE_WRITE_ERROR);
+    enable_interrupt(RSX_IOIF_INTR_BE_COMMAND_OVERFLOW);
+    enable_interrupt(RSX_IOIF_INTR_BE_DATA_OVERFLOW);
+    enable_interrupt(RSX_IOIF_INTR_INVALID_DATA_OVERFLOW);
+    enable_interrupt(RSX_IOIF_INTR_DATA_CREDIT_OVERFLOW);
+    enable_interrupt(RSX_IOIF_INTR_COMMAND_CREDIT_OVERFLOW);
+    enable_interrupt(RSX_IOIF_INTR_COMMAND_BUFFER_OVERFLOW);
+    enable_interrupt(RSX_IOIF_INTR_INVALID_PLG_TYPE);
+    enable_interrupt(RSX_IOIF_INTR_INVALID_NODE_ID);
+    enable_interrupt(RSX_IOIF_INTR_INVALID_DSIZE);
+    enable_interrupt(RSX_IOIF_INTR_INVALID_TTYPE);
+    enable_interrupt(RSX_IOIF_INTR_CRC_ERROR);
+    enable_interrupt(RSX_IOIF_INTR_RETRY_ERROR);
+    enable_interrupt(RSX_IOIF_INTR_CONSECUTIVE_RETRY_ERROR);
 }
 
 
@@ -238,13 +152,13 @@ void rsx_bus_ioif0_t::sub219018() {
     
     
     // set some flags in BAR0
-    value = rsx_rd32(0x28000088208);
+    value = rsx_rd32(0x00088208);
     value |= 2;                            // set value[30:30]
-    rsx_wr32(value, 0x28000088208);
+    rsx_wr32(value, 0x00088208);
     
-    value = rsx_rd32(0x28000088208);
+    value = rsx_rd32(0x00088208);
     value |= 1;                            // set value[31:31]
-    rsx_wr32(value, 0x28000088208);
+    rsx_wr32(value, 0x00088208);
     
     rsx_wr32(0, 0x2800008820C);          // set value to 0
     
@@ -265,45 +179,36 @@ void rsx_bus_ioif0_t::sub219018() {
         rsx_wr32(1, addr + (i * 4));
     }
     
-    rsx_bus_ioif0_217814(ioif0);
+    sub217814();
     
-    value = rsx_rd32(0x280000884C0);
+    value = rsx_rd32(0x000884C0);
     value |= 0x10;                         // set value[27:27]
-    rsx_wr32(value, 0x280000884C0);
+    rsx_wr32(value, 0x000884C0);
     
-    value = rsx_rd32(0x280000884C0);
+    value = rsx_rd32(0x000884C0);
     value &= 0xFFFFFF1F;                   // unset value[24:26]
-    rsx_wr32(value, 0x280000884C0);
+    rsx_wr32(value, 0x000884C0);
     
-    value = rsx_rd32(0x28000088208);
+    value = rsx_rd32(0x00088208);
     value &= 0xFFFFF8FF;                   // unset value[21:23]
     value |= 0x100;                        // set value[23:23]
-    rsx_wr32(value, 0x28000088208);
+    rsx_wr32(value, 0x00088208);
   
-    value = rsx_rd32(0x28000088208);
+    value = rsx_rd32(0x00088208);
     value &= 0xFFFF8FFF;                   // unset value[17:19]
     value |= 0x1000;                       // set value[19:19]
-    rsx_wr32(value, 0x28000088208);
+    rsx_wr32(value, 0x00088208);
   
-    value = rsx_rd32(0x28000088304);
+    value = rsx_rd32(0x00088304);
     value |= 0x20000000;                   // set value[02:02]
-    rsx_wr32(value, 0x28000088304);
+    rsx_wr32(value, 0x00088304);
   
-    value = rsx_rd32(0x28000088304);
+    value = rsx_rd32(0x00088304);
     value &= 1;                            // unset value[01:01]
-    rsx_wr32(value, 0x28000088304);
+    rsx_wr32(value, 0x00088304);
   
     return;
 }
-
-
-
-
-
-
-
-
-
 
 
 
@@ -338,9 +243,7 @@ void rsx_bus_ioif0_t::set_chip_revision() {
     
     */
   
-  ioif0->chip_revision = 0x5C;
-  
-  return;    
+    chip_revision = 0x5C;
 }
 
 
@@ -376,7 +279,7 @@ rsx_bus_ioif0_t* rsx_bus_ioif0_init(void) {
     rsx_wr32(0xFFFFFFFF, 0x28000088100);
     
     // get RSX chip revision
-    rsx_bus_ioif0_set_chip_revision(ioif0);
+    ioif0->set_chip_revision();
     
     return ioif0;
 }

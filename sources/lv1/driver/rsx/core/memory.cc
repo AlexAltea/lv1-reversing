@@ -493,7 +493,7 @@ rsx_core_memory_t* rsx_core_memory_ctor(S64 rsx_core_id) {
     }
     
     // get needed values
-    DDR_MB_CTags = rsx_rd32(0x28000100320);
+    DDR_MB_CTags = rsx_rd32(0x00100320);
     BAR1_addr    = rsx_bus_ioif0_get_BAR1_addr(ioif0);
     BAR1_size    = rsx_bus_ioif0_get_BAR1_size(ioif0);
     BAR2_addr    = rsx_bus_ioif0_get_BAR2_addr(ioif0);

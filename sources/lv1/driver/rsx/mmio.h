@@ -181,6 +181,42 @@
 #define RSX_PFIFO_UNK32E8                               0x000032E8
 #define RSX_PFIFO_UNK3304                               0x00003304
 
+// IOIF
+#define RSX_IOIF_INTR                                  (0x00088100)
+#define RSX_IOIF_INTR_EN                               (0x00088140)
+#define     RSX_IOIF_INTR_EMDRWER                         (1 << 31)
+#define     RSX_IOIF_INTR_EMWDSER                         (1 << 30)
+#define     RSX_IOIF_INTR_EMWSER                          (1 << 29)
+#define     RSX_IOIF_INTR_EMWDTE                          (1 << 28)
+#define     RSX_IOIF_INTR_UC_ATE                          (1 << 27)
+#define     RSX_IOIF_INTR_UC_ERII                         (1 << 26)
+#define     RSX_IOIF_INTR_UC_ERIT                         (1 << 25)
+#define     RSX_IOIF_INTR_UC_IOCPLTO                      (1 << 24)
+#define     RSX_IOIF_INTR_UC_IOODTO                       (1 << 23)
+#define     RSX_IOIF_INTR_UC_IORTO                        (1 << 22)
+#define     RSX_IOIF_INTR_UC_IOCTO                        (1 << 21)
+#define     RSX_IOIF_INTR_UC_RMRDSER                      (1 << 20)
+#define     RSX_IOIF_INTR_UC_RMRSER                       (1 << 19)
+#define     RSX_IOIF_INTR_UC_RMRDTE                       (1 << 18)
+#define     RSX_IOIF_INTR_DEBUG_ERROR                     (1 << 17)
+#define     RSX_IOIF_INTR_SPI_ERROR                       (1 << 16)
+#define     RSX_IOIF_INTR_BE_READ_ERROR                   (1 << 15)
+#define     RSX_IOIF_INTR_BE_WRITE_ERROR                  (1 << 14)
+#define     RSX_IOIF_INTR_BE_COMMAND_OVERFLOW             (1 << 13)
+#define     RSX_IOIF_INTR_BE_DATA_OVERFLOW                (1 << 12)
+#define     RSX_IOIF_INTR_INVALID_DATA_OVERFLOW           (1 << 11)
+#define     RSX_IOIF_INTR_DATA_CREDIT_OVERFLOW            (1 << 10)
+#define     RSX_IOIF_INTR_COMMAND_CREDIT_OVERFLOW         (1 <<  9)
+#define     RSX_IOIF_INTR_COMMAND_BUFFER_OVERFLOW         (1 <<  8)
+#define     RSX_IOIF_INTR_INVALID_PLG_TYPE                (1 <<  7)
+#define     RSX_IOIF_INTR_INVALID_NODE_ID                 (1 <<  6)
+#define     RSX_IOIF_INTR_INVALID_DSIZE                   (1 <<  5)
+#define     RSX_IOIF_INTR_INVALID_TSIZE                   (1 <<  4)
+#define     RSX_IOIF_INTR_INVALID_TTYPE                   (1 <<  3)
+#define     RSX_IOIF_INTR_CRC_ERROR                       (1 <<  2)
+#define     RSX_IOIF_INTR_RETRY_ERROR                     (1 <<  1)
+#define     RSX_IOIF_INTR_CONSECUTIVE_RETRY_ERROR         (1 <<  0)
+
 // PFB
 #define RSX_PFB_BOOT_0                 (0x00100000)
 #define     RSX_PFB_BOOT_0_RAM_AMOUNT                   0x00000003

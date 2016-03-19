@@ -22,6 +22,8 @@ struct rsx_bus_ioif0_t {
     S32 unk_38;               // 0x38: ?
     S32 unk_3C;               // 0x3C: ?
 
+    inline void enable_interrupt(U32 bits);
+
     // Get members
     S32 get_init_flag();
     S32 get_chip_revision();

@@ -10,13 +10,20 @@
 #include "lv1/driver/rsx/vram.h"
 #include "lv1/driver/rsx/core/device.h"
 
-S32 rsx_object_context_dma_t::get_object_size() {
+S32 rsx_object_context_dma_t::get_object_size() const {
     return 0x10;
 }
+U32 rsx_object_context_dma_t::get_object_handle() const {
+    return handle;
+}
+S64 rsx_object_context_dma_t::get_bar1_offset() const {
+    return bar1_offset;
+}
+S64 rsx_object_context_dma_t::get_bar2_offset() const {
+    return bar2_offset;
+}
 
-/***********************************************************************
-* 
-***********************************************************************/
+
 void rsx_object_context_dma_t::sub220064(S32 type, S32 arg2, S64 addr, S32 size) {
     U32 dma_object;
     U32 dma_offset;

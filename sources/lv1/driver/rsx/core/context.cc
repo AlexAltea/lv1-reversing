@@ -168,12 +168,12 @@ S32 rsx_core_context_t::sub2146F4() {
     
     
     // store count of GRAPH units(8) into driver info 0x0028:
-    value = rsx_rd32(0x28000001540);        // NV40_PMC_GRAPH_UNITS           
+    value = rsx_rd32(0x00001540);        // NV40_PMC_GRAPH_UNITS           
     DRVI_write08(index, (S8)count_set_bits((value & 0x1FF00) >>8), 0x28);  // value[15:23], GRAPH units
     DRVI_write08(index, (S8)count_set_bits(value & 0xFF) * 4, 0x29);       // value[24:31], ? 6 of 8 are set, but no idea which one
     
     // ?
-    value = rsx_rd32(0x28000100200);
+    value = rsx_rd32(0x00100200);
     value &= 3;                        // value[30:31]
     DRVI_write08(index, (S8)(value + 1), 0x2A); // 2
     
@@ -223,11 +223,11 @@ S32 rsx_core_context_t::sub2146F4() {
     DRVI_write32(index, (S32)(value - ioif0->get_bar1_addr()), 0x2B5C);
     
     // BAR0
-    value = rsx_rd32(0x28000001540);
+    value = rsx_rd32(0x00001540);
     value = (value & 0x1FF00) >>8;          // value[15:23], unk
     DRVI_write32(index, (S32)value, 0x2B64);
     
-    value = rsx_rd32(0x28000001540);
+    value = rsx_rd32(0x00001540);
     value &= 0xFF;                          // value[24:31], unk
     DRVI_write32(index, (S8)value, 0x2B66);
     
@@ -923,7 +923,7 @@ void rsx_core_context_t::init(U64 *out, S64 core_id, rsx_memory_context_t* mem_c
         rsx_device_graph_21D054((void*)core->dev_graph_obj);
         
         // BAR0/GRAPH: set 0x28000405018[17:17]
-        value = rsx_rd32(0x28000405018);
+        value = rsx_rd32(0x00405018);
         value |= 0x4000;
         rsx_wr32(0, 0x28000405018);
         

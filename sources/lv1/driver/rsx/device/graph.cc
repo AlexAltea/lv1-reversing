@@ -665,20 +665,20 @@ addi      r11, r11, 0xFFF
     rsx_wr32(0x28000405014, 0xFF200001);
     rsx_wr32(0x28000405020, 0x00000000);
   
-    value = rsx_rd32(0x28000405010);
+    value = rsx_rd32(0x00405010);
     value &= 0xFFF003FF;                      // unset value[12:21]
     value |= 0x70000;                         // set value[13:15]
-    rsx_wr32(value, 0x28000405010);
+    rsx_wr32(value, 0x00405010);
     
-    value = rsx_rd32(0x28000405010);
+    value = rsx_rd32(0x00405010);
     value &= 0xFFF003FF;                      // unset value[12:21]
     value |= 0x38800;                         // set value[14:16], [20:20]
-    rsx_wr32(value, 0x28000405010);
+    rsx_wr32(value, 0x00405010);
     
-    value = rsx_rd32(0x28000405020);
+    value = rsx_rd32(0x00405020);
     value &= 0xFFFFFC00;                      // unset value[22:31]
     value |= 0x38800;                         // set value[25:26], [28:29], [31:31]
-    rsx_wr32(value, 0x28000405020);
+    rsx_wr32(value, 0x00405020);
     
     for (i = 0; i < 8; i++)
         rsx_wr32(0, 0x28000407530 + i * 0x10);
@@ -723,15 +723,15 @@ void rsx_device_graph_21D350(rsx_device_graph_t* graph) {
     
     
     // 
-    value1 = rsx_rd32(0x28000000200);
+    value1 = rsx_rd32(0x00000200);
     value1 &= 0xFFFFFE00;                 // unset value[19:19]
     rsx_wr32(value1, 0x28000000200);
     
-    value1 = rsx_rd32(0x28000000200);
+    value1 = rsx_rd32(0x00000200);
     value1 |= 0x1000;                     // set value[19:19]
     rsx_wr32(value1, 0x28000000200);
     
-    value1 = rsx_rd32(0x28000400080);
+    value1 = rsx_rd32(0x00400080);
     value1 &= 0xFFFFFFFE;                 // unset value[31:31]
     rsx_wr32(value1, 0x28000400080);
     
@@ -765,11 +765,11 @@ void rsx_device_graph_21D350(rsx_device_graph_t* graph) {
         offset += 0x10;
     }
     
-    value1 = rsx_rd32(0x28000100200);
+    value1 = rsx_rd32(0x00100200);
     rsx_wr32(value1, 0x28000400DF0);
     rsx_wr32(value1, 0x280004069F0);
     
-    value1 = rsx_rd32(0x28000100204);
+    value1 = rsx_rd32(0x00100204);
     rsx_wr32(value1, 0x28000400DF4);
     rsx_wr32(value1, 0x280004069F4);
     
@@ -793,7 +793,7 @@ void rsx_device_graph_21D350(rsx_device_graph_t* graph) {
         offset+=0x1C;
     }
     
-    value1 = rsx_rd32(0x28000001540);
+    value1 = rsx_rd32(0x00001540);
     value2 = value1 & 0xFFFFFF00;
     
     for (i = 0; i < 8; i++) {
@@ -807,7 +807,7 @@ void rsx_device_graph_21D350(rsx_device_graph_t* graph) {
             
             i &= 0xFFFFFFFC;
             
-            value1 = rsx_rd32(0x28000405000);
+            value1 = rsx_rd32(0x00405000);
             value1 &= 0xFFFFFFF8;               // unset [29:31]
             rsx_wr32(value1, 0x28000405000);
             
@@ -845,7 +845,7 @@ S32 rsx_device_graph_21EF60(S64 *vtab) {
     
     //////////////////////////////////////////////////////////////////////
     // get BAR0 register value
-    value = rsx_rd32(0x28000001540);    // NV40_PMC_GRAPH_UNITS
+    value = rsx_rd32(0x00001540);    // NV40_PMC_GRAPH_UNITS
     value = (value & 0x1FF00)>>8;        // value[15:23]
     //////////////////////////////////////////////////////////////////////
     
@@ -949,7 +949,7 @@ void rsx_device_graph_21DA04(rsx_device_graph_t* graph, S32 idx) {
     
     //////////////////////////////////////////////////////////////////////
     rsx_wr32(0xFF3F, 0x28000001540);   // TEST: 8 units like in original dump
-    value = rsx_rd32(0x28000001540);    // NV40_PMC_GRAPH_UNITS
+    value = rsx_rd32(0x00001540);    // NV40_PMC_GRAPH_UNITS
     unit_map = (value & 0x1FF00)>>8;     // value[15:23]
     //////////////////////////////////////////////////////////////////////
     

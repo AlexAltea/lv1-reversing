@@ -21,11 +21,12 @@ struct rsx_object_context_dma_t {
     S64 bar1_offset;   // 0x10: VRAM offset
 
     // Methods
-    S32 get_object_size();
-    U32 get_object_handle();
-    S64 get_bar1_offset();
-    S64 get_bar2_offset();
+    S32 get_object_size() const;
+    U32 get_object_handle() const;
+    S64 get_bar1_offset() const;
+    S64 get_bar2_offset() const;
 
     rsx_object_context_dma_t(U32 type);
+
     void sub220064(S32 type, S32 arg2, S64 addr, S32 size);
 };

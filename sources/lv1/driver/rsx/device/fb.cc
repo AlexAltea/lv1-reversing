@@ -19,18 +19,18 @@ void rsx_device_fb_t::sub21ADAC() {
     value &= 0xFFFFFFDF;                     // unset value[26:26]
     rsx_wr32(RSX_PFB_UNK0084, value);
     
-    value = rsx_rd32(0x28000100080);
+    value = rsx_rd32(0x00100080);
     value |= 0x8000000;                      // set value[04:04]
-    rsx_wr32(value, 0x28000100080);
+    rsx_wr32(value, 0x00100080);
     
     rsx_wr32(0xCCCC5044, 0x28000100330);
     rsx_wr32(0xFFFF18FF, 0x2800010032C);
     rsx_wr32(0x0000440A, 0x28000100350);
     
-    value = rsx_rd32(0x2800010033C);
+    value = rsx_rd32(0x0010033C);
     value &= 0x000080FF;                     // unset value[16:16], value[24:31]
     value |= 0x00041200;                     // set value[13:13], value[19:19], value[22.22]
-    rsx_wr32(value, 0x2800010033C);
+    rsx_wr32(value, 0x0010033C);
     
     rsx_wr32(RSX_PFB_UNK0340, 0x000001FB);
     rsx_wr32(RSX_PFB_UNK0344, 0x00000000);
@@ -44,21 +44,21 @@ void rsx_device_fb_t::sub21ADAC() {
     
     switch(size_MB) {
         case 128:
-          value = rsx_rd32(0x28000088304);
+          value = rsx_rd32(0x00088304);
           value &= 0xFFFFFFFC;                 // unset value[30:30] and [31:31]
           value |= 1;                          // set value[31:31]
-          rsx_wr32(value, 0x28000088304);
+          rsx_wr32(value, 0x00088304);
           break;
         case 256:
-          value = rsx_rd32(0x28000088304);
+          value = rsx_rd32(0x00088304);
           value &= 0xFFFFFFFC;                 // unset value[30:30] and [31:31]
           value |= 2;                          // set value[30:30]
-          rsx_wr32(value, 0x28000088304);
+          rsx_wr32(value, 0x00088304);
           break;
         case 64:
-          value = rsx_rd32(0x28000088304);
+          value = rsx_rd32(0x00088304);
           value &= 0xFFFFFFFC;                 // unset value[30:30] and [31:31]
-          rsx_wr32(value, 0x28000088304);
+          rsx_wr32(value, 0x00088304);
         default:
           printf("rsx driver assert failed. [%s : %04d : %s()]\n", __FILE__, __LINE__, __func__);
           return;

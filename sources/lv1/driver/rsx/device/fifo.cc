@@ -75,7 +75,7 @@ void rsx_device_fifo_t::sub21CCC0(S32 channel_id, S32 offset) {
     tmp = rsx_core_memory_value_div_by_16((void*)core, offset);
     
     // read value from BAR0:0x28000003204
-    value = rsx_rd32(0x28000003204);     // unknow value! not inited, here 0
+    value = rsx_rd32(0x00003204);     // unknow value! not inited, here 0
     value &= 0x1FF;
     
     /*if (value == channel_id) {
@@ -186,24 +186,24 @@ S32 rsx_device_fifo_t::pause() {
         }
     }
     
-    value = rsx_rd32(0x28000003200);
+    value = rsx_rd32(0x00003200);
     
     // if value[32:32] unset...
     if ((value & 0xFFFFFFFE) == 0)
       return 0;
     
-    value = rsx_rd32(0x28000003200);
+    value = rsx_rd32(0x00003200);
     value &= 0xFFFFFFFE;                     // unset value[31:31]
-    rsx_wr32(value, 0x28000003200);
+    rsx_wr32(value, 0x00003200);
     
-    value = rsx_rd32(0x28000003220);
+    value = rsx_rd32(0x00003220);
     value &= 0xFFFFFFFE;                     // unset value[31:31]
-    rsx_wr32(value, 0x28000003220);
+    rsx_wr32(value, 0x00003220);
     
     
     /**/
     for (i = 0; i < 1000001; i++) {
-        value = rsx_rd32(0x28000003250);
+        value = rsx_rd32(0x00003250);
         if ((value & 0xFFFFEFFF) == 0)         // if value[19:19] unset... {
             // db16cyc                          // wait and try again
       // db16cyc
@@ -212,7 +212,7 @@ S32 rsx_device_fifo_t::pause() {
             continue;
         }
         
-        value = rsx_rd32(0x28000003304);
+        value = rsx_rd32(0x00003304);
         if ((value & 0xFFFFFFFE) == 0)         // if value[31:31] unset... {
             // db16cyc                          // wait and try again
       // db16cyc
@@ -221,15 +221,15 @@ S32 rsx_device_fifo_t::pause() {
             continue;
         }
         
-        value = rsx_rd32(0x28000003250);
+        value = rsx_rd32(0x00003250);
         value &= 0xFFFFFFFE;                  // unset value[31:31]
-        rsx_wr32(value, 0x28000003250);
+        rsx_wr32(value, 0x00003250);
         
-        value = rsx_rd32(0x28000003258);
+        value = rsx_rd32(0x00003258);
         value &= 0xFEFFFFFF;                  // unset value[07:07]
-        rsx_wr32(value, 0x28000003258);
+        rsx_wr32(value, 0x00003258);
         
-        value = rsx_rd32(0x28000003250);
+        value = rsx_rd32(0x00003250);
         if ((value & 0xFFFFFFEF) == 0)         // if value[27:27] unset... {
             
             
@@ -249,17 +249,17 @@ void rsx_device_fifo_t::resume() {
     
     
     if (fifo->pause == 0) {
-        value = rsx_rd32(0x28000003250);
+        value = rsx_rd32(0x00003250);
         value |= 1;                         // set value[31:31]
-        rsx_wr32(value, 0x28000003250);
+        rsx_wr32(value, 0x00003250);
         
-        value = rsx_rd32(0x28000003200);
+        value = rsx_rd32(0x00003200);
         value |= 1;                         // set value[31:31]
-        rsx_wr32(value, 0x28000003200);
+        rsx_wr32(value, 0x00003200);
         
-        value = rsx_rd32(0x28000003220);
+        value = rsx_rd32(0x00003220);
         value |= 1;                         // set value[31:31]
-        rsx_wr32(value, 0x28000003220);
+        rsx_wr32(value, 0x00003220);
         
         if (((rsx_core_device_get_rsx_enable_flag()) != 0) && (fifo->init != 1))
           return;
@@ -312,82 +312,82 @@ void rsx_device_fifo_t::sub21B0B0() {
     rsx_wr32(RSX_PFIFO_UNK2510 + 0x3C, 0);
 
     // set flags
-    value = rsx_rd32(0x2800000250C);
+    value = rsx_rd32(0x0000250C);
     value |= 1;                          // set [31:31]
-    rsx_wr32(value, 0x2800000250C);
+    rsx_wr32(value, 0x0000250C);
     
-    value = rsx_rd32(0x2800000250C);
+    value = rsx_rd32(0x0000250C);
     value |= 2;                          // set [30:30]
-    rsx_wr32(value, 0x2800000250C);
+    rsx_wr32(value, 0x0000250C);
     
-    value = rsx_rd32(0x2800000250C);
+    value = rsx_rd32(0x0000250C);
     value |= 4;                          // set [29:29]
-    rsx_wr32(value, 0x2800000250C);
+    rsx_wr32(value, 0x0000250C);
     
-    value = rsx_rd32(0x2800000250C);
+    value = rsx_rd32(0x0000250C);
     value |= 8;                          // set [28:28]
-    rsx_wr32(value, 0x2800000250C);
+    rsx_wr32(value, 0x0000250C);
     
-    value = rsx_rd32(0x2800000250C);
+    value = rsx_rd32(0x0000250C);
     value |= 0x10;                       // set [27:27]
-    rsx_wr32(value, 0x2800000250C);
+    rsx_wr32(value, 0x0000250C);
     
-    value = rsx_rd32(0x2800000250C);
+    value = rsx_rd32(0x0000250C);
     value |= 0x20;                       // set [26:26]
-    rsx_wr32(value, 0x2800000250C);
+    rsx_wr32(value, 0x0000250C);
     
-    value = rsx_rd32(0x2800000250C);
+    value = rsx_rd32(0x0000250C);
     value |= 0x40;                       // set [25:25]
-    rsx_wr32(value, 0x2800000250C);
+    rsx_wr32(value, 0x0000250C);
     
-    value = rsx_rd32(0x2800000250C);
+    value = rsx_rd32(0x0000250C);
     value |= 0x80;                       // set [24:24]
-    rsx_wr32(value, 0x2800000250C);
+    rsx_wr32(value, 0x0000250C);
     
-    value = rsx_rd32(0x2800000250C);
+    value = rsx_rd32(0x0000250C);
     value |= 0x100;                      // set [23:23]
-    rsx_wr32(value, 0x2800000250C);
+    rsx_wr32(value, 0x0000250C);
     
-    value = rsx_rd32(0x2800000250C);
+    value = rsx_rd32(0x0000250C);
     value |= 0x200;                      // set [22:22]
-    rsx_wr32(value, 0x2800000250C);
+    rsx_wr32(value, 0x0000250C);
     
-    value = rsx_rd32(0x2800000250C);
+    value = rsx_rd32(0x0000250C);
     value |= 0x400;                      // set [21:21]
-    rsx_wr32(value, 0x2800000250C);
+    rsx_wr32(value, 0x0000250C);
     
-    value = rsx_rd32(0x2800000250C);
+    value = rsx_rd32(0x0000250C);
     value |= 0x800;                      // set [20:20]
-    rsx_wr32(value, 0x2800000250C);
+    rsx_wr32(value, 0x0000250C);
     
-    value = rsx_rd32(0x2800000250C);
+    value = rsx_rd32(0x0000250C);
     value |= 0x1000;                     // set [19:19]
-    rsx_wr32(value, 0x2800000250C);
+    rsx_wr32(value, 0x0000250C);
     
-    value = rsx_rd32(0x2800000250C);
+    value = rsx_rd32(0x0000250C);
     value |= 0x2000;                     // set [18:18]
-    rsx_wr32(value, 0x2800000250C);
+    rsx_wr32(value, 0x0000250C);
     
-    value = rsx_rd32(0x2800000250C);
+    value = rsx_rd32(0x0000250C);
     value |= 0x4000;                     // set [17:17]
-    rsx_wr32(value, 0x2800000250C);
+    rsx_wr32(value, 0x0000250C);
     
-    value = rsx_rd32(0x2800000250C);
+    value = rsx_rd32(0x0000250C);
     value |= 0x8000;                     // set [16:16]
-    rsx_wr32(value, 0x2800000250C);
+    rsx_wr32(value, 0x0000250C);
     
-    value = rsx_rd32(0x28000002048);
+    value = rsx_rd32(0x00002048);
     value &= 0xFEFFFFFF;                 // unset [07:07]
-    rsx_wr32(value, 0x28000002048);
+    rsx_wr32(value, 0x00002048);
     
     rsx_wr32(RSX_PFIFO_CACHE1_DMA_STATE, 0);
     rsx_wr32(RSX_PFIFO_UNK32E8, 0);
     rsx_wr32(RSX_PFIFO_UNK2410, 0);
     rsx_wr32(RSX_PFIFO_UNK2420, 0);
     
-    value = rsx_rd32(0x2800000221C);
+    value = rsx_rd32(0x0000221C);
     value &= 0xFFFFFFFE;                 // unset [31:31]
-    rsx_wr32(value, 0x2800000221C);
+    rsx_wr32(value, 0x0000221C);
     
     rsx_wr32(1, 0x28000002058);        // set to 1
     
@@ -395,9 +395,9 @@ void rsx_device_fifo_t::sub21B0B0() {
     value &= 0xFFFFFFFE;                 // unset [31:31]
     rsx_wr32(value, RSX_PFIFO_CACHES);
     
-    value = rsx_rd32(0x28000003250);
+    value = rsx_rd32(0x00003250);
     value &= 0xFFFFFFFE;                 // unset [31:31]
-    rsx_wr32(value, 0x28000003250);
+    rsx_wr32(value, 0x00003250);
     
     return;
 }
@@ -437,22 +437,22 @@ void rsx_device_fifo_t::sub21BA08() {
     fc2_offset = rsx_core_memory_get_BAR2_offset_by_address((void*)core->core_mem, fifo->fc2_addr);
     
     // update BAR0 registers
-    value = rsx_rd32(0x28000002230);
+    value = rsx_rd32(0x00002230);
     value &= 0xFFFFFFFC;                 // unset value[30:30] and [31:31]
     value |= 1;                          // set value[31:31]
-    rsx_wr32(value, 0x28000002230);
+    rsx_wr32(value, 0x00002230);
     
     // BAR0:0x28000002220 = NV40_PFIFO_RAMFC, RAM FIFO cash?
     // (the offsets for fc1 and fc2 are stored here, FIFO cash 1 and 2?)
-    value = rsx_rd32(0x28000002220);
+    value = rsx_rd32(0x00002220);
     value &= 0xFFFFE000;                           // unset value[19:31]
     value |= (fc1_offset & 0x1FFF0000) >> 16;
-    rsx_wr32(value, 0x28000002220);
+    rsx_wr32(value, 0x00002220);
     
-    value = rsx_rd32(0x28000002220);
+    value = rsx_rd32(0x00002220);
     value &= 0xFF00FFFF;                           // unset value[08:15]
     value |= (fc2_offset & 0xFF0000);
-    rsx_wr32(value, 0x28000002220);              // value now 0x????30002
+    rsx_wr32(value, 0x00002220);              // value now 0x????30002
     
     // get run_out address, 0x28002018000 and size, 0x200(512 byte)
     fifo->run_out_addr = rsx_core_memory_get_mem_reg_addr_by_id((void*)core->core_mem, 3);
@@ -465,9 +465,9 @@ void rsx_device_fifo_t::sub21BA08() {
     
     //////////////////////////////////////////////////////////////////////
     // update BAR0 registers
-    value = rsx_rd32(0x28000002218);
+    value = rsx_rd32(0x00002218);
     value &= 0xFFFEFFFF;                           // unset value[15:15]
-    rsx_wr32(value, 0x28000002218);
+    rsx_wr32(value, 0x00002218);
     //////////////////////////////////////////////////////////////////////
     
     // get run_out offset, if offset is valid(not out of address range)
@@ -475,10 +475,10 @@ void rsx_device_fifo_t::sub21BA08() {
     
     //////////////////////////////////////////////////////////////////////
     // update BAR0 registers
-    value = rsx_rd32(0x28000002218);
+    value = rsx_rd32(0x00002218);
     value &= 0xFFFFFE01;                           // unset value[23:30]
     value |= (run_out_offset & 0x1FE00) >>9;
-    rsx_wr32(value, 0x28000002218);
+    rsx_wr32(value, 0x00002218);
     //////////////////////////////////////////////////////////////////////
     
     // get run_out offset, if offset is valid(not out of address range)
